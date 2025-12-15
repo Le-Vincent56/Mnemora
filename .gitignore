@@ -1,0 +1,86 @@
+# ===========================
+# Dependencies
+# ===========================
+node_modules/
+.pnpm-store/
+
+# ===========================
+# Build Outputs
+# ===========================
+dist/
+build/
+out/
+.next/
+.turbo/
+
+# ===========================
+# Environment & Secrets
+# ===========================
+.env
+.env.local
+.env.*.local
+*.pem
+
+# ===========================
+# IDE & Editor
+# ===========================
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# ===========================
+# Testing & Coverage
+# ===========================
+coverage/
+.nyc_output/
+
+# ===========================
+# Logs
+# ===========================
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# ===========================
+# OS Files
+# ===========================
+Thumbs.db
+.DS_Store
+
+# ===========================
+# Electron
+# ===========================
+release/
+*.asar
+
+# ===========================
+# React Native / Mobile
+# ===========================
+# iOS
+ios/Pods/
+ios/build/
+*.xcworkspace
+*.xcuserdata
+
+# Android
+android/.gradle/
+android/app/build/
+android/build/
+*.apk
+*.aab
+*.keystore
+!debug.keystore
+
+# Metro
+.metro-health-check*
+
+# ===========================
+# SQLite (local dev databases)
+# ===========================
+*.db
+*.sqlite
+*.sqlite3
