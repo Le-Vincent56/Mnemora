@@ -90,3 +90,11 @@ export class InvariantError extends DomainError {
         super(`Invariant violation: ${message}`);
     }
 }
+
+export class RepositoryError extends DomainError {
+    readonly code = "REPOSITORY_ERROR";
+
+    constructor(message: string, public readonly cause?: unknown) {
+        super(message);
+    }
+}

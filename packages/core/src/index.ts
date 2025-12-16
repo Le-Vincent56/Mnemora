@@ -27,8 +27,50 @@ export {
     toEntityType
 } from './domain/entities/EntityType';
 export { BaseEntity } from './domain/entities/BaseEntity';
+
 export {
     Character,
     type CreateCharacterProps,
     type CharacterProps
 } from './domain/entities/Character';
+
+export {
+    Location,
+    type CreateLocationProps,
+    type LocationProps
+} from './domain/entities/Location';
+
+export {
+    Faction,
+    type CreateFactionProps,
+    type FactionProps
+} from './domain/entities/Faction';
+
+export {
+    Session,
+    type CreateSessionProps,
+    type SessionProps
+} from './domain/entities/Session';
+
+export {
+    Note,
+    type CreateNoteProps,
+    type NoteProps
+} from './domain/entities/Note';
+
+// Repository Interfaces
+export {
+    type IEntityRepository,
+    type EntityFilter,
+    type PaginationOptions,
+    type PaginatedResult
+} from './domain/repositories/IEntityRepository';
+
+export {
+    type ISearchRepository,
+    type SearchQuery,
+    type SearchHighlight,
+    type SearchResult,
+    type SearchResponse,
+    SearchMode
+} from './domain/repositories/ISearchRepository';
