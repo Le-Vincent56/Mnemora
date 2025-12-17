@@ -1,5 +1,5 @@
 import { Result } from '../../domain/core/Result';
-import { Note, CreateNoteProps } from '../../domain/entities/Note';
+import { Note } from '../../domain/entities/Note';
 import { EntityID } from '../../domain/value-objects/EntityID';
 import type { IEntityRepository } from '../../domain/repositories/IEntityRepository';
 import { EntityCreatedEvent } from '../../domain/events/entityLifecycleEvents';

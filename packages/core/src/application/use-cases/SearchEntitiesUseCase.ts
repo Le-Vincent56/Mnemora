@@ -3,7 +3,6 @@ import { EntityID } from '../../domain/value-objects/EntityID';
 import type {
     ISearchRepository,
     SearchQuery,
-    SearchMode
 } from '../../domain/repositories/ISearchRepository';
 import { SearchMode as SearchModeEnum } from '../../domain/repositories/ISearchRepository';
 import type { IUseCase } from './IUseCase';

@@ -120,6 +120,8 @@ export class CommandHistory {
             // User can't undo past a non-undoable action
             this.undoStack = [];
         }
+
+        return result;
     }
 
     /**

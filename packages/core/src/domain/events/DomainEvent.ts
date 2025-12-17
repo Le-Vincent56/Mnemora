@@ -1,5 +1,4 @@
 import { EntityID } from "../value-objects/EntityID";
-import { EntityType } from "../entities/EntityType";
 import { EntityCreatedEvent, EntityDeletedEvent, EntityForkedEvent, EntityUpdatedEvent } from "./entityLifecycleEvents";
 import { EntityIndexedEvent, EntityRemovedFromIndexEvent } from "./searchEvents";
 
