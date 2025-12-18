@@ -192,3 +192,30 @@ export {
 
   // Mappers
   export { EntityMapper } from './application/mappers/EntityMapper';
+
+// ==============================
+//      INFRASTRUCTURE LAYER
+// ==============================
+
+// Database
+export { 
+    DatabaseManager,
+    type DatabaseConfig
+} from './infrastructure/database/DatabaseManager';
+
+export type {
+    EntityRow,
+    SearchResultRow
+} from './infrastructure/database/types';
+
+// Repositories
+export { SQLiteEntityRepository } from './infrastructure/repositories/SQLiteEntityRepository';
+export { SQLiteSearchRepository } from './infrastructure/repositories/SQLiteSearchRepository';
+
+// Mappers
+export { DatabaseMapper } from './infrastructure/mappers/DatabaseMapper';
+
+// DI Container
+export { Container } from './infrastructure/di/Container';
+export { TOKENS } from './infrastructure/di/tokens';
+export { createContainer } from './infrastructure/di/setup';

@@ -75,6 +75,20 @@ export class Timestamps {
     }
 
     /**
+     * Reconstructs Timestamps from ISO strings, throwing if invalid.
+     * Use only whne you're certain the values are valid (e.g., from database).
+     */
+    static fromStringsOrThrow(createdAt: string, modifiedAt: string): Timestamps {
+        const result = Timestamps.fromStrings(createdAt, modifiedAt);
+
+        if(result.isFailure) {
+            throw result.error;
+        }
+
+        return result.value;
+    }
+
+    /**
      * Returns a new Timestamps with modifiedAt set to now.
      * Used when an entity is updated.
      */

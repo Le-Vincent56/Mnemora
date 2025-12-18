@@ -12,8 +12,8 @@ import type { LocationDTO } from '../dtos';
 import { EntityMapper } from '../mappers/EntityMapper';
 
 /**
- * Use case: Create a new Faction.
- * Factions default to World-level (shared across campaigns).
+ * Use case: Create a new Location.
+ * Locations default to World-level (shared across campaigns).
  */
 export class CreateLocationUseCase
     implements IUseCase<CreateLocationRequest, LocationDTO> {

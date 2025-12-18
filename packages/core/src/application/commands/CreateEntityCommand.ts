@@ -7,6 +7,12 @@ import { EntityCreatedEvent } from '../../domain/events/entityLifecycleEvents';
 import { EntityDeletedEvent } from '../../domain/events/entityLifecycleEvents';
 import { BaseCommand, CommandError } from './ICommand';
 
+/**
+ * Command: Create an entity.
+ * Undo behavior: Deletes the created entity.
+ * This command wraps entity creation to make it undoable.
+ * It stores the created entity's ID so it can be deleted on undo.
+ */
 export class CreateEntityCommand extends BaseCommand {
     /** The ID of the created entity (set after execute) */
     private createdEntityID: EntityID | null = null;
