@@ -17,6 +17,10 @@ import {
     DeleteEntityUseCase,
     SearchEntitiesUseCase
 } from '../../application/use-cases';
+import { EntityEditorViewModel } from '../../presentation';
+import { SearchViewModel } from '../../presentation';
+import { EntityListViewModel } from '../../presentation';
+import { CommandHistoryViewModel } from '../../presentation';
 
 export function createContainer(config: DatabaseConfig): Container {
     const container = new Container();
@@ -28,10 +32,10 @@ export function createContainer(config: DatabaseConfig): Container {
     container.register(TOKENS.Database, () => dbManager.getDatabase(), true);
 
     // Repositories
-    container.register(TOKENS.EntityRepository, () => 
+    container.register(TOKENS.EntityRepository, () =>
         new SQLiteEntityRepository(container.resolve(TOKENS.Database)), true
     );
-    container.register(TOKENS.SearchRepository, () => 
+    container.register(TOKENS.SearchRepository, () =>
         new SQLiteSearchRepository(container.resolve(TOKENS.Database)), true
     );
 
@@ -40,61 +44,85 @@ export function createContainer(config: DatabaseConfig): Container {
     container.register(TOKENS.CommandHistory, () => new CommandHistory(), true);
 
     // Use Cases (transient - new instance each time)
-    container.register(TOKENS.CreateCharacterUseCase, () => 
+    container.register(TOKENS.CreateCharacterUseCase, () =>
         new CreateCharacterUseCase(
             container.resolve(TOKENS.EntityRepository),
             container.resolve(TOKENS.EventBus)
         )
     );
-    container.register(TOKENS.CreateLocationUseCase, () => 
+    container.register(TOKENS.CreateLocationUseCase, () =>
         new CreateLocationUseCase(
             container.resolve(TOKENS.EntityRepository),
             container.resolve(TOKENS.EventBus)
         )
     );
-    container.register(TOKENS.CreateFactionUseCase, () => 
+    container.register(TOKENS.CreateFactionUseCase, () =>
         new CreateFactionUseCase(
             container.resolve(TOKENS.EntityRepository),
             container.resolve(TOKENS.EventBus)
         )
     );
-    container.register(TOKENS.CreateSessionUseCase, () => 
+    container.register(TOKENS.CreateSessionUseCase, () =>
         new CreateSessionUseCase(
             container.resolve(TOKENS.EntityRepository),
             container.resolve(TOKENS.EventBus)
         )
     );
-    container.register(TOKENS.CreateNoteUseCase, () => 
+    container.register(TOKENS.CreateNoteUseCase, () =>
         new CreateNoteUseCase(
             container.resolve(TOKENS.EntityRepository),
             container.resolve(TOKENS.EventBus)
         )
     );
-    container.register(TOKENS.GetEntityUseCase, () => 
+    container.register(TOKENS.GetEntityUseCase, () =>
         new GetEntityUseCase(
             container.resolve(TOKENS.EntityRepository)
         )
     );
-    container.register(TOKENS.ListEntitiesUseCase, () => 
+    container.register(TOKENS.ListEntitiesUseCase, () =>
         new ListEntitiesUseCase(
             container.resolve(TOKENS.EntityRepository)
         )
     );
-    container.register(TOKENS.UpdateEntityUseCase, () => 
+    container.register(TOKENS.UpdateEntityUseCase, () =>
         new UpdateEntityUseCase(
             container.resolve(TOKENS.EntityRepository),
             container.resolve(TOKENS.EventBus)
         )
     );
-    container.register(TOKENS.DeleteEntityUseCase, () => 
+    container.register(TOKENS.DeleteEntityUseCase, () =>
         new DeleteEntityUseCase(
             container.resolve(TOKENS.EntityRepository),
             container.resolve(TOKENS.EventBus)
         )
     );
-    container.register(TOKENS.SearchEntitiesUseCase, () => 
+    container.register(TOKENS.SearchEntitiesUseCase, () =>
         new SearchEntitiesUseCase(
             container.resolve(TOKENS.EntityRepository),
+        )
+    );
+
+    // ViewModels (transient)
+    container.register(TOKENS.EntityEditorViewModel, () =>
+        new EntityEditorViewModel(
+            container.resolve(TOKENS.GetEntityUseCase),
+            container.resolve(TOKENS.UpdateEntityUseCase),
+            container.resolve(TOKENS.EventBus)
+        )
+    );
+    container.register(TOKENS.SearchViewModel, () =>
+        new SearchViewModel(
+            container.resolve(TOKENS.SearchEntitiesUseCase)
+        )
+    );
+    container.register(TOKENS.EntityListViewModel, () =>
+        new EntityListViewModel(
+            container.resolve(TOKENS.ListEntitiesUseCase)
+        )
+    );
+    container.register(TOKENS.CommandHistoryViewModel, () =>
+        new CommandHistoryViewModel(
+            container.resolve(TOKENS.CommandHistory)
         )
     );
 

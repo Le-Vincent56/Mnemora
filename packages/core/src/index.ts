@@ -10,10 +10,10 @@ export const VERSION = '0.0.1';
 // Domain Core
 export { Result } from './domain/core/Result';
 export {
-    DomainError, 
-    ValidationError, 
-    NotFoundError, 
-    ConflictError, 
+    DomainError,
+    ValidationError,
+    NotFoundError,
+    ConflictError,
     InvariantError,
     RepositoryError
 } from './domain/core/errors';
@@ -132,7 +132,7 @@ export {
 } from './application/dtos/EntityDTOs';
 
 // DTOs - Request
-  export type {
+export type {
     CreateCharacterRequest,
     CreateLocationRequest,
     CreateFactionRequest,
@@ -144,10 +144,10 @@ export {
     SearchEntitiesRequest,
     GetEntityRequest,
     ListEntitiesRequest,
-  } from './application/dtos/RequestDTOs';
+} from './application/dtos/RequestDTOs';
 
-  // DTOs - Response
-  export type {
+// DTOs - Response
+export type {
     EntityResponse,
     EntityListResponse,
     SearchResultDTO,
@@ -157,48 +157,48 @@ export {
     ForkResponse,
     BatchResponse,
     BatchFailure,
-  } from './application/dtos/ResponseDTOs';
+} from './application/dtos/ResponseDTOs';
 
-  // Commands
-  export type { ICommand } from './application/commands/ICommand';
-  export { BaseCommand, CommandError } from './application/commands/ICommand';
-  export type { CommandSnapshot, CommandHistoryOptions } from './application/commands/CommandHistory';
-  export { CommandHistory } from './application/commands/CommandHistory';
-  export { CreateEntityCommand } from './application/commands/CreateEntityCommand';
-  export { UpdateEntityCommand } from './application/commands/UpdateEntityCommand';
-  export { DeleteEntityCommand } from './application/commands/DeleteEntityCommand';
+// Commands
+export type { ICommand } from './application/commands/ICommand';
+export { BaseCommand, CommandError } from './application/commands/ICommand';
+export type { CommandSnapshot, CommandHistoryOptions } from './application/commands/CommandHistory';
+export { CommandHistory } from './application/commands/CommandHistory';
+export { CreateEntityCommand } from './application/commands/CreateEntityCommand';
+export { UpdateEntityCommand } from './application/commands/UpdateEntityCommand';
+export { DeleteEntityCommand } from './application/commands/DeleteEntityCommand';
 
-  // Use Cases
-  export type { IUseCase } from './application/use-cases/IUseCase';
-  export { UseCaseError } from './application/use-cases/UseCaseError';
+// Use Cases
+export type { IUseCase } from './application/use-cases/IUseCase';
+export { UseCaseError } from './application/use-cases/UseCaseError';
 
-  // Use Cases - Create
-  export { CreateCharacterUseCase } from './application/use-cases/CreateCharacterUseCase';
-  export { CreateLocationUseCase } from './application/use-cases/CreateLocationUseCase';
-  export { CreateFactionUseCase } from './application/use-cases/CreateFactionUseCase';
-  export { CreateSessionUseCase } from './application/use-cases/CreateSessionUseCase';
-  export { CreateNoteUseCase } from './application/use-cases/CreateNoteUseCase';
+// Use Cases - Create
+export { CreateCharacterUseCase } from './application/use-cases/CreateCharacterUseCase';
+export { CreateLocationUseCase } from './application/use-cases/CreateLocationUseCase';
+export { CreateFactionUseCase } from './application/use-cases/CreateFactionUseCase';
+export { CreateSessionUseCase } from './application/use-cases/CreateSessionUseCase';
+export { CreateNoteUseCase } from './application/use-cases/CreateNoteUseCase';
 
-  // Use Cases - Read
-  export { GetEntityUseCase } from './application/use-cases/GetEntityUseCase';
-  export { ListEntitiesUseCase } from './application/use-cases/ListEntitiesUseCase';
-  export { SearchEntitiesUseCase } from './application/use-cases/SearchEntitiesUseCase';
+// Use Cases - Read
+export { GetEntityUseCase } from './application/use-cases/GetEntityUseCase';
+export { ListEntitiesUseCase } from './application/use-cases/ListEntitiesUseCase';
+export { SearchEntitiesUseCase } from './application/use-cases/SearchEntitiesUseCase';
 
-  // Use Cases - Update
-  export { UpdateEntityUseCase } from './application/use-cases/UpdateEntityUseCase';
+// Use Cases - Update
+export { UpdateEntityUseCase } from './application/use-cases/UpdateEntityUseCase';
 
-  // Use Cases - Delete
-  export { DeleteEntityUseCase } from './application/use-cases/DeleteEntityUseCase';
+// Use Cases - Delete
+export { DeleteEntityUseCase } from './application/use-cases/DeleteEntityUseCase';
 
-  // Mappers
-  export { EntityMapper } from './application/mappers/EntityMapper';
+// Mappers
+export { EntityMapper } from './application/mappers/EntityMapper';
 
 // ==============================
 //      INFRASTRUCTURE LAYER
 // ==============================
 
 // Database
-export { 
+export {
     DatabaseManager,
     type DatabaseConfig
 } from './infrastructure/database/DatabaseManager';
@@ -219,3 +219,45 @@ export { DatabaseMapper } from './infrastructure/mappers/DatabaseMapper';
 export { Container } from './infrastructure/di/Container';
 export { TOKENS } from './infrastructure/di/tokens';
 export { createContainer } from './infrastructure/di/setup';
+
+// ==============================
+//       PRESENTATION LAYER
+// ==============================
+
+// Animations
+export {
+    TIMING,
+    EASING,
+    ANIMATION_PRESETS,
+} from './presentation/animations';
+
+export type {
+    TimingKey,
+    EasingKey,
+    AnimationPresetKey,
+} from './presentation/animations';
+
+// ViewModel Types
+export type {
+    LoadingState,
+    AsyncState,
+    IDisposable,
+    IViewModel,
+} from './presentation/view-models/types';
+
+export {
+    ViewModelError,
+    createAsyncState,
+    loadingState,
+    successState,
+    errorState,
+} from './presentation/view-models/types';
+
+// ViewModels
+export { EntityEditorViewModel } from './presentation/view-models/EntityEditorViewModel';
+export type { EntityEditorViewModelOptions } from './presentation/view-models/EntityEditorViewModel';
+export { SearchViewModel } from './presentation/view-models/SearchViewModel';
+export type { SearchViewModelOptions } from './presentation/view-models/SearchViewModel';
+export { EntityListViewModel } from './presentation/view-models/EntityListViewModel';
+export type { EntityListViewModelOptions } from './presentation/view-models/EntityListViewModel';
+export { CommandHistoryViewModel } from './presentation/view-models/CommandHistoryViewModel';

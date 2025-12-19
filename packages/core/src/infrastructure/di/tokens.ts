@@ -22,4 +22,10 @@ export const TOKENS = {
     SearchEntitiesUseCase: Symbol('SearchEntitiesUseCase'),
     UpdateEntityUseCase: Symbol('UpdateEntityUseCase'),
     DeleteEntityUseCase: Symbol('DeleteEntityUseCase'),
+
+    // ViewModels
+    EntityEditorViewModel: Symbol('EntityEditorViewModel'),
+    SearchViewModel: Symbol('SearchViewModel'),
+    EntityListViewModel: Symbol('EntityListViewModel'),
+    CommandHistoryViewModel: Symbol('CommandHistoryViewModel'),
 } as const;
