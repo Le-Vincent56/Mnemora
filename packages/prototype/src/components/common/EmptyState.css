@@ -1,0 +1,140 @@
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 56px 24px;
+    text-align: center;
+}
+
+/* Cosmic container */
+.empty-state__cosmos {
+    position: relative;
+    width: 220px;
+    height: 220px;
+    margin-bottom: 12px;
+}
+
+/* Subtle radial glow behind constellation */
+.empty-state__glow {
+    position: absolute;
+    inset: -20%;
+    background: radial-gradient(circle at center,
+            rgba(92, 122, 138, 0.08) 0%,
+            rgba(92, 122, 138, 0.03) 40%,
+            transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.empty-state__svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+/* Constellation lines */
+.empty-state__line {
+    stroke: var(--primary);
+    stroke-width: 0.7;
+    stroke-linecap: round;
+    opacity: 0.4;
+}
+
+/* Stars with magnitude-based styling */
+.empty-state__star {
+    fill: var(--primary);
+    opacity: 1;
+}
+
+.empty-state__star--mag1 {
+    animation: twinkle-bright 4s ease-in-out infinite;
+    animation-delay: var(--twinkle-delay, 0s);
+}
+
+.empty-state__star--mag2 {
+    animation: twinkle 5s ease-in-out infinite;
+    animation-delay: var(--twinkle-delay, 0s);
+}
+
+.empty-state__star--mag3 {
+    animation: twinkle-dim 6s ease-in-out infinite;
+    animation-delay: var(--twinkle-delay, 0s);
+}
+
+@keyframes twinkle-bright {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.25);
+    }
+}
+
+@keyframes twinkle {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+}
+
+@keyframes twinkle-dim {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.15);
+    }
+}
+
+/* Content */
+.empty-state__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.empty-state__title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 500;
+    font-variation-settings: 'opsz' 72, 'SOFT' 100;
+    color: var(--text-primary);
+    margin: 0 0 10px;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+}
+
+.empty-state__description {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: 0 0 24px;
+    max-width: 320px;
+    line-height: 1.6;
+}
+
+.empty-state__action {
+    margin-top: 0;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+
+    .empty-state__star--mag1,
+    .empty-state__star--mag2,
+    .empty-state__star--mag3 {
+        animation: none;
+        transform: scale(1);
+    }
+}

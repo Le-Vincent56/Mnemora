@@ -1,0 +1,50 @@
+.session-timer-container {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.session-timer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-left: 4px;
+    overflow: hidden;
+}
+
+.session-timer__time {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--text-secondary);
+    display: inline-flex;
+    white-space: nowrap;
+}
+
+.session-timer__char {
+    display: inline-block;
+    min-width: 0.6em;
+    text-align: center;
+}
+
+.session-timer__char--colon {
+    min-width: 0.35em;
+    opacity: 0.5;
+}
+
+.session-timer__controls {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    flex-shrink: 0;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+
+    .session-timer,
+    .session-timer__char,
+    .session-timer__controls {
+        animation: none !important;
+        transition: none !important;
+    }
+}

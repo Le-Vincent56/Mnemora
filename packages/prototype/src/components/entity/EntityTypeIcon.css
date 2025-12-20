@@ -1,0 +1,25 @@
+.entity-type-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.entity-type-icon--character {
+    color: var(--entity-character);
+}
+
+.entity-type-icon--location {
+    color: var(--entity-location);
+}
+
+.entity-type-icon--faction {
+    color: var(--entity-faction);
+}
+
+.entity-type-icon--session {
+    color: var(--entity-session);
+}
+
+.entity-type-icon--note {
+    color: var(--entity-note);
+}

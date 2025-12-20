@@ -1,0 +1,37 @@
+.icon-rail-item {
+    position: relative;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    border-radius: 8px;
+    cursor: pointer;
+    transition:
+        background-color var(--timing-fast) var(--easing-standard),
+        color var(--timing-fast) var(--easing-standard),
+        box-shadow 0.3s ease;
+}
+
+.icon-rail-item:hover {
+    background: var(--primary-ghost);
+    color: var(--text-primary);
+}
+
+.icon-rail-item--active {
+    color: var(--primary);
+    /* Subtle glow when active */
+    box-shadow: 0 0 12px rgba(92, 122, 138, 0.15);
+}
+
+.icon-rail-item__indicator {
+    position: absolute;
+    left: -6px;
+    width: 3px;
+    height: 20px;
+    background: var(--primary);
+    border-radius: 0 2px 2px 0;
+}

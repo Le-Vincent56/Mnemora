@@ -1,0 +1,36 @@
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 4px;
+}
+
+.badge--character {
+    background: rgba(107, 142, 159, 0.15);
+    color: var(--entity-character);
+}
+
+.badge--location {
+    background: rgba(139, 159, 107, 0.15);
+    color: var(--entity-location);
+}
+
+.badge--faction {
+    background: rgba(159, 107, 142, 0.15);
+    color: var(--entity-faction);
+}
+
+.badge--session {
+    background: rgba(159, 139, 107, 0.15);
+    color: var(--entity-session);
+}
+
+.badge--note {
+    background: rgba(138, 138, 135, 0.15);
+    color: var(--entity-note);
+}

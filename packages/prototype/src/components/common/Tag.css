@@ -1,0 +1,19 @@
+.tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-secondary);
+    background: var(--canvas);
+    border-radius: 12px;
+}
+
+.tag--clickable {
+    cursor: pointer;
+    transition: background-color var(--timing-fast) var(--easing-standard);
+}
+
+.tag--clickable:hover {
+    background: var(--border-subtle);
+}

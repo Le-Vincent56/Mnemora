@@ -1,0 +1,13 @@
+.app-shell {
+    display: flex;
+    min-height: 100vh;
+    background: var(--canvas);
+    /* Smooth canvas transition when mode changes */
+    transition: background-color 600ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.app-shell__content {
+    flex: 1;
+    padding: 24px;
+    overflow-y: auto;
+}

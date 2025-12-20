@@ -1,0 +1,23 @@
+.primer-demo {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.primer-demo__title {
+    font-family: var(--font-display);
+    font-size: 28px;
+    color: var(--text-primary);
+    margin: 0 0 8px;
+}
+
+.primer-demo__subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: 0 0 32px;
+}
+
+.primer-demo__form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}

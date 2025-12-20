@@ -1,0 +1,43 @@
+.primer-textarea {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.primer-textarea__label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-tertiary);
+}
+
+.primer-textarea__wrapper {
+    position: relative;
+}
+
+.primer-textarea__input {
+    width: 100%;
+    min-height: 120px;
+    padding: 12px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text-primary);
+    background: var(--surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    resize: vertical;
+    transition: border-color var(--timing-fast) var(--easing-standard),
+        box-shadow var(--timing-fast) var(--easing-standard);
+}
+
+.primer-textarea__input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: var(--shadow-glow);
+}
+
+.primer-textarea__input::placeholder {
+    color: var(--text-tertiary);
+}

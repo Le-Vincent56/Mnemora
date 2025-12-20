@@ -1,0 +1,51 @@
+.connection-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px 6px 10px;
+    background: var(--surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--text-primary);
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.connection-chip__name {
+    font-weight: 500;
+}
+
+/* Entity-interactive overrides for connection chips */
+.connection-chip.entity-interactive {
+    transition:
+        transform 0.25s var(--easing-organic),
+        box-shadow 0.25s var(--easing-organic),
+        border-color 0.25s var(--easing-organic);
+}
+
+.connection-chip.entity-interactive:hover {
+    border-color: color-mix(in srgb, var(--aura-color) 50%, transparent);
+    box-shadow:
+        0 0 0 1px color-mix(in srgb, var(--aura-color) 40%, transparent),
+        0 0 8px color-mix(in srgb, var(--aura-color) 25%, transparent),
+        0 2px 8px rgba(15, 23, 42, 0.06);
+}
+
+/* Focus state */
+.connection-chip:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-glow);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .connection-chip.entity-interactive {
+        transition: none;
+    }
+
+    .connection-chip.entity-interactive:hover {
+        transform: none;
+    }
+}
