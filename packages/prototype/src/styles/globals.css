@@ -55,21 +55,31 @@
     --surface: #FFFFFF;
     --surface-hover: #FBF9F7;
 
-    --primary: #8B7355;
-    --primary-hover: #7A6349;
-    --primary-subtle: rgba(139, 115, 85, 0.1);
-    --primary-ghost: rgba(139, 115, 85, 0.05);
+    /* Primary stays slate blue for brand consistency */
+    --primary: #5C7A8A;
+    --primary-hover: #4A6877;
+    --primary-subtle: rgba(92, 122, 138, 0.1);
+    --primary-ghost: rgba(92, 122, 138, 0.05);
 
-    --shadow-glow: 0 0 0 3px rgba(139, 115, 85, 0.2);
+    --shadow-glow: 0 0 0 3px rgba(92, 122, 138, 0.2);
+
+    /* Warm stone text tones for Prep Mode */
+    --text-primary: #1C1917;
+    --text-secondary: #57534E;
+    --text-tertiary: #A8A29E;
+
+    /* Warm borders */
+    --border-subtle: #EBE8E4;
+    --border-default: #E0DCD7;
 }
 
-/* Entity type colors (from ui-design-v1.md) */
+/* Entity type colors (from design-principles.md) */
 :root {
-    --entity-character: #6B8E9F;
-    --entity-location: #8B9F6B;
-    --entity-faction: #9F6B8E;
-    --entity-session: #9F8B6B;
-    --entity-note: #8A8A87;
+    --entity-character: #9F6B8E;  /* Warm mauve (people, individuals) */
+    --entity-location: #6B8E9F;   /* Slate blue (places, geography) */
+    --entity-faction: #8B9F6B;    /* Moss green (organizations, groups) */
+    --entity-session: #9F8B6B;    /* Warm taupe (game events) */
+    --entity-note: #8A8A87;       /* Neutral gray (freeform) */
 }
 
 /* Reset & Base */

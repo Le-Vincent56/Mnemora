@@ -81,19 +81,19 @@ const dotVariants: Variants = {
 };
 
 const resultItemVariants: Variants = {
-    hidden: { opacity: 0, y: -12 },
+    hidden: { opacity: 0, y: 12 },  // Surface from BELOW (memory surfacing)
     visible: (index: number) => ({
         opacity: 1,
         y: 0,
         transition: {
-            delay: index * 0.04, // 40ms stagger
+            delay: index * 0.055, // 55ms stagger per design spec
             duration: 0.35,
             ease: [0.23, 1, 0.32, 1],
         },
     }),
     exit: {
         opacity: 0,
-        y: -8,
+        y: 8,  // Exit downward (receding memory)
         transition: {
             duration: 0.2,
             ease: [0.4, 0, 1, 1],
@@ -106,7 +106,7 @@ const resultsContainerVariants: Variants = {
     visible: {
         opacity: 1,
         transition: {
-            staggerChildren: 0.04,
+            staggerChildren: 0.055,  // 55ms per design spec
             delayChildren: 0.1,
         },
     },

@@ -1,0 +1,62 @@
+.inline-editable-title {
+    position: relative;
+}
+
+.inline-editable-title__input {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+
+    /* Match the heading style */
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-variation-settings: 'opsz' 72, 'SOFT' 100;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    color: var(--text-primary);
+
+    /* Remove input styling */
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    outline: none;
+
+    /* Subtle hover hint */
+    transition: box-shadow 0.15s var(--easing-organic);
+}
+
+.inline-editable-title__input::placeholder {
+    color: var(--text-tertiary);
+}
+
+/* Hover state: subtle underline hint */
+.inline-editable-title__input:hover:not(:focus) {
+    box-shadow: 0 1px 0 var(--border-subtle);
+}
+
+/* Focus state: full input styling */
+.inline-editable-title__input:focus {
+    box-shadow: var(--shadow-glow);
+    background: var(--surface);
+    padding: 4px 8px;
+    margin: -4px -8px;
+}
+
+/* Empty state: show placeholder styling */
+.inline-editable-title--empty .inline-editable-title__input {
+    color: var(--text-tertiary);
+}
+
+/* Error state */
+.inline-editable-title--error .inline-editable-title__input {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+}
+
+.inline-editable-title__error {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 4px;
+    font-size: 12px;
+    color: #ef4444;
+}

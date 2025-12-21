@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Entity, EntityType, mockEntities } from '@/data/mockData';
+import { Entity, EntityType } from '@/data/mockData';
 import { FilterBar, SortOption } from './FilterBar';
 import { EntityListView } from './EntityListView';
 import { EntityCardView } from './EntityCardView';
@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/Button';
 import './EntityBrowser.css';
 
 interface EntityBrowserProps {
+    entities: Entity[];  // NEW: receive entities as prop
     viewMode: ViewMode;
     searchQuery: string;
     onEntityClick: (entity: Entity, event: React.MouseEvent) => void;
@@ -17,6 +18,7 @@ interface EntityBrowserProps {
 }
 
 export function EntityBrowser({
+    entities,  // NEW
     viewMode,
     searchQuery,
     onEntityClick,
@@ -30,11 +32,11 @@ export function EntityBrowser({
     // Get all unique tags from entities
     const availableTags = useMemo(() => {
         const tagSet = new Set<string>();
-        mockEntities.forEach((entity) => {
+        entities.forEach((entity) => {  // Changed from mockEntities
             entity.tags.forEach((tag) => tagSet.add(tag));
         });
         return Array.from(tagSet).sort();
-    }, []);
+    }, [entities]);  // Added dependency
 
     // Count entities by type
     const typeCounts = useMemo(() => {
@@ -45,16 +47,17 @@ export function EntityBrowser({
             session: 0,
             note: 0,
         };
-        mockEntities.forEach((entity) => {
+        entities.forEach((entity) => {  // Changed from mockEntities
             counts[entity.type]++;
         });
         return counts;
-    }, []);
+    }, [entities]);  // Added dependency
 
     // Filter and sort entities
     const filteredEntities = useMemo(() => {
-        let result = [...mockEntities];
+        let result = [...entities];  // Changed from mockEntities
 
+        // ... rest stays the same
         // Search filter
         if (searchQuery) {
             const query = searchQuery.toLowerCase();
@@ -71,7 +74,7 @@ export function EntityBrowser({
             result = result.filter((e) => e.type === selectedType);
         }
 
-        // Tag filter (entity must have ALL selected tags)
+        // Tag filter
         if (selectedTags.length > 0) {
             result = result.filter((e) =>
                 selectedTags.every((tag) => e.tags.includes(tag))
@@ -102,21 +105,21 @@ export function EntityBrowser({
         }
 
         return result;
-    }, [searchQuery, selectedType, selectedTags, sortBy]);
+    }, [entities, searchQuery, selectedType, selectedTags, sortBy]);  // Added entities dependency
 
-    // Clear all filters
+    // ... rest of the component stays the same
     const handleClearFilters = useCallback(() => {
         setSelectedType(null);
         setSelectedTags([]);
     }, []);
 
-    // Determine empty state type
     const isFiltered = selectedType !== null || selectedTags.length > 0 || searchQuery.length > 0;
     const isEmpty = filteredEntities.length === 0;
-    const hasNoEntities = mockEntities.length === 0;
+    const hasNoEntities = entities.length === 0;  // Changed from mockEntities
 
     return (
         <div className="entity-browser">
+            {/* ... rest stays the same */}
             <FilterBar
                 selectedType={selectedType}
                 onTypeChange={setSelectedType}
@@ -141,7 +144,6 @@ export function EntityBrowser({
                             transition={{ duration: 0.2 }}
                         >
                             {hasNoEntities ? (
-                                // No entities at all
                                 <EmptyState
                                     title="Your world awaits its first story."
                                     description="Create your first entity to begin building your world."
@@ -152,7 +154,6 @@ export function EntityBrowser({
                                     }
                                 />
                             ) : isFiltered ? (
-                                // Filtered results empty
                                 <EmptyState
                                     title={
                                         searchQuery

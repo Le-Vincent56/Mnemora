@@ -36,7 +36,7 @@ export function EntityCard({ entity, onClick, index = 0 }: EntityCardProps) {
                 )}
             </div>
 
-            <h3 className="entity-card__name">{entity.name}</h3>
+            <h3 className="entity-card__name text-display-sm">{entity.name}</h3>
             <p className="entity-card__preview">{previewText}</p>
             <span className="entity-card__divider" />
 

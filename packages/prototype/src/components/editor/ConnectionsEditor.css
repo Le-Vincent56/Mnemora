@@ -1,0 +1,153 @@
+.connections-editor {
+    position: relative;
+}
+
+.connections-editor__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+/* Empty state */
+.connections-editor__empty {
+    padding: 16px;
+    text-align: center;
+    color: var(--text-tertiary);
+    font-size: 13px;
+    background: var(--canvas);
+    border-radius: 8px;
+}
+
+/* Removable Connection Chip */
+.connections-editor__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 8px 6px 10px;
+    background: var(--surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--text-primary);
+
+    /* Entry animation */
+    animation: chip-enter 0.15s var(--easing-organic) forwards;
+}
+
+.connections-editor__chip--removing {
+    animation: chip-exit 0.1s var(--easing-organic) forwards;
+}
+
+@keyframes chip-enter {
+    from {
+        opacity: 0;
+        transform: scale(0.85);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes chip-exit {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    to {
+        opacity: 0;
+        transform: scale(0.85);
+    }
+}
+
+.connections-editor__chip-icon {
+    flex-shrink: 0;
+}
+
+.connections-editor__chip-name {
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.15s var(--easing-organic);
+}
+
+.connections-editor__chip-name:hover {
+    color: var(--primary);
+}
+
+.connections-editor__chip-remove {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    margin-left: 2px;
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    transition: background-color 0.15s var(--easing-organic),
+        color 0.15s var(--easing-organic);
+}
+
+.connections-editor__chip-remove:hover {
+    background: rgba(0, 0, 0, 0.08);
+    color: var(--text-secondary);
+}
+
+.connections-editor__chip-remove svg {
+    width: 12px;
+    height: 12px;
+}
+
+/* Add Button */
+.connections-editor__add {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    background: transparent;
+    border: 1px dashed var(--border-default);
+    border-radius: 6px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: border-color 0.15s var(--easing-organic),
+        color 0.15s var(--easing-organic),
+        background-color 0.15s var(--easing-organic);
+}
+
+.connections-editor__add:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--primary-ghost);
+}
+
+.connections-editor__add:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-glow);
+}
+
+.connections-editor__add--active {
+    border-color: var(--primary);
+    border-style: solid;
+    color: var(--primary);
+    background: var(--primary-ghost);
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+
+    .connections-editor__chip,
+    .connections-editor__chip--removing {
+        animation: none;
+        opacity: 1;
+        transform: none;
+    }
+}

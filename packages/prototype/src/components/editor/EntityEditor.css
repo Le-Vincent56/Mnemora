@@ -1,0 +1,473 @@
+.entity-editor-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(4px);
+    z-index: 200;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Prep mode uses warmer backdrop */
+:root[data-mode="prep"] .entity-editor-backdrop {
+    background: rgba(44, 37, 32, 0.35);
+}
+
+/* Panel */
+.entity-editor {
+    position: relative;
+    width: 480px;
+    max-width: 100%;
+    height: 100vh;
+    background: var(--surface);
+    box-shadow: -8px 0 32px rgba(0, 0, 0, 0.12);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Mobile: full width */
+@media (max-width: 540px) {
+    .entity-editor {
+        width: 100%;
+    }
+}
+
+/* Sticky Header */
+.entity-editor__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--border-subtle);
+    background: var(--surface);
+    flex-shrink: 0;
+}
+
+.entity-editor__header-left {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+}
+
+.entity-editor__icon {
+    flex-shrink: 0;
+    margin-top: 4px;
+}
+
+.entity-editor__title-group {
+    flex: 1;
+    min-width: 0;
+}
+
+.entity-editor__name {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-variation-settings: 'opsz' 72, 'SOFT' 100;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    color: var(--text-primary);
+    margin: 0 0 4px;
+
+    /* Truncate if too long */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.entity-editor__type {
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-tertiary);
+}
+
+.entity-editor__header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+/* Save Status Indicator */
+.entity-editor__status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-tertiary);
+}
+
+.entity-editor__status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--text-tertiary);
+}
+
+.entity-editor__status--saved .entity-editor__status-dot {
+    background: #22c55e;
+}
+
+.entity-editor__status--unsaved .entity-editor__status-dot {
+    background: var(--primary);
+    animation: pulse-dot 2s var(--easing-organic) infinite;
+}
+
+.entity-editor__status--saving .entity-editor__status-dot {
+    background: var(--text-tertiary);
+    animation: pulse-dot 0.8s var(--easing-organic) infinite;
+}
+
+.entity-editor__status--error .entity-editor__status-dot {
+    background: #ef4444;
+}
+
+@keyframes pulse-dot {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.6;
+        transform: scale(1.2);
+    }
+}
+
+.entity-editor__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: background-color 0.15s var(--easing-organic),
+        color 0.15s var(--easing-organic);
+}
+
+.entity-editor__close:hover {
+    background: var(--primary-ghost);
+    color: var(--text-primary);
+}
+
+.entity-editor__close:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-glow);
+}
+
+/* Content (Scrollable) */
+.entity-editor__content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Section container for each field group */
+.entity-editor__section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.entity-editor__section-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-tertiary);
+}
+
+/* Secrets section has special styling */
+.entity-editor__section--secrets .entity-editor__section-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--secret-gold);
+}
+
+.entity-editor__section--secrets .entity-editor__section-content {
+    background: var(--secret-gold-subtle);
+    border-left: 3px solid var(--secret-gold);
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+}
+
+/* Generic textarea styling (will be replaced by PrimerTextArea) */
+.entity-editor__textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 12px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text-primary);
+    background: var(--surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    resize: vertical;
+    transition: border-color var(--timing-fast) var(--easing-organic),
+        box-shadow var(--timing-fast) var(--easing-organic);
+}
+
+.entity-editor__textarea:hover {
+    border-color: var(--border-default);
+}
+
+.entity-editor__textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: var(--shadow-glow);
+}
+
+.entity-editor__textarea::placeholder {
+    color: var(--text-tertiary);
+}
+
+/* Secrets textarea inside the styled container */
+.entity-editor__section--secrets .entity-editor__textarea {
+    background: transparent;
+    border: none;
+    padding: 0;
+    min-height: 80px;
+}
+
+.entity-editor__section--secrets .entity-editor__textarea:focus {
+    box-shadow: none;
+}
+
+/* Footer Actions */
+.entity-editor__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 24px;
+    border-top: 1px solid var(--border-subtle);
+    background: var(--canvas);
+    flex-shrink: 0;
+}
+
+.entity-editor__footer-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.entity-editor__footer-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.entity-editor__footer-shortcuts {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Delete button - subtle and dangerous */
+.entity-editor__delete-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    transition: background-color 0.15s var(--easing-organic),
+        color 0.15s var(--easing-organic);
+}
+
+.entity-editor__delete-btn:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+.entity-editor__delete-btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+}
+
+/* Action buttons container */
+.entity-editor__actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Cancel button */
+.entity-editor__cancel-btn {
+    padding: 8px 16px;
+    background: transparent;
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: background-color 0.15s var(--easing-organic),
+        border-color 0.15s var(--easing-organic);
+}
+
+.entity-editor__cancel-btn:hover {
+    background: var(--surface);
+    border-color: var(--border-default);
+}
+
+.entity-editor__cancel-btn:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-glow);
+}
+
+/* Save button */
+.entity-editor__save-btn {
+    padding: 8px 20px;
+    background: var(--primary);
+    border: none;
+    border-radius: 6px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.15s var(--easing-organic),
+        transform 0.15s var(--easing-organic);
+}
+
+.entity-editor__save-btn:hover:not(:disabled) {
+    background: var(--primary-hover);
+}
+
+.entity-editor__save-btn:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+.entity-editor__save-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.entity-editor__save-btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(139, 115, 85, 0.3);
+}
+
+/* Save button pulse when unsaved */
+.entity-editor__save-btn--unsaved {
+    animation: save-pulse 2s var(--easing-organic) infinite;
+}
+
+@keyframes save-pulse {
+
+    0%,
+    100% {
+        box-shadow: none;
+    }
+
+    50% {
+        box-shadow: 0 0 0 4px rgba(139, 115, 85, 0.2);
+    }
+}
+
+/* Delete Confirmation */
+.entity-editor__warning-card--delete {
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.entity-editor__warning-card--delete .entity-editor__warning-title {
+    color: #ef4444;
+}
+
+.entity-editor__warning-entity-name {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.entity-editor__delete-confirm-btn {
+    padding: 8px 16px;
+    background: #ef4444;
+    border: none;
+    border-radius: 6px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.15s var(--easing-organic);
+}
+
+.entity-editor__delete-confirm-btn:hover {
+    background: #dc2626;
+}
+
+/* Auto-Save Indicator*/
+.entity-editor__autosave-hint {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    font-style: italic;
+}
+
+.entity-editor__warning {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.entity-editor__warning-card {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 24px;
+    max-width: 320px;
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+}
+
+.entity-editor__warning-title {
+    font-family: var(--font-display);
+    font-size: 18px;
+    color: var(--text-primary);
+    margin: 0 0 8px;
+}
+
+.entity-editor__warning-text {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin: 0 0 20px;
+    line-height: 1.5;
+}
+
+.entity-editor__warning-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    .entity-editor__save-btn--unsaved {
+        animation: none;
+    }
+}

@@ -156,11 +156,6 @@ export const mockEntities: Entity[] = [
     },
 ];
 
-// Helper to find entity by ID
-export function getEntityByID(id: string): Entity | undefined {
-    return mockEntities.find(e => e.id === id);
-}
-
 // Helper to search entities
 export function searchEntities(query: string): Entity[] {
     const lowerQuery = query.toLowerCase();
@@ -169,4 +164,74 @@ export function searchEntities(query: string): Entity[] {
         e.description.toLowerCase().includes(lowerQuery) ||
         e.tags.some(tag => tag.toLowerCase().includes(lowerQuery))
     );
+}
+
+// --- Mutation Helpers (for prototype only) ---
+
+// Make entities mutable for the prototype
+let entities = [...mockEntities];
+
+// Get all entities (use this instead of mockEntities directly)
+export function getAllEntities(): Entity[] {
+    return entities;
+}
+
+// Get all unique tags across all entities
+export function getAllTags(): string[] {
+    const tagSet = new Set<string>();
+    entities.forEach(entity => {
+        entity.tags.forEach(tag => tagSet.add(tag));
+    });
+    return Array.from(tagSet).sort();
+}
+
+// Update an entity
+export function updateEntity(id: string, updates: Partial<Entity>): Entity | null {
+    const index = entities.findIndex(e => e.id === id);
+    if (index === -1) return null;
+
+    entities[index] = {
+        ...entities[index],
+        ...updates,
+        modifiedAt: new Date().toISOString(),
+    };
+
+    return entities[index];
+}
+
+// Create a new entity
+export function createEntity(type: EntityType, name: string = 'Untitled'): Entity {
+    const newEntity: Entity = {
+        id: `${type}-${Date.now()}`,
+        type,
+        name,
+        description: '',
+        secrets: undefined,
+        tags: [],
+        connections: [],
+        createdAt: new Date().toISOString(),
+        modifiedAt: new Date().toISOString(),
+    };
+
+    entities = [newEntity, ...entities];
+    return newEntity;
+}
+
+// Delete an entity
+export function deleteEntity(id: string): boolean {
+    const index = entities.findIndex(e => e.id === id);
+    if (index === -1) return false;
+
+    // Also remove this entity from all connections
+    entities.forEach(entity => {
+        entity.connections = entity.connections.filter(conn => conn.id !== id);
+    });
+
+    entities.splice(index, 1);
+    return true;
+}
+
+// Update getEntityByID to use mutable entities
+export function getEntityByID(id: string): Entity | undefined {
+    return entities.find(e => e.id === id);
 }

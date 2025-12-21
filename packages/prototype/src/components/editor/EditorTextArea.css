@@ -1,0 +1,140 @@
+.editor-textarea {
+    position: relative;
+}
+
+.editor-textarea__input-wrapper {
+    position: relative;
+}
+
+/* The primer overlay positions inside the textarea */
+.editor-textarea__primer-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 12px;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+/* Allow pointer events only on the controls */
+.editor-textarea__primer-wrapper .primer__controls {
+    pointer-events: auto;
+}
+
+/* Borderless variant (for secrets container) */
+.editor-textarea--borderless .editor-textarea__primer-wrapper {
+    padding: 0;
+}
+
+/* Primer Overlay Styles */
+.editor-textarea .primer {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.editor-textarea .primer__text {
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text-tertiary);
+    font-style: italic;
+}
+
+.editor-textarea .primer__char {
+    opacity: 0;
+    animation: primer-char-appear 0.1s var(--easing-organic) forwards;
+}
+
+@keyframes primer-char-appear {
+    to {
+        opacity: 1;
+    }
+}
+
+.editor-textarea .primer__cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1.1em;
+    background: var(--primary);
+    margin-left: 1px;
+    vertical-align: text-bottom;
+    border-radius: 1px;
+}
+
+.editor-textarea .primer__cursor--typing {
+    animation: cursor-blink 0.8s ease-in-out infinite;
+}
+
+.editor-textarea .primer__cursor--idle {
+    animation: cursor-fade 0.4s var(--easing-organic) forwards;
+}
+
+@keyframes cursor-blink {
+
+    0%,
+    50% {
+        opacity: 1;
+    }
+
+    51%,
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes cursor-fade {
+    to {
+        opacity: 0;
+    }
+}
+
+.editor-textarea .primer__controls {
+    display: flex;
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.editor-textarea .primer__control-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    background: var(--surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    transition: background-color 0.15s var(--easing-organic),
+        color 0.15s var(--easing-organic),
+        border-color 0.15s var(--easing-organic);
+}
+
+.editor-textarea .primer__control-btn:hover {
+    background: var(--primary-ghost);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.editor-textarea .primer__control-btn:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-glow);
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    .editor-textarea .primer__char {
+        animation: none;
+        opacity: 1;
+    }
+
+    .editor-textarea .primer__cursor--typing,
+    .editor-textarea .primer__cursor--idle {
+        animation: none;
+        opacity: 0;
+    }
+}
