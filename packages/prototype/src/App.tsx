@@ -173,6 +173,12 @@ export default function App() {
         }
     }, [historyIndex, viewHistory]);
 
+    const handleEditFromQuickRef = useCallback((entity: Entity) => {
+        // Close QuickRefCard
+        setSelectedEntity(null);
+        // The PrepModeWorkspace will handle opening the editor
+    }, []);
+
     // Render
     // Prep Mode: Title Page (full screen, no AppShell)
     if (mode === 'prep' && prepState === 'title-page') {
@@ -245,6 +251,7 @@ export default function App() {
             <QuickRefCard
                 entity={selectedEntity}
                 onClose={closeEntity}
+                onEdit={mode === 'prep' ? handleEditFromQuickRef : undefined}  // Only show in prep mode
                 onNavigate={navigateToEntity}
                 onPrev={goToPrev}
                 onNext={goToNext}
