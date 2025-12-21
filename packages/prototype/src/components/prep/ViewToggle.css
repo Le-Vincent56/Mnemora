@@ -1,0 +1,48 @@
+.view-toggle {
+    display: flex;
+    align-items: center;
+    background: rgba(139, 115, 85, 0.06);
+    border-radius: 8px;
+    padding: 4px;
+    gap: 2px;
+}
+
+.view-toggle__btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 28px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    transition: color 150ms ease;
+    z-index: 1;
+}
+
+.view-toggle__btn:hover {
+    color: var(--text-secondary);
+}
+
+.view-toggle__btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(139, 115, 85, 0.2);
+}
+
+.view-toggle__btn--active {
+    color: var(--primary);
+}
+
+/* Animated Indicator */
+.view-toggle__indicator {
+    position: absolute;
+    inset: 0;
+    background: var(--surface);
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    z-index: -1;
+}

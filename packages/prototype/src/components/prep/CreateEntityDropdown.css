@@ -1,0 +1,190 @@
+.create-dropdown {
+    position: relative;
+}
+
+/* Trigger Button */
+.create-dropdown__trigger {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 36px;
+    padding: 0 14px;
+    background: var(--primary);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 150ms var(--easing-organic);
+}
+
+.create-dropdown__trigger:hover {
+    background: var(--primary-hover);
+    box-shadow: 0 2px 8px rgba(139, 115, 85, 0.25);
+}
+
+.create-dropdown__trigger:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(139, 115, 85, 0.25);
+}
+
+.create-dropdown__trigger--active {
+    background: var(--primary-hover);
+}
+
+.create-dropdown__plus {
+    flex-shrink: 0;
+}
+
+.create-dropdown__text {
+    /* Hide on small screens */
+}
+
+.create-dropdown__chevron {
+    opacity: 0.8;
+    margin-left: -2px;
+}
+
+/* Dropdown Menu */
+.create-dropdown__menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 180px;
+    background: var(--surface);
+    border: 1px solid rgba(139, 115, 85, 0.12);
+    border-radius: 12px;
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.08),
+        0 8px 24px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+    z-index: 200;
+    padding: 8px 0;
+}
+
+/* Menu item entrance animation */
+@keyframes menuItemFadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Menu Items with Entity Type Colors */
+.create-dropdown__item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 14px;
+    background: transparent;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    transition: all 150ms ease;
+
+    /* CSS stagger animation */
+    opacity: 0;
+    animation: menuItemFadeIn 0.2s var(--easing-organic) forwards;
+    /* animation-delay set via style prop */
+
+    /* Fast hover */
+    transition: background 0.1s ease, transform 0.1s ease;
+}
+
+.create-dropdown__item:hover {
+    background: rgba(139, 115, 85, 0.04);
+    transform: translateX(2px);
+}
+
+.create-dropdown__item:focus-visible {
+    outline: none;
+    background: rgba(139, 115, 85, 0.06);
+}
+
+.create-dropdown__item-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    transition: all 150ms ease;
+}
+
+/* Entity type icon colors */
+.create-dropdown__item[data-type="character"] .create-dropdown__item-icon {
+    background: rgba(107, 142, 159, 0.12);
+    color: var(--entity-character);
+}
+
+.create-dropdown__item[data-type="location"] .create-dropdown__item-icon {
+    background: rgba(139, 159, 107, 0.12);
+    color: var(--entity-location);
+}
+
+.create-dropdown__item[data-type="faction"] .create-dropdown__item-icon {
+    background: rgba(159, 107, 142, 0.12);
+    color: var(--entity-faction);
+}
+
+.create-dropdown__item[data-type="session"] .create-dropdown__item-icon {
+    background: rgba(159, 139, 107, 0.12);
+    color: var(--entity-session);
+}
+
+.create-dropdown__item[data-type="note"] .create-dropdown__item-icon {
+    background: rgba(138, 138, 135, 0.12);
+    color: var(--entity-note);
+}
+
+.create-dropdown__item-label {
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+/* Footer with Dropdown Hint */
+.create-dropdown__footer {
+    margin-top: 4px;
+    padding: 8px 14px;
+    border-top: 1px solid rgba(139, 115, 85, 0.08);
+    font-family: var(--font-body);
+    font-size: 11px;
+    color: var(--text-tertiary);
+
+    opacity: 0;
+    animation: menuItemFadeIn 0.2s ease forwards;
+}
+
+.create-dropdown__footer kbd {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    background: rgba(139, 115, 85, 0.08);
+    padding: 2px 5px;
+    border-radius: 3px;
+    border: 1px solid rgba(139, 115, 85, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .create-dropdown__text {
+        display: none;
+    }
+
+    .create-dropdown__trigger {
+        padding: 0 10px;
+    }
+
+    .create-dropdown__chevron {
+        display: none;
+    }
+}

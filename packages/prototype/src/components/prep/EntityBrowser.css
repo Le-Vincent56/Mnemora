@@ -1,0 +1,55 @@
+.entity-browser {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 0 24px;
+}
+
+.entity-browser__content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 0;
+}
+
+/* Empty State Container */
+.entity-browser__empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+}
+
+/* Scrollbar Styling */
+.entity-browser__content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.entity-browser__content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.entity-browser__content::-webkit-scrollbar-thumb {
+    background: rgba(139, 115, 85, 0.15);
+    border-radius: 4px;
+}
+
+.entity-browser__content::-webkit-scrollbar-thumb:hover {
+    background: rgba(139, 115, 85, 0.25);
+}
+
+/* Firefox */
+.entity-browser__content {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(139, 115, 85, 0.15) transparent;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .entity-browser {
+        padding: 0 16px;
+    }
+
+    .entity-browser__content {
+        padding: 16px 0;
+    }
+}

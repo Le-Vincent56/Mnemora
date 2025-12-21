@@ -1,0 +1,64 @@
+.prep-header {
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    background: var(--surface);
+    border-bottom: 1px solid rgba(139, 115, 85, 0.08);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+
+    /* Subtle bottom shadow for depth */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+/* Left Section: World and Campaign */
+.prep-header__left {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+/* Center Section: Search */
+.prep-header__center {
+    flex: 0 1 200px;
+    max-width: 320px;
+
+    /* SMOOTH expansion and contraction */
+    transition: flex 0.25s var(--easing-organic);
+}
+
+.prep-header__center--expanded {
+    flex: 0 1 320px;
+}
+
+/* Right Section: View Toggle and Create */
+.prep-header__right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.prep-header__divider {
+    width: 1px;
+    height: 24px;
+    background: rgba(139, 115, 85, 0.12);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .prep-header {
+        padding: 0 16px;
+    }
+
+    .prep-header__center {
+        flex: 0 1 160px;
+    }
+
+    .prep-header__center--expanded {
+        flex: 1 1 auto;
+    }
+}

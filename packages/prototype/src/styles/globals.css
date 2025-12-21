@@ -123,10 +123,6 @@ body::before {
     box-shadow: var(--shadow-glow);
 }
 
-/* ===========================================
-     TYPOGRAPHY SYSTEM — Display & Body
-     =========================================== */
-
 /* Display typography (Fraunces with variable axes) */
 .text-display {
     font-family: var(--font-display);
