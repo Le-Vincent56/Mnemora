@@ -128,3 +128,81 @@ export interface ListEntitiesRequest {
     readonly limit?: number;
     readonly offset?: number;
 }
+
+/**
+   * Create a new World.
+   */
+export interface CreateWorldRequest {
+    readonly name: string;
+    readonly tagline?: string;
+}
+
+/**
+ * Update an existing World.
+ * Undefined = don't change, null = clear (for tagline).
+ */
+export interface UpdateWorldRequest {
+    readonly id: string;
+    readonly name?: string;
+    readonly tagline?: string | null;
+}
+
+/**
+ * Delete a World by ID.
+ */
+export interface DeleteWorldRequest {
+    readonly id: string;
+}
+
+/**
+ * Get a single World by ID.
+ */
+export interface GetWorldRequest {
+    readonly id: string;
+}
+
+/**
+ * List all Worlds.
+ */
+export interface ListWorldsRequest {
+    // Empty for now - could add pagination later
+}
+
+/**
+   * Create a new Campaign.
+   */
+export interface CreateCampaignRequest {
+    readonly name: string;
+    readonly worldID: string;
+    readonly description?: string;
+}
+
+/**
+ * Update an existing Campaign.
+ */
+export interface UpdateCampaignRequest {
+    readonly id: string;
+    readonly name?: string;
+    readonly description?: string;
+}
+
+/**
+ * Delete a Campaign by ID.
+ */
+export interface DeleteCampaignRequest {
+    readonly id: string;
+}
+
+/**
+ * Get a single Campaign by ID.
+ */
+export interface GetCampaignRequest {
+    readonly id: string;
+}
+
+/**
+ * List Campaigns for a World.
+ */
+export interface ListCampaignsRequest {
+    readonly worldID: string;
+}

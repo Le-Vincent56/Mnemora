@@ -1,4 +1,4 @@
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
 export const CREATE_ENTITIES_TABLE = `
     CREATE TABLE IF NOT EXISTS entities (
@@ -68,4 +68,38 @@ export const CREATE_SCHEMA_VERSION_TABLE = `
     CREATE TABLE IF NOT EXISTS schema_version (
         version INTEGER PRIMARY KEY
     );
+`;
+
+// ============================================================================
+// Schema Version 2: World and Campaign tables
+// ============================================================================
+
+export const CREATE_WORLDS_TABLE = `
+    CREATE TABLE IF NOT EXISTS worlds (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        tagline TEXT,
+        created_at TEXT NOT NULL,
+        modified_at TEXT NOT NULL
+    );
+`;
+
+export const CREATE_WORLDS_INDEXES = `
+    CREATE INDEX IF NOT EXISTS idx_worlds_modified ON worlds(modified_at DESC);
+`;
+
+export const CREATE_CAMPAIGNS_TABLE = `
+    CREATE TABLE IF NOT EXISTS campaigns (
+        id TEXT PRIMARY KEY,
+        world_id TEXT NOT NULL REFERENCES worlds(id) ON DELETE CASCADE,
+        name TEXT NOT NULL,
+        description TEXT,
+        created_at TEXT NOT NULL,
+        modified_at TEXT NOT NULL
+    );
+`;
+
+export const CREATE_CAMPAIGNS_INDEXES = `
+    CREATE INDEX IF NOT EXISTS idx_campaigns_world ON campaigns(world_id);
+    CREATE INDEX IF NOT EXISTS idx_campaigns_modified ON campaigns(modified_at DESC);
 `;

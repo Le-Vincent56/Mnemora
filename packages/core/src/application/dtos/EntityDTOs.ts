@@ -70,11 +70,11 @@ export interface NoteDTO extends BaseEntityDTO {
 }
 
 export type EntityDTO =
-| CharacterDTO
-| LocationDTO
-| FactionDTO
-| SessionDTO
-| NoteDTO;
+    | CharacterDTO
+    | LocationDTO
+    | FactionDTO
+    | SessionDTO
+    | NoteDTO;
 
 export function isCharacterDTO(dto: EntityDTO): dto is CharacterDTO {
     return dto.type === EntityType.CHARACTER;
@@ -94,4 +94,27 @@ export function isSessionDTO(dto: EntityDTO): dto is SessionDTO {
 
 export function isNoteDTO(dto: EntityDTO): dto is NoteDTO {
     return dto.type === EntityType.NOTE;
+}
+
+/**
+   * World DTO: Top-level container for a game setting.
+   */
+export interface WorldDTO {
+    readonly id: string;
+    readonly name: string;
+    readonly tagline: string | null;
+    readonly createdAt: string;   // ISO date string
+    readonly modifiedAt: string;  // ISO date string
+}
+
+/**
+ * Campaign DTO: A campaign within a World.
+ */
+export interface CampaignDTO {
+    readonly id: string;
+    readonly name: string;
+    readonly description: string;
+    readonly worldID: string;
+    readonly createdAt: string;   // ISO date string
+    readonly modifiedAt: string;  // ISO date string
 }

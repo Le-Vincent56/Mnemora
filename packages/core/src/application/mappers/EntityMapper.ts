@@ -13,6 +13,9 @@ import type {
     SessionDTO,
     NoteDTO
 } from '../dtos/EntityDTOs';
+import { World } from "../../domain/entities/World";
+import { Campaign } from "../../domain/entities/Campaign";
+import type { WorldDTO, CampaignDTO } from '../dtos/EntityDTOs';
 
 /**
  * Mapper to convert domain entities to DTOs.
@@ -126,5 +129,34 @@ export class EntityMapper {
             createdAt: note.createdAt.toISOString(),
             modifiedAt: note.modifiedAt.toISOString(),
         };
+    }
+
+    static worldToDTO(world: World): WorldDTO {
+        return {
+            id: world.id.toString(),
+            name: world.name.toString(),
+            tagline: world.tagline,
+            createdAt: world.createdAt.toISOString(),
+            modifiedAt: world.modifiedAt.toISOString(),
+        };
+    }
+
+    static worldsToDTOs(worlds: readonly World[]): WorldDTO[] {
+        return worlds.map((w) => this.worldToDTO(w));
+    }
+
+    static campaignToDTO(campaign: Campaign): CampaignDTO {
+        return {
+            id: campaign.id.toString(),
+            name: campaign.name.toString(),
+            description: campaign.description.toString(),
+            worldID: campaign.worldID.toString(),
+            createdAt: campaign.createdAt.toISOString(),
+            modifiedAt: campaign.modifiedAt.toISOString(),
+        };
+    }
+
+    static campaignsToDTOs(campaigns: readonly Campaign[]): CampaignDTO[] {
+        return campaigns.map((c) => this.campaignToDTO(c));
     }
 }
