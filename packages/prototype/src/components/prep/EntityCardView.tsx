@@ -5,9 +5,16 @@ import './EntityCardView.css';
 interface EntityCardViewProps {
     entities: Entity[];
     onEntityClick: (entity: Entity, event: React.MouseEvent) => void;
+    activeSessionID?: string | null;
+    onStartSession?: (entity: Entity) => void;
 }
 
-export function EntityCardView({ entities, onEntityClick }: EntityCardViewProps) {
+export function EntityCardView({
+    entities,
+    onEntityClick,
+    activeSessionID,
+    onStartSession,
+}: EntityCardViewProps) {
     return (
         <div className="entity-card-grid" role="list">
             {entities.map((entity, index) => (
@@ -16,6 +23,8 @@ export function EntityCardView({ entities, onEntityClick }: EntityCardViewProps)
                     entity={entity}
                     onClick={onEntityClick}
                     index={index}
+                    activeSessionID={activeSessionID}
+                    onStartSession={onStartSession}
                 />
             ))}
         </div>

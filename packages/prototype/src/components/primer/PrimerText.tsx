@@ -15,7 +15,7 @@ interface PrimerTextProps {
 }
 
 // Natural typing rhythm - varies speed and adds pauses
-function getTypingDelay(char: string, prevChar: string, baseSpeed: number): number {
+function getTypingDelay(_char: string, prevChar: string, baseSpeed: number): number {
     // Gentle variance: 0.8x to 1.3x
     const variance = 0.8 + Math.random() * 0.5;
     let delay = baseSpeed * variance;

@@ -10,11 +10,13 @@ import { Button } from '@/components/ui/Button';
 import './EntityBrowser.css';
 
 interface EntityBrowserProps {
-    entities: Entity[];  // NEW: receive entities as prop
+    entities: Entity[];  // Receive entities as prop
     viewMode: ViewMode;
     searchQuery: string;
     onEntityClick: (entity: Entity, event: React.MouseEvent) => void;
     onCreateEntity: (type: EntityType) => void;
+    activeSessionID?: string | null;
+    onStartSession?: (entity: Entity) => void;
 }
 
 export function EntityBrowser({
@@ -23,6 +25,8 @@ export function EntityBrowser({
     searchQuery,
     onEntityClick,
     onCreateEntity,
+    activeSessionID,
+    onStartSession,
 }: EntityBrowserProps) {
     // Filter state
     const [selectedType, setSelectedType] = useState<EntityType | null>(null);
@@ -47,17 +51,15 @@ export function EntityBrowser({
             session: 0,
             note: 0,
         };
-        entities.forEach((entity) => {  // Changed from mockEntities
+        entities.forEach((entity) => {
             counts[entity.type]++;
         });
         return counts;
-    }, [entities]);  // Added dependency
+    }, [entities]);
 
     // Filter and sort entities
     const filteredEntities = useMemo(() => {
-        let result = [...entities];  // Changed from mockEntities
-
-        // ... rest stays the same
+        let result = [...entities];
         // Search filter
         if (searchQuery) {
             const query = searchQuery.toLowerCase();
@@ -119,7 +121,6 @@ export function EntityBrowser({
 
     return (
         <div className="entity-browser">
-            {/* ... rest stays the same */}
             <FilterBar
                 selectedType={selectedType}
                 onTypeChange={setSelectedType}
@@ -186,6 +187,8 @@ export function EntityBrowser({
                                 <EntityCardView
                                     entities={filteredEntities}
                                     onEntityClick={onEntityClick}
+                                    activeSessionID={activeSessionID}
+                                    onStartSession={onStartSession}
                                 />
                             )}
                         </motion.div>

@@ -1,4 +1,3 @@
-import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Clock, Pause, Play, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
@@ -7,6 +6,10 @@ import './SessionTimer.css';
 interface SessionTimerProps {
     visible: boolean;
     onToggleVisible: () => void;
+    formattedDuration: string;      // Formatted duration string (e.g., "1:23:45")
+    isRunning: boolean;
+    onTogglePause: () => void;      // Toggle pause/resume
+    onReset: () => void;            // Reset timer to 0
 }
 
 // Wrapper that creates the space — animates width
@@ -100,40 +103,14 @@ const controlsVariants = {
     },
 };
 
-export function SessionTimer({ visible, onToggleVisible }: SessionTimerProps) {
-    const [seconds, setSeconds] = useState(0);
-    const [isRunning, setIsRunning] = useState(true);
-
-    useEffect(() => {
-        let interval: number | undefined;
-        if (visible && isRunning) {
-            interval = window.setInterval(() => {
-                setSeconds((s) => s + 1);
-            }, 1000);
-        }
-        return () => {
-            if (interval) clearInterval(interval);
-        };
-    }, [visible, isRunning]);
-
-    const togglePause = useCallback(() => {
-        setIsRunning((r) => !r);
-    }, []);
-
-    const reset = useCallback(() => {
-        setSeconds(0);
-        setIsRunning(true);
-    }, []);
-
-    const formatTime = (totalSeconds: number): string => {
-        const hours = Math.floor(totalSeconds / 3600);
-        const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const secs = totalSeconds % 60;
-        return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    };
-
-    const timeString = formatTime(seconds);
-
+export function SessionTimer({
+    visible,
+    onToggleVisible,
+    formattedDuration,
+    isRunning,
+    onTogglePause,
+    onReset,
+}: SessionTimerProps) {
     return (
         <div className="session-timer-container">
             {/* Clock button — animates based on visible state */}
@@ -170,7 +147,7 @@ export function SessionTimer({ visible, onToggleVisible }: SessionTimerProps) {
                             animate="visible"
                             exit="exit"
                         >
-                            {timeString.split('').map((char, index) => (
+                            {formattedDuration.split('').map((char, index) => (
                                 <motion.span
                                     key={`${index}-${char}`}
                                     className={`session-timer__char ${char === ':' ? 'session-timer__char--colon' : ''}`}
@@ -189,10 +166,14 @@ export function SessionTimer({ visible, onToggleVisible }: SessionTimerProps) {
                             animate="visible"
                             exit="exit"
                         >
-                            <Button variant="icon" onClick={togglePause} title={isRunning ? 'Pause' : 'Resume'}>
+                            <Button
+                                variant="icon"
+                                onClick={onTogglePause}
+                                title={isRunning ? 'Pause' : 'Resume'}
+                            >
                                 {isRunning ? <Pause size={14} /> : <Play size={14} />}
                             </Button>
-                            <Button variant="icon" onClick={reset} title="Reset timer">
+                            <Button variant="icon" onClick={onReset} title="Reset timer">
                                 <RotateCcw size={14} />
                             </Button>
                         </motion.div>

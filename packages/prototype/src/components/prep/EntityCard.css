@@ -12,10 +12,24 @@
     cursor: pointer;
     overflow: hidden;
     transition: all 200ms var(--easing-organic);
+
+    /* CSS stagger animation */
+    opacity: 0;
+    animation: cardFadeIn 0.3s var(--easing-organic) forwards;
+    /* animation-delay set via style prop */
+
+    /* FAST hover with organic easing */
+    transition:
+        transform 0.15s var(--easing-organic),
+        box-shadow 0.15s var(--easing-organic),
+        border-color 0.15s var(--easing-organic);
 }
 
 .entity-card:hover {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    transform: translateY(-3px) scale(1.005);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.12),
+        0 0 40px rgba(92, 122, 138, 0.08);
 }
 
 .entity-card:focus-visible {
@@ -213,26 +227,25 @@
     }
 }
 
-.entity-card {
-    /* ... existing styles ... */
-
-    /* CSS stagger animation */
-    opacity: 0;
-    animation: cardFadeIn 0.3s var(--easing-organic) forwards;
-    /* animation-delay set via style prop */
-
-    /* FAST hover with organic easing */
-    transition:
-        transform 0.15s var(--easing-organic),
-        box-shadow 0.15s var(--easing-organic),
-        border-color 0.15s var(--easing-organic);
+/* Footer with tags and actions */
+.entity-card__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 12px;
+    margin-top: auto;
 }
 
-.entity-card:hover {
-    transform: translateY(-3px) scale(1.005);
+/* Active session indicator */
+.entity-card--active-session {
+    border-color: var(--entity-session);
     box-shadow:
-        0 8px 32px rgba(0, 0, 0, 0.12),
-        0 0 40px rgba(92, 122, 138, 0.08);
+        0 0 0 1px var(--entity-session),
+        0 0 12px rgba(159, 139, 107, 0.2);
+}
+
+.entity-card--active-session .entity-card__accent {
+    background: var(--entity-session);
 }
 
 /* Reduced Motion */

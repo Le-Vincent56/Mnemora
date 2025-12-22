@@ -21,6 +21,8 @@ interface PrepModeWorkspaceProps {
     campaign: Campaign | null;
     onSwitchWorld: () => void;
     onEntityClick: (entity: Entity, event: React.MouseEvent) => void;
+    activeSessionID?: string | null;
+    onStartSession?: (entity: Entity) => void;
 }
 
 export function PrepModeWorkspace({
@@ -28,6 +30,8 @@ export function PrepModeWorkspace({
     campaign,
     onSwitchWorld,
     onEntityClick,
+    activeSessionID,
+    onStartSession,
 }: PrepModeWorkspaceProps) {
     // View state
     const [viewMode, setViewMode] = useState<ViewMode>('cards');
@@ -58,7 +62,7 @@ export function PrepModeWorkspace({
     }, []);
 
     // Open entity for editing
-    const handleEntityClick = useCallback((entity: Entity, event: React.MouseEvent) => {
+    const handleEntityClick = useCallback((entity: Entity, _event: React.MouseEvent) => {
         // Open in editor instead of QuickRefCard
         setEditingEntity(entity);
     }, []);
@@ -128,6 +132,8 @@ export function PrepModeWorkspace({
                 searchQuery={searchQuery}
                 onEntityClick={handleEntityClick}
                 onCreateEntity={handleCreateEntity}
+                activeSessionID={activeSessionID}
+                onStartSession={onStartSession}
             />
 
             {/* Entity Editor Overlay */}

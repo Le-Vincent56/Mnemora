@@ -1,0 +1,37 @@
+.start-session-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+        background var(--timing-fast) ease,
+        transform var(--timing-fast) ease,
+        opacity var(--timing-fast) ease;
+}
+
+.start-session-action:hover:not(:disabled) {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+.start-session-action:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.start-session-action--active {
+    background: var(--entity-session);
+    cursor: default;
+    opacity: 0.9;
+}
+
+.start-session-action--active:hover {
+    transform: none;
+}

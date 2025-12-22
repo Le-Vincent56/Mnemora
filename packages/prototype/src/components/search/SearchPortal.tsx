@@ -14,8 +14,14 @@ interface SearchPortalProps {
     isSearching: boolean;
     clearSearch: () => void;
     onEntityClick: (entity: Entity, event?: React.MouseEvent) => void;
+
+    // Timer props
     timerVisible: boolean;
     onToggleTimer: () => void;
+    formattedDuration: string;
+    isTimerRunning: boolean;
+    onTogglePause: () => void;
+    onResetTimer: () => void;
 }
 
 // Fixed constellation positions - 7 dots arranged in a subtle arc pattern
@@ -127,6 +133,10 @@ export function SearchPortal({
     onEntityClick,
     timerVisible,
     onToggleTimer,
+    formattedDuration,
+    isTimerRunning,
+    onTogglePause,
+    onResetTimer,
 }: SearchPortalProps) {
     const inputRef = useRef<HTMLInputElement>(null);
     const [isFocused, setIsFocused] = useState(false);
@@ -223,7 +233,14 @@ export function SearchPortal({
                         onFocus={handleFocus}
                         onBlur={handleBlur}
                     />
-                    <SessionTimer visible={timerVisible} onToggleVisible={onToggleTimer} />
+                    <SessionTimer
+                        visible={timerVisible}
+                        onToggleVisible={onToggleTimer}
+                        formattedDuration={formattedDuration}
+                        isRunning={isTimerRunning}
+                        onTogglePause={onTogglePause}
+                        onReset={onResetTimer}
+                    />
                     <motion.kbd
                         className="search-portal__shortcut"
                         animate={isAwakened

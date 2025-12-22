@@ -12,7 +12,9 @@ import {
     getWorldById,
     getCampaignById
 } from '@/data/mockWorldData';
-import { useSessionState } from '@/hooks/useSessionState';
+import { SessionSummaryModal } from '@/components/session/SessionSummaryModal';
+import { SessionSummary } from '@/types/session';
+import { useActiveSession } from '@/hooks/useActiveSession';
 
 // Types
 type AppMode = 'prep' | 'session';
@@ -60,7 +62,9 @@ export default function App() {
     const [viewHistory, setViewHistory] = useState<string[]>([]);
     const [historyIndex, setHistoryIndex] = useState(-1);
 
-    const sessionState = useSessionState();
+    // Session State
+    const [sessionSummary, setSessionSummary] = useState<SessionSummary | null>(null);
+    const activeSessionContext = useActiveSession();
 
     // Sync mode to document root (for CSS theme switching)
     useEffect(() => {
@@ -126,7 +130,7 @@ export default function App() {
         }
 
         setSelectedEntity(entity);
-        sessionState.addToRecent(entity);
+        activeSessionContext.recordEntityAccess(entity);
 
         setViewHistory((prev) => {
             const newHistory = prev.slice(0, historyIndex + 1);
@@ -134,7 +138,7 @@ export default function App() {
             return newHistory;
         });
         setHistoryIndex((prev) => prev + 1);
-    }, [historyIndex, sessionState]);
+    }, [historyIndex, activeSessionContext]);
 
     const navigateToEntity = useCallback((id: string) => {
         setClickOrigin(null);
@@ -173,11 +177,23 @@ export default function App() {
         }
     }, [historyIndex, viewHistory]);
 
-    const handleEditFromQuickRef = useCallback((entity: Entity) => {
+    const handleEditFromQuickRef = useCallback((_entity: Entity) => {
         // Close QuickRefCard
         setSelectedEntity(null);
         // The PrepModeWorkspace will handle opening the editor
     }, []);
+
+    // Handle starting a session from Prep Mode
+    const handleStartSession = useCallback((sessionEntity: Entity) => {
+        // Need the campaign for the session
+        // For now, use the current prep context campaign or first available
+        const sessionCampaign = prepContext.campaign || prepContext.world?.campaigns[0];
+
+        if (sessionCampaign) {
+            activeSessionContext.startSession(sessionEntity, sessionCampaign);
+            setMode('session');
+        }
+    }, [activeSessionContext, prepContext]);
 
     // Render
     // Prep Mode: Title Page (full screen, no AppShell)
@@ -230,8 +246,25 @@ export default function App() {
                     >
                         {mode === 'session' ? (
                             <SessionDashboard
-                                sessionState={sessionState}
+                                activeSession={activeSessionContext.activeSession}
+                                recentEntities={activeSessionContext.recentEntities}
+                                timerVisible={activeSessionContext.timerVisible}
+                                formattedDuration={activeSessionContext.formattedDuration}
                                 onEntityClick={openEntity}
+                                onToggleTimerVisibility={activeSessionContext.toggleTimerVisibility}
+                                onToggleTimer={activeSessionContext.toggleTimer}
+                                onResetTimer={activeSessionContext.resetTimer}
+                                onClearRecent={activeSessionContext.clearRecent}
+                                onSwitchSession={(sessionEntity) => {
+                                    activeSessionContext.switchSession(sessionEntity, activeSessionContext.activeSession!.campaign);
+                                }}
+                                onEndSession={() => {
+                                    const summary = activeSessionContext.endSession();
+                                    if (summary) {
+                                        setSessionSummary(summary);
+                                    }
+                                }}
+                                onGoToPrep={() => handleModeChange('prep')}
                             />
                         ) : (
                             // Prep Mode Workspace
@@ -241,6 +274,8 @@ export default function App() {
                                     campaign={prepContext.campaign}
                                     onSwitchWorld={handleSwitchWorld}
                                     onEntityClick={openEntity}
+                                    activeSessionID={activeSessionContext.activeSession?.sessionID}
+                                    onStartSession={handleStartSession}
                                 />
                             )
                         )}
@@ -258,6 +293,23 @@ export default function App() {
                 hasPrev={historyIndex > 0}
                 hasNext={historyIndex < viewHistory.length - 1}
                 clickOrigin={clickOrigin}
+            />
+
+            <SessionSummaryModal
+                summary={sessionSummary}
+                onClose={() => setSessionSummary(null)}
+                onCopyNotes={() => {
+                    if (sessionSummary) {
+                        navigator.clipboard.writeText(sessionSummary.generatedNotes);
+                        // Could add a toast notification here
+                    }
+                    setSessionSummary(null);
+                }}
+                onSaveToSession={() => {
+                    // TODO: Append notes to session entity
+                    console.log('Saving notes to session...');
+                    setSessionSummary(null);
+                }}
             />
         </>
     );

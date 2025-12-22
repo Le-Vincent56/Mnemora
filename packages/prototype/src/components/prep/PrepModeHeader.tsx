@@ -28,7 +28,7 @@ export function PrepModeHeader({
     onViewModeChange,
     onSearch,
     onCreateEntity,
-    entityCount,
+    entityCount: _entityCount,
 }: PrepModeHeaderProps) {
     const [searchQuery, setSearchQuery] = useState('');
     const [isSearchFocused, setIsSearchFocused] = useState(false);

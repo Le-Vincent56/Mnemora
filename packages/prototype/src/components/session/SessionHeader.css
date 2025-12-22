@@ -1,0 +1,64 @@
+.session-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.session-header__info {
+    position: relative;
+}
+
+.session-header__chevron {
+    transition: transform var(--timing-fast) ease;
+}
+
+.session-header__chevron--open {
+    transform: rotate(180deg);
+}
+
+.session-header__session-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    transition: color var(--timing-fast) ease;
+}
+
+.session-header__session-btn:hover {
+    color: var(--primary);
+}
+
+.session-header__session-btn:hover .session-header__chevron {
+    opacity: 1;
+}
+
+.session-header__campaign {
+    font-size: 13px;
+    color: var(--text-tertiary);
+}
+
+.session-header__actions {
+    display: flex;
+    gap: 8px;
+}
+
+.session-header__end-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-secondary);
+}
+
+.session-header__end-btn:hover {
+    color: var(--text-primary);
+}

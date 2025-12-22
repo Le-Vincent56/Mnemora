@@ -1,43 +1,83 @@
-import { mockEntities, Entity } from '@/data/mockData';
+import { getAllEntities, Entity } from '@/data/mockData';
 import { EntityTypeIcon } from '@/components/entity/EntityTypeIcon';
 import { SearchPortal } from '@/components/search/SearchPortal';
+import { SessionHeader } from '@/components/session/SessionHeader';
+import { NoSessionCTA } from '@/components/session/NoSessionCTA';
 import { useSearch } from '@/hooks/useSearch';
 import { formatTimeAgo } from '@/hooks/useSessionState';
+import { ActiveSession } from '@/types/session';
+import { RecentEntity } from '@/hooks/useActiveSession';
 import './SessionDashboard.css';
 
 interface SessionDashboardProps {
-    sessionState: {
-        recentEntities: Array<{ entity: Entity; viewedAt: Date }>;
-        clearRecent: () => void;
-        pinnedIds: Set<string>;
-        togglePin: (id: string) => void;
-        timerVisible: boolean;
-        toggleTimer: () => void;
-    };
+    activeSession: ActiveSession | null;
+    recentEntities: RecentEntity[];
+    timerVisible: boolean;
+    formattedDuration: string;
+    // Actions
     onEntityClick: (entity: Entity, event?: React.MouseEvent) => void;
+    onToggleTimerVisibility: () => void;
+    onToggleTimer: () => void;
+    onResetTimer: () => void;
+    onClearRecent: () => void;
+    onSwitchSession: (sessionEntity: Entity) => void;
+    onEndSession: () => void;
+    onGoToPrep: () => void;
 }
 
-export function SessionDashboard({ sessionState, onEntityClick }: SessionDashboardProps) {
+export function SessionDashboard({
+    activeSession,
+    recentEntities,
+    timerVisible,
+    formattedDuration,
+    onEntityClick,
+    onToggleTimerVisibility,
+    onToggleTimer,
+    onResetTimer,
+    onClearRecent,
+    onSwitchSession,
+    onEndSession,
+    onGoToPrep,
+}: SessionDashboardProps) {
     const { query, setQuery, results, isSearching, clearSearch } = useSearch();
-    const { recentEntities, clearRecent, pinnedIds, timerVisible, toggleTimer } = sessionState;
 
-    // Get pinned entities
-    const pinnedEntities = mockEntities.filter((e) => pinnedIds.has(e.id));
+    // If no active session, show the CTA
+    if (!activeSession) {
+        return (
+            <div className="session-dashboard">
+                <NoSessionCTA onGoToPrep={onGoToPrep} />
+            </div>
+        );
+    }
+
+    // Get pinned entities from the active session
+    const allEntities = getAllEntities();
+    const pinnedEntities = allEntities.filter((e) =>
+        activeSession.pinnedEntityIDs.has(e.id)
+    );
 
     // Display recent or use defaults if empty
     const displayRecent =
         recentEntities.length > 0
             ? recentEntities
-            : mockEntities.slice(0, 4).map((entity) => ({
+            : allEntities.slice(0, 4).map((entity) => ({
                 entity,
                 viewedAt: new Date(entity.modifiedAt),
             }));
 
     // Display pinned or use defaults if empty
-    const displayPinned = pinnedEntities.length > 0 ? pinnedEntities : mockEntities.slice(0, 3);
+    const displayPinned =
+        pinnedEntities.length > 0 ? pinnedEntities : allEntities.slice(0, 3);
 
     return (
         <div className="session-dashboard">
+            {/* Session Header */}
+            <SessionHeader
+                activeSession={activeSession}
+                onSwitchSession={onSwitchSession}
+                onEndSession={onEndSession}
+            />
+
             {/* Search Portal — The signature interaction */}
             <SearchPortal
                 query={query}
@@ -47,7 +87,11 @@ export function SessionDashboard({ sessionState, onEntityClick }: SessionDashboa
                 clearSearch={clearSearch}
                 onEntityClick={onEntityClick}
                 timerVisible={timerVisible}
-                onToggleTimer={toggleTimer}
+                onToggleTimer={onToggleTimerVisibility}
+                formattedDuration={formattedDuration}
+                isTimerRunning={activeSession.isTimerRunning}
+                onTogglePause={onToggleTimer}
+                onResetTimer={onResetTimer}
             />
 
             {/* This Session */}
@@ -55,7 +99,7 @@ export function SessionDashboard({ sessionState, onEntityClick }: SessionDashboa
                 <section className="session-section">
                     <div className="session-section__header">
                         <h2 className="session-section__title">This Session</h2>
-                        <button className="session-section__action" onClick={clearRecent}>
+                        <button className="session-section__action" onClick={onClearRecent}>
                             Clear
                         </button>
                     </div>
@@ -67,7 +111,11 @@ export function SessionDashboard({ sessionState, onEntityClick }: SessionDashboa
                                 data-type={entity.type}
                                 onClick={(e) => onEntityClick(entity, e)}
                             >
-                                <EntityTypeIcon type={entity.type} size={18} className="entity-icon" />
+                                <EntityTypeIcon
+                                    type={entity.type}
+                                    size={18}
+                                    className="entity-icon"
+                                />
                                 <span className="session-stack-item__name">{entity.name}</span>
                                 <span className="session-stack-item__time">
                                     {formatTimeAgo(viewedAt)}
@@ -93,7 +141,11 @@ export function SessionDashboard({ sessionState, onEntityClick }: SessionDashboa
                                 data-type={entity.type}
                                 onClick={(e) => onEntityClick(entity, e)}
                             >
-                                <EntityTypeIcon type={entity.type} size={16} className="entity-icon" />
+                                <EntityTypeIcon
+                                    type={entity.type}
+                                    size={16}
+                                    className="entity-icon"
+                                />
                                 <span>{entity.name}</span>
                             </div>
                         ))}

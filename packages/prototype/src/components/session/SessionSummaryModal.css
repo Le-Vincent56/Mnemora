@@ -1,0 +1,202 @@
+.session-summary-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 24px;
+}
+
+.session-summary-modal {
+    width: 100%;
+    max-width: 520px;
+    max-height: 80vh;
+    background: var(--surface);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Header */
+.session-summary__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 24px 24px 16px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.session-summary__title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.session-summary__title {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.session-summary__session-name {
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.session-summary__close {
+    background: none;
+    border: none;
+    padding: 4px;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: color var(--timing-fast) ease, background var(--timing-fast) ease;
+}
+
+.session-summary__close:hover {
+    color: var(--text-primary);
+    background: var(--surface-hover);
+}
+
+/* Stats */
+.session-summary__stats {
+    display: flex;
+    gap: 24px;
+    padding: 20px 24px;
+    background: var(--surface-hover);
+}
+
+.session-summary__stat {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-secondary);
+}
+
+.session-summary__stat svg {
+    color: var(--primary);
+}
+
+.session-summary__stat-value {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.session-summary__stat-label {
+    font-size: 13px;
+    color: var(--text-tertiary);
+}
+
+/* Entities Section */
+.session-summary__entities {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-subtle);
+    overflow-y: auto;
+    flex: 1;
+}
+
+.session-summary__section-title {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-tertiary);
+    margin: 0 0 12px;
+}
+
+.session-summary__entity-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.session-summary__entity-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.session-summary__entity-type {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.session-summary__entity-count {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--text-tertiary);
+    background: var(--surface-hover);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+}
+
+.session-summary__entity-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-left: 20px;
+}
+
+.session-summary__entity-list li {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: var(--text-primary);
+    padding: 4px 0;
+}
+
+.session-summary__access-count {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    font-variant-numeric: tabular-nums;
+}
+
+/* Notes Section */
+.session-summary__notes {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-subtle);
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.session-summary__notes-content {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    background: var(--surface-hover);
+    padding: 12px;
+    border-radius: var(--radius-md);
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin: 0;
+}
+
+/* Actions */
+.session-summary__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 24px;
+}
+
+.session-summary__actions button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
