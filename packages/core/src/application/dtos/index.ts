@@ -34,6 +34,18 @@ export type {
     ListEntitiesRequest,
 } from './RequestDTOs';
 
+export type {
+    CreateWorldRequest,
+    UpdateWorldRequest,
+    DeleteWorldRequest,
+    GetWorldRequest,
+    ListWorldsRequest,
+    CreateCampaignRequest,
+    UpdateCampaignRequest,
+    DeleteCampaignRequest, GetCampaignRequest,
+    ListCampaignsRequest,
+} from './RequestDTOs';
+
 // Response DTOs
 export type {
     EntityResponse,

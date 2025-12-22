@@ -41,7 +41,7 @@ export class DatabaseManager {
      * Returns the raw database instance.
      */
     getDatabase(): Database.Database {
-        if(!this.db) {
+        if (!this.db) {
             throw new Error('Database no initialized. Call initialize() first.');
         }
         return this.db;
@@ -51,7 +51,7 @@ export class DatabaseManager {
      * Closes the database connection.
      */
     close(): void {
-        if(!this.db) {
+        if (!this.db) {
             return;
         }
 
@@ -74,10 +74,10 @@ export class DatabaseManager {
 
         const currentVersion = row?.version ?? 0;
 
-        if(currentVersion < schema.SCHEMA_VERSION) {
+        if (currentVersion < schema.SCHEMA_VERSION) {
             // Run migrations in a transaction
             db.transaction(() => {
-                if(currentVersion < 1) {
+                if (currentVersion < 1) {
                     db.exec(schema.CREATE_ENTITIES_TABLE);
                     db.exec(schema.CREATE_ENTITIES_INDEXES);
                     db.exec(schema.CREATE_FTS_TABLE);
@@ -85,7 +85,13 @@ export class DatabaseManager {
                     db.prepare('INSERT INTO schema_version (version) VALUES (?)').run(1);
                 }
 
-                // Add future migrations here: if (currentVersion < 2) {...}
+                if (currentVersion < 2) {
+                    db.exec(schema.CREATE_WORLDS_TABLE);
+                    db.exec(schema.CREATE_WORLDS_INDEXES);
+                    db.exec(schema.CREATE_CAMPAIGNS_TABLE);
+                    db.exec(schema.CREATE_CAMPAIGNS_INDEXES);
+                    db.prepare('INSERT INTO schema_version (version) VALUES (?)').run(2);
+                }
             })();
         }
     }

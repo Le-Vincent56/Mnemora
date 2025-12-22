@@ -3,6 +3,8 @@ import { TOKENS } from './tokens';
 import { DatabaseManager, DatabaseConfig } from '../database/DatabaseManager';
 import { SQLiteEntityRepository } from '../repositories/SQLiteEntityRepository';
 import { SQLiteSearchRepository } from '../repositories/SQLiteSearchRepository';
+import { SQLiteWorldRepository } from '../repositories/SQLiteWorldRepository';
+import { SQLiteCampaignRepository } from '../repositories/SQLiteCampaignRepository';
 import { EventBus } from '../../application/services/EventBus';
 import { CommandHistory } from '../../application/commands/CommandHistory';
 import {
@@ -11,11 +13,22 @@ import {
     CreateFactionUseCase,
     CreateSessionUseCase,
     CreateNoteUseCase,
+    CreateWorldUseCase,
+    CreateCampaignUseCase,
     GetEntityUseCase,
+    GetWorldUseCase,
+    GetCampaignUseCase,
     ListEntitiesUseCase,
+    ListWorldsUseCase,
+    ListCampaignsUseCase,
     UpdateEntityUseCase,
+    UpdateWorldUseCase,
+    UpdateCampaignUseCase,
     DeleteEntityUseCase,
-    SearchEntitiesUseCase
+    DeleteWorldUseCase,
+    DeleteCampaignUseCase,
+    SearchEntitiesUseCase,
+
 } from '../../application/use-cases';
 import { EntityEditorViewModel } from '../../presentation';
 import { SearchViewModel } from '../../presentation';
@@ -37,6 +50,12 @@ export function createContainer(config: DatabaseConfig): Container {
     );
     container.register(TOKENS.SearchRepository, () =>
         new SQLiteSearchRepository(container.resolve(TOKENS.Database)), true
+    );
+    container.register(TOKENS.WorldRepository, () =>
+        new SQLiteWorldRepository(container.resolve(TOKENS.Database)), true
+    );
+    container.register(TOKENS.CampaignRepository, () =>
+        new SQLiteCampaignRepository(container.resolve(TOKENS.Database)), true
     );
 
     // Services (singletons)
@@ -100,6 +119,54 @@ export function createContainer(config: DatabaseConfig): Container {
         new SearchEntitiesUseCase(
             container.resolve(TOKENS.EntityRepository),
         )
+    );
+
+    // World use cases
+    container.register(TOKENS.CreateWorldUseCase, () =>
+        new CreateWorldUseCase(container.resolve(TOKENS.WorldRepository),
+            container.resolve(TOKENS.EventBus)
+        )
+    );
+    container.register(TOKENS.UpdateWorldUseCase, () =>
+        new UpdateWorldUseCase(
+            container.resolve(TOKENS.WorldRepository),
+            container.resolve(TOKENS.EventBus)
+        )
+    ); 
+    container.register(TOKENS.DeleteWorldUseCase, () =>
+        new DeleteWorldUseCase(
+            container.resolve(TOKENS.WorldRepository),
+            container.resolve(TOKENS.EventBus)
+        )
+    );
+    container.register(TOKENS.GetWorldUseCase, () =>
+        new GetWorldUseCase(container.resolve(TOKENS.WorldRepository))
+    ); 
+    container.register(TOKENS.ListWorldsUseCase, () =>
+        new ListWorldsUseCase(container.resolve(TOKENS.WorldRepository))
+    );
+
+    // Campaign use cases
+    container.register(TOKENS.CreateCampaignUseCase, () =>
+        new CreateCampaignUseCase(
+            container.resolve(TOKENS.CampaignRepository),
+            container.resolve(TOKENS.WorldRepository),
+            container.resolve(TOKENS.EventBus)
+        )
+    );
+    container.register(TOKENS.UpdateCampaignUseCase, () => 
+        new UpdateCampaignUseCase(container.resolve(TOKENS.CampaignRepository),
+        container.resolve(TOKENS.EventBus))
+    );
+    container.register(TOKENS.DeleteCampaignUseCase, () => 
+        new DeleteCampaignUseCase(container.resolve(TOKENS.CampaignRepository),
+        container.resolve(TOKENS.EventBus))
+    );
+    container.register(TOKENS.GetCampaignUseCase, () => 
+        new GetCampaignUseCase(container.resolve(TOKENS.CampaignRepository))
+    ); 
+    container.register(TOKENS.ListCampaignsUseCase, () => 
+        new ListCampaignsUseCase(container.resolve(TOKENS.CampaignRepository))
     );
 
     // ViewModels (transient)
