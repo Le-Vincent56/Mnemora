@@ -100,6 +100,15 @@ export class DatabaseManager {
                     db.exec(schema.CREATE_SAFETY_TOOLS_INDEXES);
                     db.prepare('INSERT INTO schema_version (version) VALUES (?)').run(3);
                 }
+
+                if (currentVersion < 4) {
+                    db.exec(schema.CREATE_QUICK_NOTES_TABLE);
+                    db.exec(schema.CREATE_QUICK_NOTES_INDEXES);
+                    db.exec(schema.CREATE_SESSION_FEEDBACK_TABLE);
+                    db.exec(schema.CREATE_SESSION_FEEDBACK_INDEXES);
+                    db.exec(schema.ALTER_ENTITIES_ADD_DURATION);
+                    db.prepare('INSERT INTO schema_version (version) VALUES (?)').run(4);
+                }
             })();
         }
     }

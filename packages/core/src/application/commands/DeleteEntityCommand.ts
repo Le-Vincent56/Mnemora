@@ -272,6 +272,9 @@ export class DeleteEntityCommand extends BaseCommand {
                         campaignID: campaignID!, // Sessions always have campaignID
                         sessionDate: snapshot.sessionDate ? new Date(snapshot.sessionDate) : null,
                         timestamps: timestamps.value,
+                        quickNotes: [],
+                        starsAndWishes: null,
+                        duration: null,
                     };
                     return Result.ok(Session.fromProps(props));
                 }

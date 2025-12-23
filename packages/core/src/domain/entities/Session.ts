@@ -7,6 +7,8 @@ import { TagCollection } from "../value-objects/TagCollection";
 import { Timestamps } from "../value-objects/Timestamps";
 import { BaseEntity } from "./BaseEntity";
 import { EntityType } from "./EntityType";
+import { QuickNote } from '../value-objects/QuickNote';
+import { StarsAndWishes } from '../value-objects/StarsAndWishes';
 
 /**
  * Props required to create a new Session.
@@ -32,6 +34,9 @@ export interface SessionProps {
     campaignID: EntityID;
     sessionDate: Date | null;
     timestamps: Timestamps;
+    quickNotes: QuickNote[];
+    starsAndWishes: StarsAndWishes | null;
+    duration: number | null;
 }
 
 /**
@@ -48,6 +53,9 @@ export class Session extends BaseEntity {
     private readonly _worldID: EntityID;
     private readonly _campaignID: EntityID;
     private _sessionDate: Date | null;
+    private _quickNotes: QuickNote[];
+    private _starsAndWishes: StarsAndWishes | null;
+    private _duration: number | null;
 
     get name(): Name {
         return this._name;
@@ -88,6 +96,25 @@ export class Session extends BaseEntity {
         return true;
     }
 
+    get quickNotes(): readonly QuickNote[] {
+        return [...this._quickNotes];
+    }
+
+    get starsAndWishes(): StarsAndWishes | null {
+        return this._starsAndWishes;
+    }
+
+    get duration(): number | null {
+        return this._duration;
+    }
+
+    /**
+     * Returns true if the session has ended (duration is set).
+     */
+    get hasEnded(): boolean {
+        return this._duration !== null;
+    }
+
     private constructor(props: SessionProps) {
         super(props.id, EntityType.SESSION, props.timestamps);
         this._name = props.name;
@@ -98,6 +125,9 @@ export class Session extends BaseEntity {
         this._worldID = props.worldID;
         this._campaignID = props.campaignID;
         this._sessionDate = props.sessionDate;
+        this._quickNotes = props.quickNotes;
+        this._starsAndWishes = props.starsAndWishes;
+        this._duration = props.duration;
     }
 
     /**
@@ -120,7 +150,10 @@ export class Session extends BaseEntity {
             worldID: props.worldID,
             campaignID: props.campaignID,
             sessionDate: props.sessionDate ?? null,
-            timestamps: Timestamps.now()
+            timestamps: Timestamps.now(),
+            quickNotes: [],
+            starsAndWishes: null,
+            duration: null
         });
 
         return Result.ok(session);
@@ -214,5 +247,63 @@ export class Session extends BaseEntity {
     removeTag(tag: string): void {
         this._tags = this._tags.remove(tag);
         this.touch();
+    }
+
+    /**
+       * Adds a quick note to the session.
+       * Returns the created note's ID on success.
+       */
+    addQuickNote(
+        content: string,
+        linkedEntityIds?: string[],
+        visibility?: 'gm_only' | 'players'
+    ): Result<string, ValidationError> {
+        const noteResult = QuickNote.create(content, linkedEntityIds, visibility);
+        if (noteResult.isFailure) {
+            return Result.fail(noteResult.error);
+        }
+
+        this._quickNotes = [...this._quickNotes, noteResult.value];
+        this.touch();
+        return Result.ok(noteResult.value.id);
+    }
+
+    /**
+     * Removes a quick note by ID.
+     */
+    removeQuickNote(noteId: string): void {
+        this._quickNotes = this._quickNotes.filter(n => n.id !== noteId);
+        this.touch();
+    }
+
+    /**
+     * Gets a quick note by ID.
+     */
+    getQuickNote(noteId: string): QuickNote | undefined {
+        return this._quickNotes.find(n => n.id === noteId);
+    }
+
+    /**
+     * Sets the Stars & Wishes feedback for the session.
+     */
+    setStarsAndWishes(starsAndWishes: StarsAndWishes): void {
+        this._starsAndWishes = starsAndWishes;
+        this.touch();
+    }
+
+    /**
+     * Ends the session with the given duration.
+     * Duration is in seconds.
+     */
+    endSession(durationSeconds: number): Result<void, ValidationError> {
+        if (durationSeconds < 0) {
+            return Result.fail(
+                new ValidationError('Duration cannot be negative', 'duration')
+            );
+        }
+
+        this._duration = durationSeconds;
+        this.touch();
+        return Result.okVoid();
     }
 }

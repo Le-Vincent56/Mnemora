@@ -192,6 +192,9 @@ export class DatabaseMapper {
             campaignID: EntityID.fromStringOrThrow(row.campaign_id!),  // Never null for Session
             sessionDate: row.session_date ? new Date(row.session_date) : null,
             timestamps: Timestamps.fromStringsOrThrow(row.created_at, row.modified_at),
+            quickNotes: [],
+            starsAndWishes: null,
+            duration: (row as EntityRow & { duration?: number }).duration ?? null,
         };
     }
 

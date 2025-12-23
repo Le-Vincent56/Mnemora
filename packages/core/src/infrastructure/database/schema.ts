@@ -1,4 +1,4 @@
-export const SCHEMA_VERSION = 3;
+export const SCHEMA_VERSION = 4;
 
 export const CREATE_ENTITIES_TABLE = `
     CREATE TABLE IF NOT EXISTS entities (
@@ -109,40 +109,80 @@ export const CREATE_CAMPAIGNS_INDEXES = `
 // ============================================================================
 
 export const CREATE_SAFETY_TOOL_CONFIGURATIONS_TABLE = `
-      CREATE TABLE IF NOT EXISTS safety_tool_configurations (
-          id TEXT PRIMARY KEY,
-          campaign_id TEXT NOT NULL REFERENCES campaigns(id) ON DELETE CASCADE,
-          created_at TEXT NOT NULL,
-          modified_at TEXT NOT NULL,
-          UNIQUE(campaign_id)
-      );
-  `;
+    CREATE TABLE IF NOT EXISTS safety_tool_configurations (
+        id TEXT PRIMARY KEY,
+        campaign_id TEXT NOT NULL REFERENCES campaigns(id) ON DELETE CASCADE,
+        created_at TEXT NOT NULL,
+        modified_at TEXT NOT NULL,
+        UNIQUE(campaign_id)
+    );
+`;
 
 export const CREATE_SAFETY_TOOL_CONFIGURATIONS_INDEXES = `
-      CREATE INDEX IF NOT EXISTS idx_safety_tool_configs_campaign
-          ON safety_tool_configurations(campaign_id);
-  `;
+    CREATE INDEX IF NOT EXISTS idx_safety_tool_configs_campaign
+        ON safety_tool_configurations(campaign_id);
+`;
 
 export const CREATE_SAFETY_TOOLS_TABLE = `
-      CREATE TABLE IF NOT EXISTS safety_tools (
-          id TEXT PRIMARY KEY,
-          configuration_id TEXT NOT NULL REFERENCES safety_tool_configurations(id) ON DELETE CASCADE,
-          type TEXT NOT NULL,
-          name TEXT NOT NULL,
-          description TEXT NOT NULL,
-          is_enabled INTEGER NOT NULL DEFAULT 0,
-          is_built_in INTEGER NOT NULL DEFAULT 1,
-          custom_id TEXT,
-          display_order INTEGER NOT NULL DEFAULT 0,
-          config_json TEXT NOT NULL DEFAULT '{}',
-          created_at TEXT NOT NULL,
-          modified_at TEXT NOT NULL
-      );
-  `;
+    CREATE TABLE IF NOT EXISTS safety_tools (
+        id TEXT PRIMARY KEY,
+        configuration_id TEXT NOT NULL REFERENCES safety_tool_configurations(id) ON DELETE CASCADE,
+        type TEXT NOT NULL,
+        name TEXT NOT NULL,
+        description TEXT NOT NULL,
+        is_enabled INTEGER NOT NULL DEFAULT 0,
+        is_built_in INTEGER NOT NULL DEFAULT 1,
+        custom_id TEXT,
+        display_order INTEGER NOT NULL DEFAULT 0,
+        config_json TEXT NOT NULL DEFAULT '{}',
+        created_at TEXT NOT NULL,
+        modified_at TEXT NOT NULL
+    );
+`;
 
 export const CREATE_SAFETY_TOOLS_INDEXES = `
-      CREATE INDEX IF NOT EXISTS idx_safety_tools_config
-          ON safety_tools(configuration_id);
-      CREATE INDEX IF NOT EXISTS idx_safety_tools_type
-          ON safety_tools(type);
-  `;
+    CREATE INDEX IF NOT EXISTS idx_safety_tools_config
+        ON safety_tools(configuration_id);
+    CREATE INDEX IF NOT EXISTS idx_safety_tools_type
+        ON safety_tools(type);
+`;
+
+// ============================================================================
+// Schema Version 4: Quick Notes and Session Feedback tables
+// ============================================================================
+
+export const CREATE_QUICK_NOTES_TABLE = `
+    CREATE TABLE IF NOT EXISTS quick_notes (
+        id TEXT PRIMARY KEY,
+        session_id TEXT NOT NULL,
+        content TEXT NOT NULL,
+        captured_at TEXT NOT NULL,
+        linked_entity_ids TEXT NOT NULL DEFAULT '[]',
+        visibility TEXT NOT NULL DEFAULT 'gm_only' CHECK(visibility IN ('gm_only', 'players')),
+        FOREIGN KEY (session_id) REFERENCES entities(id) ON DELETE CASCADE
+    );
+`;
+
+export const CREATE_QUICK_NOTES_INDEXES = `
+    CREATE INDEX IF NOT EXISTS idx_quick_notes_session ON quick_notes(session_id);
+    CREATE INDEX IF NOT EXISTS idx_quick_notes_captured ON quick_notes(captured_at);
+`;
+
+export const CREATE_SESSION_FEEDBACK_TABLE = `
+    CREATE TABLE IF NOT EXISTS session_feedback (
+        id TEXT PRIMARY KEY,
+        session_id TEXT NOT NULL,
+        feedback_type TEXT NOT NULL CHECK(feedback_type IN ('star', 'wish')),
+        content TEXT NOT NULL,
+        collected_at TEXT NOT NULL,
+        FOREIGN KEY (session_id) REFERENCES entities(id) ON DELETE CASCADE
+    );
+`;
+
+export const CREATE_SESSION_FEEDBACK_INDEXES = `
+    CREATE INDEX IF NOT EXISTS idx_session_feedback_session ON session_feedback(session_id);
+`;
+
+export const ALTER_ENTITIES_ADD_DURATION = `
+    ALTER TABLE entities ADD COLUMN duration INTEGER;
+`;

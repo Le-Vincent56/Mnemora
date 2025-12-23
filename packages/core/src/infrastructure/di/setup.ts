@@ -6,6 +6,7 @@ import { SQLiteSearchRepository } from '../repositories/SQLiteSearchRepository';
 import { SQLiteWorldRepository } from '../repositories/SQLiteWorldRepository';
 import { SQLiteCampaignRepository } from '../repositories/SQLiteCampaignRepository';
 import { SQLiteSafetyToolRepository } from '../repositories/SQLiteSafetyToolRepository';
+import { SQLiteQuickNoteRepository } from '../repositories/SQLiteQuickNoteRepository';
 import { EventBus } from '../../application/services/EventBus';
 import { CommandHistory } from '../../application/commands/CommandHistory';
 import {
@@ -30,7 +31,10 @@ import {
     DeleteCampaignUseCase,
     SearchEntitiesUseCase,
     GetSafetyToolsUseCase,
-    ConfigureSafetyToolsUseCase
+    ConfigureSafetyToolsUseCase,
+    AddQuickNoteUseCase,
+    RemoveQuickNoteUseCase,
+    EndSessionWithSummaryUseCase
 } from '../../application/use-cases';
 import { EntityEditorViewModel } from '../../presentation';
 import { SearchViewModel } from '../../presentation';
@@ -61,6 +65,9 @@ export function createContainer(config: DatabaseConfig): Container {
     );
     container.register(TOKENS.SafetyToolRepository, () =>
         new SQLiteSafetyToolRepository(container.resolve(TOKENS.Database)), true
+    );
+    container.register(TOKENS.QuickNoteRepository, () =>
+        new SQLiteQuickNoteRepository(container.resolve(TOKENS.Database)), true
     );
 
     // Services (singletons)
@@ -185,6 +192,23 @@ export function createContainer(config: DatabaseConfig): Container {
         new ConfigureSafetyToolsUseCase(
             container.resolve(TOKENS.SafetyToolRepository),
             container.resolve(TOKENS.CampaignRepository),
+        )
+    );
+
+    // Session notes use cases
+    container.register(TOKENS.AddQuickNoteUseCase, () =>
+        new AddQuickNoteUseCase(
+            container.resolve(TOKENS.EntityRepository),
+            container.resolve(TOKENS.QuickNoteRepository)
+        )
+    );
+    container.register(TOKENS.RemoveQuickNoteUseCase, () =>
+        new RemoveQuickNoteUseCase(container.resolve(TOKENS.QuickNoteRepository))
+    );
+    container.register(TOKENS.EndSessionWithSummaryUseCase, () =>
+        new EndSessionWithSummaryUseCase(
+            container.resolve(TOKENS.EntityRepository),
+            container.resolve(TOKENS.QuickNoteRepository)
         )
     );
 

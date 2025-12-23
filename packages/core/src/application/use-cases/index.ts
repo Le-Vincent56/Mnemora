@@ -35,3 +35,8 @@ export { ConfigureSafetyToolsUseCase } from './ConfigureSafetyToolsUseCase';
 export { DeleteEntityUseCase } from './DeleteEntityUseCase';
 export { DeleteWorldUseCase } from './DeleteWorldUseCase';
 export { DeleteCampaignUseCase } from './DeleteCampaignUseCase';
+
+// Session notes use cases
+export { AddQuickNoteUseCase } from './AddQuickNoteCase';
+export { RemoveQuickNoteUseCase } from './RemoveQuickNoteUseCase';
+export { EndSessionWithSummaryUseCase } from './EndSessionWithSummaryUseCase';

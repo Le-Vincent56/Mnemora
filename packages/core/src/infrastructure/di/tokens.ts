@@ -9,6 +9,7 @@ export const TOKENS = {
     WorldRepository: Symbol('WorldRepository'),
     CampaignRepository: Symbol('CampaignRepository'),
     SafetyToolRepository: Symbol('SafetyToolRepository'),
+    QuickNoteRepository: Symbol('QuickNoteRepository'),
 
     // Services
     EventBus: Symbol('EventBus'),
@@ -40,6 +41,10 @@ export const TOKENS = {
 
     GetSafetyToolsUseCase: Symbol('GetSafetyToolsUseCase'),
     ConfigureSafetyToolsUseCase: Symbol('ConfigureSafetyToolsUseCase'),
+
+    AddQuickNoteUseCase: Symbol('AddQuickNoteUseCase'),
+    RemoveQuickNoteUseCase: Symbol('RemoveQuickNoteUseCase'),
+    EndSessionWithSummaryUseCase: Symbol('EndSessionWithSummaryUseCase'),
 
     // ViewModels
     EntityEditorViewModel: Symbol('EntityEditorViewModel'),
