@@ -92,6 +92,14 @@ export class DatabaseManager {
                     db.exec(schema.CREATE_CAMPAIGNS_INDEXES);
                     db.prepare('INSERT INTO schema_version (version) VALUES (?)').run(2);
                 }
+
+                if (currentVersion < 3) {
+                    db.exec(schema.CREATE_SAFETY_TOOL_CONFIGURATIONS_TABLE);
+                    db.exec(schema.CREATE_SAFETY_TOOL_CONFIGURATIONS_INDEXES);
+                    db.exec(schema.CREATE_SAFETY_TOOLS_TABLE);
+                    db.exec(schema.CREATE_SAFETY_TOOLS_INDEXES);
+                    db.prepare('INSERT INTO schema_version (version) VALUES (?)').run(3);
+                }
             })();
         }
     }

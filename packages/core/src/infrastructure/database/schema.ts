@@ -1,4 +1,4 @@
-export const SCHEMA_VERSION = 2;
+export const SCHEMA_VERSION = 3;
 
 export const CREATE_ENTITIES_TABLE = `
     CREATE TABLE IF NOT EXISTS entities (
@@ -103,3 +103,46 @@ export const CREATE_CAMPAIGNS_INDEXES = `
     CREATE INDEX IF NOT EXISTS idx_campaigns_world ON campaigns(world_id);
     CREATE INDEX IF NOT EXISTS idx_campaigns_modified ON campaigns(modified_at DESC);
 `;
+
+// ============================================================================
+// Schema Version 3: Safety Tool tables
+// ============================================================================
+
+export const CREATE_SAFETY_TOOL_CONFIGURATIONS_TABLE = `
+      CREATE TABLE IF NOT EXISTS safety_tool_configurations (
+          id TEXT PRIMARY KEY,
+          campaign_id TEXT NOT NULL REFERENCES campaigns(id) ON DELETE CASCADE,
+          created_at TEXT NOT NULL,
+          modified_at TEXT NOT NULL,
+          UNIQUE(campaign_id)
+      );
+  `;
+
+export const CREATE_SAFETY_TOOL_CONFIGURATIONS_INDEXES = `
+      CREATE INDEX IF NOT EXISTS idx_safety_tool_configs_campaign
+          ON safety_tool_configurations(campaign_id);
+  `;
+
+export const CREATE_SAFETY_TOOLS_TABLE = `
+      CREATE TABLE IF NOT EXISTS safety_tools (
+          id TEXT PRIMARY KEY,
+          configuration_id TEXT NOT NULL REFERENCES safety_tool_configurations(id) ON DELETE CASCADE,
+          type TEXT NOT NULL,
+          name TEXT NOT NULL,
+          description TEXT NOT NULL,
+          is_enabled INTEGER NOT NULL DEFAULT 0,
+          is_built_in INTEGER NOT NULL DEFAULT 1,
+          custom_id TEXT,
+          display_order INTEGER NOT NULL DEFAULT 0,
+          config_json TEXT NOT NULL DEFAULT '{}',
+          created_at TEXT NOT NULL,
+          modified_at TEXT NOT NULL
+      );
+  `;
+
+export const CREATE_SAFETY_TOOLS_INDEXES = `
+      CREATE INDEX IF NOT EXISTS idx_safety_tools_config
+          ON safety_tools(configuration_id);
+      CREATE INDEX IF NOT EXISTS idx_safety_tools_type
+          ON safety_tools(type);
+  `;

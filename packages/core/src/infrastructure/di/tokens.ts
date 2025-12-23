@@ -8,6 +8,7 @@ export const TOKENS = {
     SearchRepository: Symbol('SearchRepository'),
     WorldRepository: Symbol('WorldRepository'),
     CampaignRepository: Symbol('CampaignRepository'),
+    SafetyToolRepository: Symbol('SafetyToolRepository'),
 
     // Services
     EventBus: Symbol('EventBus'),
@@ -36,6 +37,9 @@ export const TOKENS = {
     DeleteCampaignUseCase: Symbol('DeleteCampaignUseCase'),
     GetCampaignUseCase: Symbol('GetCampaignUseCase'),
     ListCampaignsUseCase: Symbol('ListCampaignsUseCase'),
+
+    GetSafetyToolsUseCase: Symbol('GetSafetyToolsUseCase'),
+    ConfigureSafetyToolsUseCase: Symbol('ConfigureSafetyToolsUseCase'),
 
     // ViewModels
     EntityEditorViewModel: Symbol('EntityEditorViewModel'),
