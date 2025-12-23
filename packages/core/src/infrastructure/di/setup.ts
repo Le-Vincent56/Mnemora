@@ -30,6 +30,8 @@ import {
     DeleteWorldUseCase,
     DeleteCampaignUseCase,
     SearchEntitiesUseCase,
+    AddCustomSafetyToolUseCase,
+    RemoveCustomSafetyToolUseCase,
     GetSafetyToolsUseCase,
     ConfigureSafetyToolsUseCase,
     AddQuickNoteUseCase,
@@ -182,6 +184,18 @@ export function createContainer(config: DatabaseConfig): Container {
     );
 
     // Safety tool use cases
+    container.register(TOKENS.AddCustomSafetyToolUseCase, () =>
+        new AddCustomSafetyToolUseCase(
+            container.resolve(TOKENS.SafetyToolRepository),
+            container.resolve(TOKENS.CampaignRepository)
+        )
+    );
+    container.register(TOKENS.RemoveCustomSafetyToolUseCase, () =>
+        new RemoveCustomSafetyToolUseCase(
+            container.resolve(TOKENS.SafetyToolRepository),
+            container.resolve(TOKENS.CampaignRepository)
+        )
+    );
     container.register(TOKENS.GetSafetyToolsUseCase, () =>
         new GetSafetyToolsUseCase(
             container.resolve(TOKENS.SafetyToolRepository),

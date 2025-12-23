@@ -30,6 +30,8 @@ export { UpdateEntityUseCase } from './UpdateEntityUseCase';
 export { UpdateWorldUseCase } from './UpdateWorldUseCase';
 export { UpdateCampaignUseCase } from './UpdateCampaignUseCase';
 export { ConfigureSafetyToolsUseCase } from './ConfigureSafetyToolsUseCase';
+export { AddCustomSafetyToolUseCase } from './AddCustomSafetyToolUseCase';
+export { RemoveCustomSafetyToolUseCase } from './RemoveCustomSafetyToolUseCase';
 
 // Delete use cases
 export { DeleteEntityUseCase } from './DeleteEntityUseCase';
@@ -37,6 +39,6 @@ export { DeleteWorldUseCase } from './DeleteWorldUseCase';
 export { DeleteCampaignUseCase } from './DeleteCampaignUseCase';
 
 // Session notes use cases
-export { AddQuickNoteUseCase } from './AddQuickNoteCase';
+export { AddQuickNoteUseCase } from './AddQuickNoteUseCase';
 export { RemoveQuickNoteUseCase } from './RemoveQuickNoteUseCase';
 export { EndSessionWithSummaryUseCase } from './EndSessionWithSummaryUseCase';

@@ -39,6 +39,8 @@ export const TOKENS = {
     GetCampaignUseCase: Symbol('GetCampaignUseCase'),
     ListCampaignsUseCase: Symbol('ListCampaignsUseCase'),
 
+    AddCustomSafetyToolUseCase: Symbol('AddCustomSafetyToolUseCase'),
+    RemoveCustomSafetyToolUseCase: Symbol('RemoveCustomSafetyToolUseCase'),
     GetSafetyToolsUseCase: Symbol('GetSafetyToolsUseCase'),
     ConfigureSafetyToolsUseCase: Symbol('ConfigureSafetyToolsUseCase'),
 
