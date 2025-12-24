@@ -1,0 +1,217 @@
+.stars-wishes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+}
+
+/* Column */
+.stars-wishes__column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--canvas);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-subtle);
+}
+
+.stars-wishes__column--star {
+    --column-accent: var(--accent-gold);
+}
+
+.stars-wishes__column--wish {
+    --column-accent: var(--primary);
+}
+
+.stars-wishes__column-heading {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-display);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    font-variation-settings: 'opsz' 14, 'SOFT' 10, 'WONK' 0;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.stars-wishes__column-icon {
+    color: var(--column-accent);
+}
+
+/* Items list */
+.stars-wishes__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    min-height: 32px;
+}
+
+.stars-wishes__item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    border-left: 2px solid var(--column-accent);
+}
+
+.stars-wishes__item-text {
+    flex: 1;
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    line-height: 1.4;
+    color: var(--text-primary);
+}
+
+.stars-wishes__item-remove {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--text-tertiary);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    opacity: 0;
+    transition:
+        opacity 0.15s ease,
+        color 0.15s ease,
+        background-color 0.15s ease;
+}
+
+.stars-wishes__item:hover .stars-wishes__item-remove,
+.stars-wishes__item-remove:focus-visible {
+    opacity: 1;
+}
+
+.stars-wishes__item-remove:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+.stars-wishes__item-remove:focus-visible {
+    outline: none;
+    box-shadow:
+        0 0 0 2px var(--surface),
+        0 0 0 4px var(--primary);
+}
+
+/* Add button */
+.stars-wishes__add {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--column-accent);
+    background: transparent;
+    border: 1px dashed var(--column-accent);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    opacity: 0.7;
+    transition:
+        opacity 0.15s ease,
+        background-color 0.15s ease;
+}
+
+.stars-wishes__add:hover {
+    opacity: 1;
+    background: rgba(92, 122, 138, 0.04);
+}
+
+.stars-wishes__add:focus-visible {
+    outline: none;
+    opacity: 1;
+    box-shadow:
+        0 0 0 3px rgba(92, 122, 138, 0.2),
+        0 0 12px rgba(92, 122, 138, 0.1);
+}
+
+/* Input wrapper */
+.stars-wishes__input-wrapper {
+    display: flex;
+}
+
+.stars-wishes__input {
+    width: 100%;
+    padding: var(--space-2) var(--space-3);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--text-primary);
+    background: var(--surface);
+    border: 1px solid var(--column-accent);
+    border-radius: var(--radius-md);
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.stars-wishes__input::placeholder {
+    color: var(--text-tertiary);
+    font-style: italic;
+}
+
+.stars-wishes__input:focus {
+    outline: none;
+    box-shadow:
+        0 0 0 3px rgba(92, 122, 138, 0.2),
+        0 0 12px rgba(92, 122, 138, 0.1);
+}
+
+/* Screen reader only */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Mobile: stack columns */
+@media (max-width: 600px) {
+    .stars-wishes {
+        grid-template-columns: 1fr;
+    }
+
+    .stars-wishes__item-remove {
+        opacity: 1;
+        width: 28px;
+        height: 28px;
+    }
+
+    .stars-wishes__add {
+        padding: var(--space-3);
+        min-height: 44px;
+    }
+
+    .stars-wishes__input {
+        padding: var(--space-3);
+        min-height: 44px;
+    }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+
+    .stars-wishes__item-remove,
+    .stars-wishes__add,
+    .stars-wishes__input {
+        transition: none;
+    }
+}

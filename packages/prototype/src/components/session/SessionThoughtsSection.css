@@ -1,0 +1,192 @@
+.session-thoughts {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.session-thoughts__heading {
+    font-family: var(--font-display);
+    font-size: var(--text-base);
+    font-weight: 600;
+    font-variation-settings: 'opsz' 16, 'SOFT' 10, 'WONK' 0;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+/* Quick Notes List */
+.session-thoughts__notes {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.session-thoughts__note {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    background: var(--canvas);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-subtle);
+}
+
+.session-thoughts__note-content {
+    flex: 1;
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    color: var(--text-primary);
+}
+
+.session-thoughts__note-time {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    white-space: nowrap;
+}
+
+.session-thoughts__note-remove {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--text-tertiary);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    opacity: 0.6;
+    transition:
+        opacity 0.15s ease,
+        color 0.15s ease,
+        background-color 0.15s ease;
+}
+
+.session-thoughts__note:hover .session-thoughts__note-remove {
+    opacity: 1;
+}
+
+.session-thoughts__note-remove:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+.session-thoughts__note-remove:focus-visible {
+    outline: none;
+    opacity: 1;
+    box-shadow:
+        0 0 0 2px var(--surface),
+        0 0 0 4px var(--primary);
+}
+
+/* Empty State */
+.session-thoughts__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-6) var(--space-4);
+    background: var(--canvas);
+    border-radius: var(--radius-lg);
+    border: 1px dashed var(--border-default);
+}
+
+.session-thoughts__empty-constellation {
+    color: var(--primary);
+    opacity: 0.4;
+    margin-bottom: var(--space-2);
+}
+
+.session-thoughts__empty-text {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+    margin: 0;
+    text-align: center;
+}
+
+/* Reflection Textarea */
+.session-thoughts__reflection {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.session-thoughts__reflection-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.session-thoughts__optional {
+    font-weight: 400;
+    color: var(--text-tertiary);
+}
+
+.session-thoughts__reflection-input {
+    width: 100%;
+    padding: var(--space-3) var(--space-4);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    color: var(--text-primary);
+    background: var(--canvas);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    resize: vertical;
+    min-height: 80px;
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.session-thoughts__reflection-input::placeholder {
+    color: var(--text-tertiary);
+    font-style: italic;
+}
+
+.session-thoughts__reflection-input:hover {
+    border-color: var(--border-emphasis);
+}
+
+.session-thoughts__reflection-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow:
+        0 0 0 3px rgba(92, 122, 138, 0.2),
+        0 0 12px rgba(92, 122, 138, 0.1);
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .session-thoughts__note-remove {
+        width: 32px;
+        height: 32px;
+        opacity: 1;
+    }
+
+    .session-thoughts__reflection-input {
+        min-height: 100px;
+    }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .session-thoughts__note-remove {
+        transition: none;
+    }
+
+    .session-thoughts__reflection-input {
+        transition: none;
+    }
+}

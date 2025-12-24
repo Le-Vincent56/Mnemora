@@ -3,6 +3,9 @@ import { EntityTypeIcon } from '@/components/entity/EntityTypeIcon';
 import { SearchPortal } from '@/components/search/SearchPortal';
 import { SessionHeader } from '@/components/session/SessionHeader';
 import { NoSessionCTA } from '@/components/session/NoSessionCTA';
+import { SafetyToolsIconRailItem } from '@/components/session/SafetyToolsIconRailItem';
+import { QuickNoteIconRailItem, QuickNote } from '@/components/session/QuickNoteIconRailItem';
+import { SafetyTool } from '@/components/session/SafetyToolQuickRef';
 import { useSearch } from '@/hooks/useSearch';
 import { formatTimeAgo } from '@/hooks/useSessionState';
 import { ActiveSession } from '@/types/session';
@@ -14,6 +17,10 @@ interface SessionDashboardProps {
     recentEntities: RecentEntity[];
     timerVisible: boolean;
     formattedDuration: string;
+    // Session tools
+    safetyTools: SafetyTool[];
+    quickNotes: QuickNote[];
+    onSaveNote: (content: string, timestamp: Date) => void;
     // Actions
     onEntityClick: (entity: Entity, event?: React.MouseEvent) => void;
     onToggleTimerVisibility: () => void;
@@ -30,6 +37,9 @@ export function SessionDashboard({
     recentEntities,
     timerVisible,
     formattedDuration,
+    safetyTools,
+    quickNotes,
+    onSaveNote,
     onEntityClick,
     onToggleTimerVisibility,
     onToggleTimer,
@@ -77,6 +87,19 @@ export function SessionDashboard({
                 onSwitchSession={onSwitchSession}
                 onEndSession={onEndSession}
             />
+
+            {/* Icon Rail — Quick access to session tools */}
+            <div className="session-icon-rail">
+                <SafetyToolsIconRailItem
+                    tools={safetyTools}
+                    isSessionActive={!!activeSession}
+                />
+                <QuickNoteIconRailItem
+                    notes={quickNotes}
+                    onSaveNote={onSaveNote}
+                    isSessionActive={!!activeSession}
+                />
+            </div>
 
             {/* Search Portal — The signature interaction */}
             <SearchPortal

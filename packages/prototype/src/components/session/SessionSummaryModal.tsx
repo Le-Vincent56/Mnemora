@@ -1,8 +1,12 @@
+import { useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Clock, Users, MapPin, Flag, FileText, Copy, Save } from 'lucide-react';
+import { X, Clock, FileText, Copy, Save } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { SessionSummary } from '@/types/session';
 import { formatDuration } from '@/hooks/useActiveSession';
+import { SessionThoughtsSection, QuickNote } from './SessionThoughtsSection';
+import { StarsAndWishesSection } from './StarsAndWishesSection';
+import { EntityReferenceSummary, ReferencedEntity } from './EntityReferenceSummary';
 import './SessionSummaryModal.css';
 
 interface SessionSummaryModalProps {
@@ -10,6 +14,19 @@ interface SessionSummaryModalProps {
     onClose: () => void;
     onCopyNotes: () => void;
     onSaveToSession: () => void;
+    // Session thoughts
+    quickNotes: QuickNote[];
+    onRemoveNote: (id: string) => void;
+    reflection: string;
+    onReflectionChange: (value: string) => void;
+    // Stars & Wishes (optional - only shown when enabled)
+    isStarsWishesEnabled: boolean;
+    stars: string[];
+    wishes: string[];
+    onAddStar: (star: string) => void;
+    onRemoveStar: (index: number) => void;
+    onAddWish: (wish: string) => void;
+    onRemoveWish: (index: number) => void;
 }
 
 const backdropVariants = {
@@ -39,47 +56,36 @@ const modalVariants = {
     },
 };
 
-// Group entities by type for display
-function groupByType(entities: SessionSummary['entitiesAccessed']) {
-    const groups: Record<string, typeof entities> = {
-        character: [],
-        location: [],
-        faction: [],
-        note: [],
-    };
-
-    entities.forEach((entity) => {
-        if (groups[entity.entityType]) {
-            groups[entity.entityType].push(entity);
-        }
-    });
-
-    return groups;
-}
-
-const typeIcons: Record<string, React.ReactNode> = {
-    character: <Users size={14} />,
-    location: <MapPin size={14} />,
-    faction: <Flag size={14} />,
-    note: <FileText size={14} />,
-};
-
-const typeLabels: Record<string, string> = {
-    character: 'Characters',
-    location: 'Locations',
-    faction: 'Factions',
-    note: 'Notes',
-};
-
 export function SessionSummaryModal({
     summary,
     onClose,
     onCopyNotes,
     onSaveToSession,
+    quickNotes,
+    onRemoveNote,
+    reflection,
+    onReflectionChange,
+    isStarsWishesEnabled,
+    stars,
+    wishes,
+    onAddStar,
+    onRemoveStar,
+    onAddWish,
+    onRemoveWish,
 }: SessionSummaryModalProps) {
+    // Map session access log to ReferencedEntity format
+    const referencedEntities: ReferencedEntity[] = useMemo(() => {
+        if (!summary) return [];
+        return summary.entitiesAccessed.map(entity => ({
+            id: entity.entityID,
+            name: entity.entityName,
+            type: entity.entityType,
+            accessCount: entity.accessCount
+        }));
+    }, [summary]);
+
     if (!summary) return null;
 
-    const groupedEntities = groupByType(summary.entitiesAccessed);
     const totalEntities = summary.entitiesAccessed.length;
 
     return (
@@ -136,40 +142,37 @@ export function SessionSummaryModal({
                             </div>
                         </div>
 
-                        {/* Entities by Type */}
-                        {totalEntities > 0 && (
-                            <div className="session-summary__entities">
-                                <h3 className="session-summary__section-title">Referenced During Session</h3>
-                                <div className="session-summary__entity-groups">
-                                    {Object.entries(groupedEntities).map(([type, entities]) => {
-                                        if (entities.length === 0) return null;
-                                        return (
-                                            <div key={type} className="session-summary__entity-group">
-                                                <div className="session-summary__entity-type">
-                                                    {typeIcons[type]}
-                                                    <span>{typeLabels[type]}</span>
-                                                    <span className="session-summary__entity-count">
-                                                        {entities.length}
-                                                    </span>
-                                                </div>
-                                                <ul className="session-summary__entity-list">
-                                                    {entities
-                                                        .sort((a, b) => b.accessCount - a.accessCount)
-                                                        .map((entity) => (
-                                                            <li key={entity.entityID}>
-                                                                <span>{entity.entityName}</span>
-                                                                <span className="session-summary__access-count">
-                                                                    {entity.accessCount}×
-                                                                </span>
-                                                            </li>
-                                                        ))}
-                                                </ul>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
+                        {/* Session Thoughts (quick notes + reflection) */}
+                        <div className="session-summary__section">
+                            <SessionThoughtsSection
+                                quickNotes={quickNotes}
+                                onRemoveNote={onRemoveNote}
+                                reflection={reflection}
+                                onReflectionChange={onReflectionChange}
+                            />
+                        </div>
+
+                        {/* Stars & Wishes (conditionally rendered) */}
+                        {isStarsWishesEnabled && (
+                            <div className="session-summary__section">
+                                <StarsAndWishesSection
+                                    isEnabled={isStarsWishesEnabled}
+                                    stars={stars}
+                                    wishes={wishes}
+                                    onAddStar={onAddStar}
+                                    onRemoveStar={onRemoveStar}
+                                    onAddWish={onAddWish}
+                                    onRemoveWish={onRemoveWish}
+                                />
                             </div>
                         )}
+
+                        {/* Entity Reference Summary */}
+                        <div className="session-summary__section">
+                            <EntityReferenceSummary
+                                entities={referencedEntities}
+                            />
+                        </div>
 
                         {/* Generated Notes Preview */}
                         {summary.generatedNotes && (

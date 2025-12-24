@@ -4,6 +4,15 @@
     padding-top: 8px;
 }
 
+/* Icon Rail — Session tool buttons */
+.session-icon-rail {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-bottom: 16px;
+    padding: 0 4px;
+}
+
 /* Sections */
 .session-section {
     margin-bottom: 32px;

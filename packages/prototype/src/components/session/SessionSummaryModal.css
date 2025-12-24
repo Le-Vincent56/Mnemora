@@ -95,7 +95,19 @@
     color: var(--text-tertiary);
 }
 
-/* Entities Section */
+/* Section wrapper for new components */
+.session-summary__section {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+/* Allow scrollable content area */
+.session-summary__section:last-of-type {
+    overflow-y: auto;
+    flex: 1;
+}
+
+/* Legacy Entities Section (kept for backwards compatibility) */
 .session-summary__entities {
     padding: 20px 24px;
     border-bottom: 1px solid var(--border-subtle);

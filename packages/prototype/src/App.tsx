@@ -5,6 +5,7 @@ import { SessionDashboard } from '@/screens/SessionDashboard';
 import { QuickRefCard } from '@/components/modal/QuickRefCard';
 import { WorldTitlePage } from '@/screens/WorldTitlePage';
 import { PrepModeWorkspace } from '@/screens/PrepModeWorkspace';
+import { ComponentShowcase } from '@/screens/ComponentShowcase';
 import { Entity, getEntityByID } from '@/data/mockData';
 import {
     World,
@@ -15,6 +16,8 @@ import {
 import { SessionSummaryModal } from '@/components/session/SessionSummaryModal';
 import { SessionSummary } from '@/types/session';
 import { useActiveSession } from '@/hooks/useActiveSession';
+import { SafetyTool } from '@/components/session/SafetyToolQuickRef';
+import { QuickNote } from '@/components/session/QuickNoteIconRailItem';
 
 // Types
 type AppMode = 'prep' | 'session';
@@ -24,6 +27,31 @@ interface PrepContext {
     world: World | null;
     campaign: Campaign | null;
 }
+
+// Mock safety tools (prototype data - would come from campaign settings in production)
+const MOCK_SAFETY_TOOLS: SafetyTool[] = [
+    {
+        id: 'xcard',
+        name: 'X-Card',
+        description: 'Any player can "X" a scene to immediately pause, skip, or fade-to-black — no explanation needed.'
+    },
+    {
+        id: 'lines',
+        name: 'Lines & Veils',
+        description: 'Define content that should never appear (Lines) or happen off-screen (Veils).',
+        details: 'Lines: Harm to children, Sexual assault. Veils: Graphic torture, Explicit romance.'
+    },
+    {
+        id: 'opendoor',
+        name: 'Open Door',
+        description: 'Anyone can step away from the table at any time. No questions asked, no pressure to explain.'
+    },
+    {
+        id: 'starswishes',
+        name: 'Stars & Wishes',
+        description: 'At session end, players share what they loved (Stars) and what they hope for (Wishes).'
+    }
+];
 
 // Animation Variants
 const contentVariants = {
@@ -66,6 +94,33 @@ export default function App() {
     const [sessionSummary, setSessionSummary] = useState<SessionSummary | null>(null);
     const activeSessionContext = useActiveSession();
 
+    // Quick Notes State (for session tools)
+    const [quickNotes, setQuickNotes] = useState<QuickNote[]>([]);
+    const [reflection, setReflection] = useState('');
+    const [stars, setStars] = useState<string[]>([]);
+    const [wishes, setWishes] = useState<string[]>([]);
+
+    // Check if Stars & Wishes tool is enabled
+    const isStarsWishesEnabled = MOCK_SAFETY_TOOLS.some(tool => tool.id === 'starswishes');
+
+    // Check for showcase route
+    const [showShowcase, setShowShowcase] = useState(() =>
+        window.location.hash === '#showcase'
+    );
+
+    useEffect(() => {
+        const handleHashChange = () => {
+            setShowShowcase(window.location.hash === '#showcase');
+        };
+        window.addEventListener('hashchange', handleHashChange);
+        return () => window.removeEventListener('hashchange', handleHashChange);
+    }, []);
+
+    // Render showcase if on that route
+    if (showShowcase) {
+        return <ComponentShowcase />;
+    }
+
     // Sync mode to document root (for CSS theme switching)
     useEffect(() => {
         document.documentElement.setAttribute('data-mode', mode);
@@ -101,15 +156,6 @@ export default function App() {
             });
             setPrepState('workspace');
         }
-    }, []);
-
-    /**
-     * Called when user clicks "Create World" on the Title Page.
-     * TODO: Open world creation flow.
-     */
-    const handleCreateWorld = useCallback(() => {
-        console.log('Create world - opening creation flow...');
-        // TODO: Open world creation modal/overlay
     }, []);
 
     /**
@@ -192,8 +238,43 @@ export default function App() {
         if (sessionCampaign) {
             activeSessionContext.startSession(sessionEntity, sessionCampaign);
             setMode('session');
+            // Reset session-specific state
+            setQuickNotes([]);
+            setReflection('');
+            setStars([]);
+            setWishes([]);
         }
     }, [activeSessionContext, prepContext]);
+
+    // Quick Notes Handlers
+    const handleSaveNote = useCallback((content: string, timestamp: Date) => {
+        setQuickNotes(prev => [...prev, {
+            id: String(Date.now()),
+            content,
+            timestamp
+        }]);
+    }, []);
+
+    const handleRemoveNote = useCallback((id: string) => {
+        setQuickNotes(prev => prev.filter(n => n.id !== id));
+    }, []);
+
+    // Stars & Wishes Handlers
+    const handleAddStar = useCallback((star: string) => {
+        setStars(prev => [...prev, star]);
+    }, []);
+
+    const handleRemoveStar = useCallback((index: number) => {
+        setStars(prev => prev.filter((_, i) => i !== index));
+    }, []);
+
+    const handleAddWish = useCallback((wish: string) => {
+        setWishes(prev => [...prev, wish]);
+    }, []);
+
+    const handleRemoveWish = useCallback((index: number) => {
+        setWishes(prev => prev.filter((_, i) => i !== index));
+    }, []);
 
     // Render
     // Prep Mode: Title Page (full screen, no AppShell)
@@ -211,7 +292,6 @@ export default function App() {
                     >
                         <WorldTitlePage
                             onEnterWorkspace={handleEnterWorkspace}
-                            onCreateWorld={handleCreateWorld}
                         />
                     </motion.div>
                 </AnimatePresence>
@@ -250,6 +330,9 @@ export default function App() {
                                 recentEntities={activeSessionContext.recentEntities}
                                 timerVisible={activeSessionContext.timerVisible}
                                 formattedDuration={activeSessionContext.formattedDuration}
+                                safetyTools={MOCK_SAFETY_TOOLS}
+                                quickNotes={quickNotes}
+                                onSaveNote={handleSaveNote}
                                 onEntityClick={openEntity}
                                 onToggleTimerVisibility={activeSessionContext.toggleTimerVisibility}
                                 onToggleTimer={activeSessionContext.toggleTimer}
@@ -310,6 +393,17 @@ export default function App() {
                     console.log('Saving notes to session...');
                     setSessionSummary(null);
                 }}
+                quickNotes={quickNotes}
+                onRemoveNote={handleRemoveNote}
+                reflection={reflection}
+                onReflectionChange={setReflection}
+                isStarsWishesEnabled={isStarsWishesEnabled}
+                stars={stars}
+                wishes={wishes}
+                onAddStar={handleAddStar}
+                onRemoveStar={handleRemoveStar}
+                onAddWish={handleAddWish}
+                onRemoveWish={handleRemoveWish}
             />
         </>
     );
