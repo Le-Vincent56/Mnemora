@@ -21,6 +21,9 @@
 
 .mention-chip:hover {
     background: var(--surface-hover);
+    box-shadow:
+        0 0 0 1px color-mix(in srgb, var(--entity-note) 30%, transparent),
+        0 0 8px color-mix(in srgb, var(--entity-note) 20%, transparent);
 }
 
 .mention-chip:focus-visible {
@@ -37,6 +40,9 @@
 .mention-chip--character:hover {
     border-color: color-mix(in srgb, var(--entity-character) 60%, transparent);
     background: color-mix(in srgb, var(--entity-character) 10%, var(--surface));
+    box-shadow:
+        0 0 0 1px color-mix(in srgb, var(--entity-character) 30%, transparent),
+        0 0 8px color-mix(in srgb, var(--entity-character) 20%, transparent);
 }
 
 .mention-chip--location {
@@ -47,6 +53,9 @@
 .mention-chip--location:hover {
     border-color: color-mix(in srgb, var(--entity-location) 60%, transparent);
     background: color-mix(in srgb, var(--entity-location) 10%, var(--surface));
+    box-shadow:
+        0 0 0 1px color-mix(in srgb, var(--entity-location) 30%, transparent),
+        0 0 8px color-mix(in srgb, var(--entity-location) 20%, transparent);
 }
 
 .mention-chip--faction {
@@ -57,6 +66,9 @@
 .mention-chip--faction:hover {
     border-color: color-mix(in srgb, var(--entity-faction) 60%, transparent);
     background: color-mix(in srgb, var(--entity-faction) 10%, var(--surface));
+    box-shadow:
+        0 0 0 1px color-mix(in srgb, var(--entity-faction) 30%, transparent),
+        0 0 8px color-mix(in srgb, var(--entity-faction) 20%, transparent);
 }
 
 .mention-chip--session {
@@ -67,6 +79,9 @@
 .mention-chip--session:hover {
     border-color: color-mix(in srgb, var(--entity-session) 60%, transparent);
     background: color-mix(in srgb, var(--entity-session) 10%, var(--surface));
+    box-shadow:
+        0 0 0 1px color-mix(in srgb, var(--entity-session) 30%, transparent),
+        0 0 8px color-mix(in srgb, var(--entity-session) 20%, transparent);
 }
 
 .mention-chip--note {
@@ -77,6 +92,9 @@
 .mention-chip--note:hover {
     border-color: color-mix(in srgb, var(--entity-note) 60%, transparent);
     background: color-mix(in srgb, var(--entity-note) 10%, var(--surface));
+    box-shadow:
+        0 0 0 1px color-mix(in srgb, var(--entity-note) 30%, transparent),
+        0 0 8px color-mix(in srgb, var(--entity-note) 20%, transparent);
 }
 
 /* Icon wrapper */

@@ -14,12 +14,25 @@ export function StartSessionAction({ isActive, onStart }: StartSessionActionProp
         }
     };
 
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            e.stopPropagation();
+            if (!isActive) {
+                onStart(e as unknown as React.MouseEvent);
+            }
+        }
+    };
+
     return (
-        <button
+        <span
             className={`start-session-action ${isActive ? 'start-session-action--active' : ''}`}
             onClick={handleClick}
-            title={isActive ? 'This session is active' : 'Start this session'}
-            disabled={isActive}
+            onKeyDown={handleKeyDown}
+            role="button"
+            tabIndex={isActive ? -1 : 0}
+            aria-label={isActive ? 'This session is active' : 'Start this session'}
+            aria-disabled={isActive}
         >
             {isActive ? (
                 <>
@@ -32,6 +45,6 @@ export function StartSessionAction({ isActive, onStart }: StartSessionActionProp
                     <span>Start Session</span>
                 </>
             )}
-        </button>
+        </span>
     );
 }

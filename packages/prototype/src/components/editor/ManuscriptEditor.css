@@ -36,14 +36,14 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 20px 16px;
+    padding: 24px 16px;
     border-bottom: 1px solid var(--border-subtle);
     flex-shrink: 0;
 }
 
 .manuscript-editor__index--collapsed .manuscript-editor__index-header {
     justify-content: center;
-    padding: 20px 12px;
+    padding: 24px 12px;
 }
 
 .manuscript-editor__index-title {
@@ -67,7 +67,7 @@
     color: var(--text-tertiary);
     background: var(--primary-ghost);
     padding: 2px 8px;
-    border-radius: 10px;
+    border-radius: 8px;
 }
 
 .manuscript-editor__toggle-btn {
@@ -79,7 +79,7 @@
     padding: 0;
     background: transparent;
     border: none;
-    border-radius: 6px;
+    border-radius: 4px;
     color: var(--text-tertiary);
     cursor: pointer;
     transition:
@@ -92,12 +92,17 @@
     color: var(--text-secondary);
 }
 
+.manuscript-editor__toggle-btn:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-glow);
+}
+
 /* Index Controls */
 .manuscript-editor__index-controls {
     padding: 12px 16px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
     border-bottom: 1px solid var(--border-subtle);
     flex-shrink: 0;
 }
@@ -143,10 +148,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 6px 10px;
+    padding: 4px 8px;
     background: transparent;
     border: 1px solid var(--border-subtle);
-    border-radius: 6px;
+    border-radius: 4px;
     font-family: var(--font-body);
     font-size: 11px;
     font-weight: 500;
@@ -168,6 +173,11 @@
     background: var(--primary-subtle);
     border-color: var(--primary);
     color: var(--primary);
+}
+
+.manuscript-editor__filter-btn:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-glow);
 }
 
 /* Index List */
@@ -224,6 +234,11 @@
     color: var(--text-primary);
 }
 
+.manuscript-editor__index-item:focus-visible {
+    outline: none;
+    box-shadow: inset var(--shadow-glow);
+}
+
 .manuscript-editor__index-item--active {
     background: color-mix(in srgb, var(--item-color) 8%, transparent);
     color: var(--text-primary);
@@ -262,12 +277,12 @@
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--text-tertiary);
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
 
 .manuscript-editor__create-buttons {
     display: flex;
-    gap: 6px;
+    gap: 8px;
 }
 
 .manuscript-editor__create-btn {
@@ -298,6 +313,11 @@
     transform: translateY(-1px);
 }
 
+.manuscript-editor__create-btn:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-glow);
+}
+
 /* Collapsed Index Icons */
 .manuscript-editor__index-collapsed-icons {
     display: flex;
@@ -319,7 +339,7 @@
     padding: 0;
     background: transparent;
     border: none;
-    border-radius: 6px;
+    border-radius: 4px;
     color: var(--text-tertiary);
     cursor: pointer;
     transition:
@@ -330,6 +350,11 @@
 .manuscript-editor__collapsed-type:hover {
     background: color-mix(in srgb, var(--type-color) 12%, transparent);
     color: var(--type-color);
+}
+
+.manuscript-editor__collapsed-type:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-glow);
 }
 
 .manuscript-editor__collapsed-count {
@@ -343,7 +368,7 @@
     font-weight: 600;
     color: white;
     background: var(--type-color);
-    border-radius: 7px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -491,12 +516,12 @@
 .manuscript-editor__header-actions {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     flex-shrink: 0;
 }
 
 .manuscript-editor__action-btn {
-    padding: 10px 20px;
+    padding: 8px 16px;
     background: var(--primary);
     border: none;
     border-radius: 8px;
@@ -521,6 +546,11 @@
     cursor: not-allowed;
 }
 
+.manuscript-editor__action-btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 40%, transparent);
+}
+
 .manuscript-editor__close-btn {
     display: flex;
     align-items: center;
@@ -539,6 +569,11 @@
 .manuscript-editor__close-btn:hover {
     background: var(--primary-ghost);
     color: var(--text-primary);
+}
+
+.manuscript-editor__close-btn:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-glow);
 }
 
 /* Content Area */
@@ -578,7 +613,7 @@
 }
 
 .manuscript-editor__section--dimmed {
-    opacity: 0.6;
+    opacity: 0.75;
 }
 
 .manuscript-editor__section--type-specific::before {
@@ -642,11 +677,11 @@
 .manuscript-editor__delete-btn {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 8px 14px;
+    gap: 8px;
+    padding: 8px 16px;
     background: transparent;
     border: none;
-    border-radius: 6px;
+    border-radius: 4px;
     font-family: var(--font-body);
     font-size: 13px;
     color: var(--text-tertiary);
@@ -657,6 +692,11 @@
 .manuscript-editor__delete-btn:hover {
     background: rgba(239, 68, 68, 0.08);
     color: #dc2626;
+}
+
+.manuscript-editor__delete-btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25);
 }
 
 .manuscript-editor__shortcut-hint {
@@ -730,6 +770,99 @@
     }
 }
 
+/* Mobile view toggle buttons - hidden by default */
+.manuscript-editor__mobile-toggle,
+.manuscript-editor__mobile-back {
+    display: none;
+}
+
+/* Mobile-specific styles (≤600px) */
+@media (max-width: 600px) {
+    /* Show mobile toggle */
+    .manuscript-editor__mobile-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        padding: 0;
+        margin-right: 8px;
+        background: var(--primary-ghost);
+        border: 1px solid var(--border-subtle);
+        border-radius: 8px;
+        color: var(--text-secondary);
+        cursor: pointer;
+        flex-shrink: 0;
+        transition:
+            background-color var(--timing-fast) var(--easing-organic),
+            border-color var(--timing-fast) var(--easing-organic);
+    }
+
+    .manuscript-editor__mobile-toggle:hover {
+        background: var(--primary-subtle);
+        border-color: var(--primary);
+    }
+
+    .manuscript-editor__mobile-toggle:focus-visible {
+        outline: none;
+        box-shadow: var(--shadow-glow);
+    }
+
+    /* Mobile back button in index header */
+    .manuscript-editor__mobile-back {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        background: var(--primary-ghost);
+        border: 1px solid var(--border-subtle);
+        border-radius: 6px;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition:
+            background-color var(--timing-fast) var(--easing-organic),
+            border-color var(--timing-fast) var(--easing-organic);
+    }
+
+    .manuscript-editor__mobile-back:hover {
+        background: var(--primary-subtle);
+        border-color: var(--primary);
+    }
+
+    .manuscript-editor__mobile-back:focus-visible {
+        outline: none;
+        box-shadow: var(--shadow-glow);
+    }
+
+    /* Hide desktop toggle on mobile */
+    .manuscript-editor__toggle-btn {
+        display: none;
+    }
+
+    /* When viewing index on mobile */
+    .manuscript-editor--mobile-index .manuscript-editor__index {
+        position: relative;
+        width: 100% !important;
+        box-shadow: none;
+    }
+
+    .manuscript-editor--mobile-index .manuscript-editor__spine,
+    .manuscript-editor--mobile-index .manuscript-editor__workspace {
+        display: none;
+    }
+
+    /* When viewing editor on mobile (default) */
+    .manuscript-editor--mobile-editor .manuscript-editor__index {
+        display: none;
+    }
+
+    .manuscript-editor--mobile-editor .manuscript-editor__spine {
+        display: none;
+    }
+}
+
 /* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
     .manuscript-editor__section {
@@ -738,5 +871,29 @@
 
     .manuscript-editor__status-dot {
         animation: none !important;
+    }
+
+    /* Disable all transitions */
+    .manuscript-editor,
+    .manuscript-editor__index,
+    .manuscript-editor__workspace,
+    .manuscript-editor__toggle-btn,
+    .manuscript-editor__filter-btn,
+    .manuscript-editor__create-btn,
+    .manuscript-editor__collapsed-type,
+    .manuscript-editor__index-item,
+    .manuscript-editor__item-indicator,
+    .manuscript-editor__action-btn,
+    .manuscript-editor__close-btn,
+    .manuscript-editor__delete-btn,
+    .manuscript-editor__mobile-toggle,
+    .manuscript-editor__mobile-back {
+        transition: none !important;
+    }
+
+    /* Disable transforms on hover */
+    .manuscript-editor__create-btn:hover,
+    .manuscript-editor__action-btn:active:not(:disabled) {
+        transform: none !important;
     }
 }

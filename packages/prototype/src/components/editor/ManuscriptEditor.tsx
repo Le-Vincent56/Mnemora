@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import {
-    X, Lock, Trash2, Search, PanelLeftClose, PanelLeft
+    X, Lock, Trash2, Search, PanelLeftClose, PanelLeft, BookOpen, FileText
 } from 'lucide-react';
 import { Entity, EntityType } from '@/data/mockData';
 import { EntityTypeIcon } from '@/components/entity/EntityTypeIcon';
@@ -62,10 +62,10 @@ const pageVariants = {
 };
 
 const indexItemVariants = {
-    hidden: { opacity: 0, x: -8 },
+    hidden: { opacity: 0, y: 8 },
     visible: {
         opacity: 1,
-        x: 0,
+        y: 0,
         transition: { duration: 0.25, ease: [0.23, 1, 0.32, 1] }
     }
 };
@@ -86,6 +86,12 @@ export function ManuscriptEditor({
     const [isIndexCollapsed, setIsIndexCollapsed] = useState(false);
     const [indexSearch, setIndexSearch] = useState('');
     const [indexTypeFilter, setIndexTypeFilter] = useState<EntityType | 'all'>('all');
+
+    // Mobile view state: 'index' or 'editor'
+    const [mobileView, setMobileView] = useState<'index' | 'editor'>('editor');
+
+    // Reduced motion preference
+    const prefersReducedMotion = useReducedMotion();
 
     // Form state
     const [formState, setFormState] = useState<FormState>({
@@ -392,11 +398,11 @@ export function ManuscriptEditor({
         <AnimatePresence>
             {entity && (
                 <motion.div
-                    className="manuscript-editor"
-                    variants={pageVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
+                    className={`manuscript-editor manuscript-editor--mobile-${mobileView}`}
+                    variants={prefersReducedMotion ? undefined : pageVariants}
+                    initial={prefersReducedMotion ? false : "hidden"}
+                    animate={prefersReducedMotion ? false : "visible"}
+                    exit={prefersReducedMotion ? undefined : "exit"}
                 >
                     {/* Left Page: Index */}
                     <motion.aside
@@ -404,7 +410,9 @@ export function ManuscriptEditor({
                         initial={false}
                         animate={{
                             width: isIndexCollapsed ? 48 : 280,
-                            transition: { duration: 0.3, ease: [0.23, 1, 0.32, 1] }
+                            transition: prefersReducedMotion
+                                ? { duration: 0 }
+                                : { duration: 0.3, ease: [0.23, 1, 0.32, 1] }
                         }}
                     >
                         {/* Index Header */}
@@ -412,14 +420,23 @@ export function ManuscriptEditor({
                             {!isIndexCollapsed && (
                                 <motion.div
                                     className="manuscript-editor__index-title"
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ delay: 0.1 }}
+                                    initial={prefersReducedMotion ? false : { opacity: 0 }}
+                                    animate={prefersReducedMotion ? false : { opacity: 1 }}
+                                    transition={prefersReducedMotion ? undefined : { delay: 0.1 }}
                                 >
                                     <span className="manuscript-editor__index-label">Index</span>
                                     <span className="manuscript-editor__index-count">{entities.length}</span>
                                 </motion.div>
                             )}
+                            {/* Mobile: show editor toggle */}
+                            <button
+                                className="manuscript-editor__mobile-back"
+                                onClick={() => setMobileView('editor')}
+                                aria-label="Back to editor"
+                            >
+                                <FileText size={18} />
+                            </button>
+                            {/* Desktop: collapse/expand toggle */}
                             <button
                                 className="manuscript-editor__toggle-btn"
                                 onClick={() => setIsIndexCollapsed(!isIndexCollapsed)}
@@ -433,9 +450,9 @@ export function ManuscriptEditor({
                         {!isIndexCollapsed && (
                             <motion.div
                                 className="manuscript-editor__index-controls"
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                transition={{ delay: 0.15 }}
+                                initial={prefersReducedMotion ? false : { opacity: 0 }}
+                                animate={prefersReducedMotion ? false : { opacity: 1 }}
+                                transition={prefersReducedMotion ? undefined : { delay: 0.15 }}
                             >
                                 <div className="manuscript-editor__index-search">
                                     <Search size={14} />
@@ -471,9 +488,9 @@ export function ManuscriptEditor({
                         {!isIndexCollapsed && (
                             <motion.div
                                 className="manuscript-editor__index-list"
-                                initial="hidden"
-                                animate="visible"
-                                variants={{
+                                initial={prefersReducedMotion ? false : "hidden"}
+                                animate={prefersReducedMotion ? false : "visible"}
+                                variants={prefersReducedMotion ? undefined : {
                                     visible: { transition: { staggerChildren: 0.02, delayChildren: 0.2 } }
                                 }}
                             >
@@ -495,7 +512,7 @@ export function ManuscriptEditor({
                                                         key={e.id}
                                                         className={`manuscript-editor__index-item ${e.id === entity.id ? 'manuscript-editor__index-item--active' : ''}`}
                                                         onClick={() => handleEntitySelect(e)}
-                                                        variants={indexItemVariants}
+                                                        variants={prefersReducedMotion ? undefined : indexItemVariants}
                                                         style={{ '--item-color': `var(--entity-${e.type})` } as React.CSSProperties}
                                                     >
                                                         <span className="manuscript-editor__item-indicator" />
@@ -512,7 +529,7 @@ export function ManuscriptEditor({
                                             key={e.id}
                                             className={`manuscript-editor__index-item ${e.id === entity.id ? 'manuscript-editor__index-item--active' : ''}`}
                                             onClick={() => handleEntitySelect(e)}
-                                            variants={indexItemVariants}
+                                            variants={prefersReducedMotion ? undefined : indexItemVariants}
                                             style={{ '--item-color': `var(--entity-${e.type})` } as React.CSSProperties}
                                         >
                                             <EntityTypeIcon type={e.type} size={14} />
@@ -580,6 +597,14 @@ export function ManuscriptEditor({
                         {/* Workspace Header */}
                         <header className="manuscript-editor__header">
                             <div className="manuscript-editor__header-main">
+                                {/* Mobile toggle button */}
+                                <button
+                                    className="manuscript-editor__mobile-toggle"
+                                    onClick={() => setMobileView(mobileView === 'index' ? 'editor' : 'index')}
+                                    aria-label={mobileView === 'index' ? 'Show editor' : 'Show index'}
+                                >
+                                    {mobileView === 'index' ? <FileText size={20} /> : <BookOpen size={20} />}
+                                </button>
                                 <div className="manuscript-editor__entity-icon">
                                     <EntityTypeIcon type={entity.type} size={32} />
                                 </div>

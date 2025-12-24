@@ -173,6 +173,7 @@ const dropdownVariants = {
         transition: {
             duration: 0.2,
             ease: [0.23, 1, 0.32, 1],
+            staggerChildren: 0.04,
         },
     },
     exit: {
@@ -180,6 +181,24 @@ const dropdownVariants = {
         y: 8,
         transition: {
             duration: 0.15,
+        },
+    },
+};
+
+/**
+ * Staggered item animation for dropdown items.
+ */
+const dropdownItemVariants = {
+    hidden: {
+        opacity: 0,
+        y: 8,
+    },
+    visible: {
+        opacity: 1,
+        y: 0,
+        transition: {
+            duration: 0.2,
+            ease: [0.23, 1, 0.32, 1],
         },
     },
 };
@@ -417,17 +436,19 @@ export const MentionTextArea = forwardRef<HTMLDivElement, MentionTextAreaProps>(
                             aria-label="Entity suggestions"
                         >
                             {filteredEntities.slice(0, 8).map((entity, index) => (
-                                <button
+                                <motion.button
                                     key={entity.id}
                                     type="button"
                                     className={`mention-dropdown__item ${index === selectedIndex
                                             ? 'mention-dropdown__item--selected'
                                             : ''
                                         }`}
+                                    data-type={entity.type}
                                     onClick={() => insertMention(entity)}
                                     onMouseEnter={() => setSelectedIndex(index)}
                                     role="option"
                                     aria-selected={index === selectedIndex}
+                                    variants={dropdownItemVariants}
                                 >
                                     <EntityTypeIcon type={entity.type} size={14} />
                                     <span className="mention-dropdown__item-name">
@@ -436,7 +457,7 @@ export const MentionTextArea = forwardRef<HTMLDivElement, MentionTextAreaProps>(
                                     <span className="mention-dropdown__item-type">
                                         {entity.type}
                                     </span>
-                                </button>
+                                </motion.button>
                             ))}
                         </motion.div>
                     )}
