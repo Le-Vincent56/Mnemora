@@ -18,6 +18,7 @@ import { SessionSummary } from '@/types/session';
 import { useActiveSession } from '@/hooks/useActiveSession';
 import { SafetyTool } from '@/components/session/SafetyToolQuickRef';
 import { QuickNote } from '@/components/session/QuickNoteIconRailItem';
+import { SessionShortcutsProvider } from '@/components/session/SessionShortcutsProvider';
 
 // Types
 type AppMode = 'prep' | 'session';
@@ -325,30 +326,36 @@ export default function App() {
                         style={{ height: '100%' }}
                     >
                         {mode === 'session' ? (
-                            <SessionDashboard
-                                activeSession={activeSessionContext.activeSession}
-                                recentEntities={activeSessionContext.recentEntities}
-                                timerVisible={activeSessionContext.timerVisible}
-                                formattedDuration={activeSessionContext.formattedDuration}
+                            <SessionShortcutsProvider
+                                isSessionActive={!!activeSessionContext.activeSession}
                                 safetyTools={MOCK_SAFETY_TOOLS}
-                                quickNotes={quickNotes}
-                                onSaveNote={handleSaveNote}
-                                onEntityClick={openEntity}
-                                onToggleTimerVisibility={activeSessionContext.toggleTimerVisibility}
-                                onToggleTimer={activeSessionContext.toggleTimer}
-                                onResetTimer={activeSessionContext.resetTimer}
-                                onClearRecent={activeSessionContext.clearRecent}
-                                onSwitchSession={(sessionEntity) => {
-                                    activeSessionContext.switchSession(sessionEntity, activeSessionContext.activeSession!.campaign);
-                                }}
-                                onEndSession={() => {
-                                    const summary = activeSessionContext.endSession();
-                                    if (summary) {
-                                        setSessionSummary(summary);
-                                    }
-                                }}
-                                onGoToPrep={() => handleModeChange('prep')}
-                            />
+                                onSaveQuickNote={handleSaveNote}
+                            >
+                                <SessionDashboard
+                                    activeSession={activeSessionContext.activeSession}
+                                    recentEntities={activeSessionContext.recentEntities}
+                                    timerVisible={activeSessionContext.timerVisible}
+                                    formattedDuration={activeSessionContext.formattedDuration}
+                                    safetyTools={MOCK_SAFETY_TOOLS}
+                                    quickNotes={quickNotes}
+                                    onSaveNote={handleSaveNote}
+                                    onEntityClick={openEntity}
+                                    onToggleTimerVisibility={activeSessionContext.toggleTimerVisibility}
+                                    onToggleTimer={activeSessionContext.toggleTimer}
+                                    onResetTimer={activeSessionContext.resetTimer}
+                                    onClearRecent={activeSessionContext.clearRecent}
+                                    onSwitchSession={(sessionEntity) => {
+                                        activeSessionContext.switchSession(sessionEntity, activeSessionContext.activeSession!.campaign)
+                                    }}
+                                    onEndSession={() => {
+                                        const summary = activeSessionContext.endSession()
+                                        if (summary) {
+                                            setSessionSummary(summary)
+                                        }
+                                    }}
+                                    onGoToPrep={() => handleModeChange('prep')}
+                                />
+                            </SessionShortcutsProvider>
                         ) : (
                             // Prep Mode Workspace
                             prepContext.world && (

@@ -1,0 +1,373 @@
+/* Modal overlay */
+.lv-editor {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-4);
+    background: rgba(28, 25, 23, 0.5);
+    backdrop-filter: blur(4px);
+}
+
+/* Modal card */
+.lv-editor__card {
+    width: 100%;
+    max-width: 640px;
+    max-height: calc(100vh - var(--space-8));
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-8);
+    background: var(--surface);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+}
+
+/* Header */
+.lv-editor__header {
+    margin-bottom: var(--space-6);
+}
+
+.lv-editor__title {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    font-weight: 600;
+    font-variation-settings: 'opsz' 24, 'SOFT' 15, 'WONK' 1;
+    letter-spacing: -0.015em;
+    color: var(--text-primary);
+    margin: 0 0 var(--space-2);
+}
+
+.lv-editor__description {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* Two-column grid */
+.lv-editor__columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+/* Column */
+.lv-editor__column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--canvas);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-subtle);
+    min-height: 200px;
+}
+
+.lv-editor__column--line {
+    --column-accent: #dc2626;
+    /* Red for hard limits */
+}
+
+.lv-editor__column--veil {
+    --column-accent: var(--primary);
+}
+
+/* Column header */
+.lv-editor__column-header {
+    margin-bottom: var(--space-2);
+}
+
+.lv-editor__column-heading {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-display);
+    font-size: var(--text-base);
+    font-weight: 600;
+    font-variation-settings: 'opsz' 16, 'SOFT' 10, 'WONK' 0;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.lv-editor__column-icon {
+    color: var(--column-accent);
+}
+
+.lv-editor__column-subheading {
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    margin: var(--space-1) 0 0;
+    line-height: 1.4;
+}
+
+/* Items list */
+.lv-editor__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    flex: 1;
+}
+
+.lv-editor__empty {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-style: italic;
+    color: var(--text-tertiary);
+    text-align: center;
+    padding: var(--space-4);
+}
+
+.lv-editor__item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    border-left: 2px solid var(--column-accent);
+}
+
+.lv-editor__item-text {
+    flex: 1;
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    line-height: 1.4;
+    color: var(--text-primary);
+    word-break: break-word;
+}
+
+.lv-editor__item-remove {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--text-tertiary);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    opacity: 0;
+    transition:
+        opacity 0.15s ease,
+        color 0.15s ease,
+        background-color 0.15s ease;
+}
+
+.lv-editor__item:hover .lv-editor__item-remove,
+.lv-editor__item-remove:focus-visible {
+    opacity: 1;
+}
+
+.lv-editor__item-remove:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+}
+
+.lv-editor__item-remove:focus-visible {
+    outline: none;
+    opacity: 1;
+    box-shadow:
+        0 0 0 2px var(--surface),
+        0 0 0 4px var(--primary);
+}
+
+/* Add button */
+.lv-editor__add {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    margin-top: auto;
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--column-accent);
+    background: transparent;
+    border: 1px dashed var(--column-accent);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    opacity: 0.7;
+    transition:
+        opacity 0.15s ease,
+        background-color 0.15s ease;
+}
+
+.lv-editor__add:hover {
+    opacity: 1;
+    background: rgba(92, 122, 138, 0.04);
+}
+
+.lv-editor__add:focus-visible {
+    outline: none;
+    opacity: 1;
+    box-shadow:
+        0 0 0 3px rgba(92, 122, 138, 0.2),
+        0 0 0 6px rgba(92, 122, 138, 0.08);
+}
+
+/* Input wrapper */
+.lv-editor__input-wrapper {
+    margin-top: auto;
+}
+
+.lv-editor__input {
+    width: 100%;
+    padding: var(--space-2) var(--space-3);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--text-primary);
+    background: var(--surface);
+    border: 1px solid var(--column-accent);
+    border-radius: var(--radius-md);
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.lv-editor__input::placeholder {
+    color: var(--text-tertiary);
+    font-style: italic;
+}
+
+.lv-editor__input:focus {
+    outline: none;
+    box-shadow:
+        0 0 0 3px rgba(92, 122, 138, 0.2),
+        0 0 12px rgba(92, 122, 138, 0.1);
+}
+
+/* Actions */
+.lv-editor__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border-subtle);
+}
+
+.lv-editor__btn {
+    padding: var(--space-3) var(--space-5);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        transform 0.1s ease,
+        opacity 0.15s ease;
+}
+
+.lv-editor__btn:active {
+    transform: scale(0.98);
+}
+
+.lv-editor__btn:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-glow);
+}
+
+.lv-editor__btn--ghost {
+    background: transparent;
+    color: var(--text-tertiary);
+}
+
+.lv-editor__btn--ghost:hover {
+    color: var(--text-secondary);
+}
+
+.lv-editor__btn--primary {
+    background: var(--primary);
+    color: white;
+}
+
+.lv-editor__btn--primary:hover {
+    background: var(--primary-hover);
+}
+
+/* Screen reader only */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Responsive: stack columns on mobile */
+@media (max-width: 600px) {
+    .lv-editor__card {
+        padding: var(--space-6);
+        max-height: calc(100vh - var(--space-4));
+    }
+
+    .lv-editor__columns {
+        grid-template-columns: 1fr;
+        gap: var(--space-3);
+    }
+
+    .lv-editor__column {
+        min-height: 150px;
+    }
+
+    .lv-editor__item-remove {
+        opacity: 1;
+        width: 28px;
+        height: 28px;
+    }
+
+    .lv-editor__add {
+        padding: var(--space-3);
+        min-height: 44px;
+    }
+
+    .lv-editor__input {
+        padding: var(--space-3);
+        min-height: 44px;
+    }
+
+    .lv-editor__actions {
+        flex-direction: column-reverse;
+    }
+
+    .lv-editor__btn {
+        width: 100%;
+        padding: var(--space-4);
+        min-height: 44px;
+    }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+
+    .lv-editor,
+    .lv-editor__card,
+    .lv-editor__item,
+    .lv-editor__item-remove,
+    .lv-editor__add,
+    .lv-editor__input,
+    .lv-editor__btn {
+        transition: none;
+    }
+}
