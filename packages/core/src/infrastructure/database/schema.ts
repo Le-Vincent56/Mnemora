@@ -1,4 +1,4 @@
-export const SCHEMA_VERSION = 4;
+export const SCHEMA_VERSION = 5;
 
 export const CREATE_ENTITIES_TABLE = `
     CREATE TABLE IF NOT EXISTS entities (
@@ -185,4 +185,12 @@ export const CREATE_SESSION_FEEDBACK_INDEXES = `
 
 export const ALTER_ENTITIES_ADD_DURATION = `
     ALTER TABLE entities ADD COLUMN duration INTEGER;
+`;
+
+// ============================================================================
+// Schema Version 5: Type-specific fields
+// ============================================================================
+
+export const ALTER_ENTITIES_ADD_TYPE_SPECIFIC_FIELDS = `
+    ALTER TABLE entities ADD COLUMN type_specific_fields TEXT DEFAULT '{}';
 `;

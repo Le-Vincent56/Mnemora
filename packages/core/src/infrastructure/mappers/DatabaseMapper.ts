@@ -11,6 +11,7 @@ import { Name } from '../../domain/value-objects/Name';
 import { RichText } from '../../domain/value-objects/RichText';
 import { TagCollection } from '../../domain/value-objects/TagCollection';
 import { Timestamps } from '../../domain/value-objects/Timestamps';
+import { TypeSpecificFieldsWrapper } from '../../domain/value-objects/TypeSpecificFields';
 
 export class DatabaseMapper {
     /**
@@ -63,6 +64,7 @@ export class DatabaseMapper {
                     campaign_id: char.campaignID?.toString() ?? null,
                     forked_from: char.forkedFrom?.toString() ?? null,
                     session_date: null,
+                    type_specific_fields: char.typeSpecificFieldsWrapper.toJSON(),
                 };
             }
             case EntityType.LOCATION: {
@@ -80,6 +82,7 @@ export class DatabaseMapper {
                     campaign_id: loc.campaignID?.toString() ?? null,
                     forked_from: loc.forkedFrom?.toString() ?? null,
                     session_date: null,
+                    type_specific_fields: loc.typeSpecificFieldsWrapper.toJSON(),
                 };
             }
             case EntityType.FACTION: {
@@ -97,6 +100,7 @@ export class DatabaseMapper {
                     campaign_id: fac.campaignID?.toString() ?? null,
                     forked_from: fac.forkedFrom?.toString() ?? null,
                     session_date: null,
+                    type_specific_fields: fac.typeSpecificFieldsWrapper.toJSON(),
                 };
             }
             case EntityType.SESSION: {
@@ -114,6 +118,7 @@ export class DatabaseMapper {
                     campaign_id: sess.campaignID.toString(),  // Always non-null for Session
                     forked_from: null,
                     session_date: sess.sessionDate?.toISOString() ?? null,
+                    type_specific_fields: sess.typeSpecificFieldsWrapper.toJSON(),
                 };
             }
             case EntityType.NOTE: {
@@ -131,6 +136,7 @@ export class DatabaseMapper {
                     campaign_id: note.campaignID.toString(),  // Always non-null for Note
                     forked_from: null,
                     session_date: null,
+                    type_specific_fields: note.typeSpecificFieldsWrapper.toJSON(),
                 };
             }
             default:
@@ -149,6 +155,10 @@ export class DatabaseMapper {
             campaignID: row.campaign_id ? EntityID.fromStringOrThrow(row.campaign_id) : null,
             forkedFrom: row.forked_from ? EntityID.fromStringOrThrow(row.forked_from) : null,
             timestamps: Timestamps.fromStringsOrThrow(row.created_at, row.modified_at),
+            typeSpecificFields: TypeSpecificFieldsWrapper.fromJSON(
+                EntityType.CHARACTER,
+                row.type_specific_fields
+            ),
         };
     }
 
@@ -163,6 +173,10 @@ export class DatabaseMapper {
             campaignID: row.campaign_id ? EntityID.fromStringOrThrow(row.campaign_id) : null,
             forkedFrom: row.forked_from ? EntityID.fromStringOrThrow(row.forked_from) : null,
             timestamps: Timestamps.fromStringsOrThrow(row.created_at, row.modified_at),
+            typeSpecificFields: TypeSpecificFieldsWrapper.fromJSON(
+                EntityType.LOCATION,
+                row.type_specific_fields
+            ),
         };
     }
 
@@ -177,6 +191,10 @@ export class DatabaseMapper {
             campaignID: row.campaign_id ? EntityID.fromStringOrThrow(row.campaign_id) : null,
             forkedFrom: row.forked_from ? EntityID.fromStringOrThrow(row.forked_from) : null,
             timestamps: Timestamps.fromStringsOrThrow(row.created_at, row.modified_at),
+            typeSpecificFields: TypeSpecificFieldsWrapper.fromJSON(
+                EntityType.FACTION,
+                row.type_specific_fields
+            ),
         };
     }
 
@@ -195,6 +213,10 @@ export class DatabaseMapper {
             quickNotes: [],
             starsAndWishes: null,
             duration: (row as EntityRow & { duration?: number }).duration ?? null,
+            typeSpecificFields: TypeSpecificFieldsWrapper.fromJSON(
+                EntityType.SESSION,
+                row.type_specific_fields
+            ),
         };
     }
 
@@ -207,6 +229,10 @@ export class DatabaseMapper {
             worldID: EntityID.fromStringOrThrow(row.world_id),
             campaignID: EntityID.fromStringOrThrow(row.campaign_id!),  // Never null for Note
             timestamps: Timestamps.fromStringsOrThrow(row.created_at, row.modified_at),
+            typeSpecificFields: TypeSpecificFieldsWrapper.fromJSON(
+                EntityType.NOTE,
+                row.type_specific_fields
+            ),
         };
     }
 }

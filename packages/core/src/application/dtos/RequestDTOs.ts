@@ -79,6 +79,7 @@ export interface UpdateEntityRequest {
     readonly notes?: string;                // For Session
     readonly sessionDate?: string | null;   // For Session
     readonly tags?: readonly string[];
+    readonly typeSpecificFields?: Record<string, string | undefined>;
 }
 
 /**

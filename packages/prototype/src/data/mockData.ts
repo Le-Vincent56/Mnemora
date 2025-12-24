@@ -12,9 +12,9 @@ export interface Entity {
         name: string;
         type: EntityType;
     }>;
-    // Metadata
     createdAt: string;
     modifiedAt: string;
+    typeSpecificFields?: Record<string, string>;
 }
 
 // "The Sundered Realm" demo world (from ui-prototype.md)
@@ -33,6 +33,12 @@ export const mockEntities: Entity[] = [
         ],
         createdAt: '2025-12-15T10:00:00Z',
         modifiedAt: '2025-12-19T14:30:00Z',
+        typeSpecificFields: {
+            appearance: 'Stocky dwarven build, braided gray beard, missing right eye',
+            personality: 'Gruff exterior hiding a warm heart. Protective of young adventurers.',
+            motivation: 'Seeking redemption for past sins. Wants to prevent others from making his mistakes.',
+            voiceMannerisms: 'Deep gravelly voice. Says "lad" and "lass" frequently. Tugs at beard when thinking.',
+        },
     },
     {
         id: 'char-2',

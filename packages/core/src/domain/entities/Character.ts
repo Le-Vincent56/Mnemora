@@ -7,6 +7,7 @@ import { TagCollection } from "../value-objects/TagCollection";
 import { Timestamps } from "../value-objects/Timestamps";
 import { BaseEntity } from "./BaseEntity";
 import { EntityType } from "./EntityType";
+import { TypeSpecificFieldsWrapper, CharacterFields } from "../value-objects/TypeSpecificFields";
 
 /**
  * Props required to create a new Character.
@@ -30,6 +31,7 @@ export interface CharacterProps {
     campaignID: EntityID | null;
     forkedFrom: EntityID | null;
     timestamps: Timestamps;
+    typeSpecificFields?: TypeSpecificFieldsWrapper<EntityType.CHARACTER>;
 }
 
 /**
@@ -45,33 +47,34 @@ export class Character extends BaseEntity {
     private readonly _worldID: EntityID;
     private readonly _campaignID: EntityID | null;
     private readonly _forkedFrom: EntityID | null;
+    private _typeSpecificFields: TypeSpecificFieldsWrapper<EntityType.CHARACTER>;
 
     get name(): Name {
         return this._name;
     }
 
     get description(): RichText {
-      return this._description;
+        return this._description;
     }
 
     get secrets(): RichText {
-      return this._secrets;
+        return this._secrets;
     }
 
     get tags(): TagCollection {
-      return this._tags;
+        return this._tags;
     }
 
     get worldID(): EntityID {
-      return this._worldID;
+        return this._worldID;
     }
 
     get campaignID(): EntityID | null {
-      return this._campaignID;
+        return this._campaignID;
     }
 
     get forkedFrom(): EntityID | null {
-      return this._forkedFrom;
+        return this._forkedFrom;
     }
 
     /**
@@ -88,6 +91,20 @@ export class Character extends BaseEntity {
         return this._forkedFrom !== null;
     }
 
+    /**
+     * Type-specific fields for this character.
+     */
+    get typeSpecificFields(): CharacterFields {
+        return this._typeSpecificFields.toFields();
+    }
+
+    /**
+     * Returns the raw wrapper for persistence.
+     */
+    get typeSpecificFieldsWrapper(): TypeSpecificFieldsWrapper<EntityType.CHARACTER> {
+        return this._typeSpecificFields;
+    }
+
     private constructor(props: CharacterProps) {
         super(props.id, EntityType.CHARACTER, props.timestamps);
         this._name = props.name;
@@ -97,6 +114,7 @@ export class Character extends BaseEntity {
         this._worldID = props.worldID;
         this._campaignID = props.campaignID;
         this._forkedFrom = props.forkedFrom;
+        this._typeSpecificFields = props.typeSpecificFields ?? TypeSpecificFieldsWrapper.createForType(EntityType.CHARACTER);
     }
 
     /**
@@ -104,7 +122,7 @@ export class Character extends BaseEntity {
      */
     static create(props: CreateCharacterProps): Result<Character, ValidationError> {
         const nameResult = Name.create(props.name);
-        if(nameResult.isFailure) {
+        if (nameResult.isFailure) {
             return Result.fail(nameResult.error);
         }
 
@@ -117,7 +135,8 @@ export class Character extends BaseEntity {
             worldID: props.worldID,
             campaignID: props.campaignID ?? null,
             forkedFrom: null,
-            timestamps: Timestamps.now()
+            timestamps: Timestamps.now(),
+            typeSpecificFields: TypeSpecificFieldsWrapper.createForType(EntityType.CHARACTER),
         });
 
         return Result.ok(character);
@@ -136,7 +155,7 @@ export class Character extends BaseEntity {
      */
     rename(newName: string): Result<void, ValidationError> {
         const nameResult = Name.create(newName);
-        if(nameResult.isFailure) {
+        if (nameResult.isFailure) {
             return Result.fail(nameResult.error);
         }
 
@@ -166,7 +185,7 @@ export class Character extends BaseEntity {
      */
     setTags(tags: string[]): Result<void, ValidationError> {
         const tagsResult = TagCollection.fromArray(tags);
-        if(tagsResult.isFailure) {
+        if (tagsResult.isFailure) {
             return Result.fail(tagsResult.error);
         }
 
@@ -180,7 +199,7 @@ export class Character extends BaseEntity {
      */
     addTag(tag: string): Result<void, ValidationError> {
         const tagsResult = this._tags.add(tag);
-        if(tagsResult.isFailure) {
+        if (tagsResult.isFailure) {
             return Result.fail(tagsResult.error);
         }
 
@@ -211,7 +230,31 @@ export class Character extends BaseEntity {
             worldID: this._worldID,
             campaignID: intoCampaign,
             forkedFrom: this.id,
-            timestamps: Timestamps.now()
+            timestamps: Timestamps.now(),
+            typeSpecificFields: this._typeSpecificFields,
         });
+    }
+
+    /**
+     * Sets a type-specific field value.
+     * Returns failure if the field name is not valid for characters.
+     */
+    setTypeSpecificField(field: string, value: string | undefined): Result<void, ValidationError> {
+        const updated = this._typeSpecificFields.setField(field, value);
+        if (updated === null) {
+            return Result.fail(
+                ValidationError.invalid('field', `'${field}' is not a valid character field`)
+            );
+        }
+        this._typeSpecificFields = updated;
+        this.touch();
+        return Result.okVoid();
+    }
+
+    /**
+     * Gets a type-specific field value by name.
+     */
+    getTypeSpecificField(field: keyof Omit<CharacterFields, 'type'>): string | undefined {
+        return this._typeSpecificFields.getField(field);
     }
 }

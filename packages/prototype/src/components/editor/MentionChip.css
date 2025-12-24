@@ -1,0 +1,137 @@
+.mention-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 6px 2px 4px;
+    margin: 0 2px;
+    background: var(--surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 4px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+    vertical-align: baseline;
+}
+
+.mention-chip:hover {
+    background: var(--surface-hover);
+}
+
+.mention-chip:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--primary-subtle), 0 0 0 4px var(--primary);
+}
+
+/* Entity type-specific border colors */
+.mention-chip--character {
+    border-color: color-mix(in srgb, var(--entity-character) 40%, transparent);
+    background: color-mix(in srgb, var(--entity-character) 6%, var(--surface));
+}
+
+.mention-chip--character:hover {
+    border-color: color-mix(in srgb, var(--entity-character) 60%, transparent);
+    background: color-mix(in srgb, var(--entity-character) 10%, var(--surface));
+}
+
+.mention-chip--location {
+    border-color: color-mix(in srgb, var(--entity-location) 40%, transparent);
+    background: color-mix(in srgb, var(--entity-location) 6%, var(--surface));
+}
+
+.mention-chip--location:hover {
+    border-color: color-mix(in srgb, var(--entity-location) 60%, transparent);
+    background: color-mix(in srgb, var(--entity-location) 10%, var(--surface));
+}
+
+.mention-chip--faction {
+    border-color: color-mix(in srgb, var(--entity-faction) 40%, transparent);
+    background: color-mix(in srgb, var(--entity-faction) 6%, var(--surface));
+}
+
+.mention-chip--faction:hover {
+    border-color: color-mix(in srgb, var(--entity-faction) 60%, transparent);
+    background: color-mix(in srgb, var(--entity-faction) 10%, var(--surface));
+}
+
+.mention-chip--session {
+    border-color: color-mix(in srgb, var(--entity-session) 40%, transparent);
+    background: color-mix(in srgb, var(--entity-session) 6%, var(--surface));
+}
+
+.mention-chip--session:hover {
+    border-color: color-mix(in srgb, var(--entity-session) 60%, transparent);
+    background: color-mix(in srgb, var(--entity-session) 10%, var(--surface));
+}
+
+.mention-chip--note {
+    border-color: color-mix(in srgb, var(--entity-note) 40%, transparent);
+    background: color-mix(in srgb, var(--entity-note) 6%, var(--surface));
+}
+
+.mention-chip--note:hover {
+    border-color: color-mix(in srgb, var(--entity-note) 60%, transparent);
+    background: color-mix(in srgb, var(--entity-note) 10%, var(--surface));
+}
+
+/* Icon wrapper */
+.mention-chip__icon {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+/* Name text */
+.mention-chip__name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 150px;
+}
+
+/* Remove button */
+.mention-chip__remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    margin-left: 2px;
+    padding: 0;
+    background: var(--text-tertiary);
+    border: none;
+    border-radius: 50%;
+    color: var(--surface);
+    cursor: pointer;
+    transition:
+        background-color 0.1s ease,
+        transform 0.1s ease;
+}
+
+.mention-chip__remove:hover {
+    background: #ef4444;
+    transform: scale(1.1);
+}
+
+.mention-chip__remove:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 1px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .mention-chip {
+        transition: none;
+    }
+
+    .mention-chip__remove {
+        /* Always visible when parent is hovered */
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}

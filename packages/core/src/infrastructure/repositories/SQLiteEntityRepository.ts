@@ -138,16 +138,15 @@ export class SQLiteEntityRepository implements IEntityRepository {
         try {
             const row = DatabaseMapper.toRow(entity);
 
-            // Upsert: insert or replace
             const stmt = this.db.prepare(`
                 INSERT INTO entities (
                     id, type, name, description, secrets, content, summary, notes,
                     tags, world_id, campaign_id, forked_from, session_date,
-                    created_at, modified_at
+                    created_at, modified_at, type_specific_fields
                 ) VALUES (
                     @id, @type, @name, @description, @secrets, @content, @summary, @notes,
                     @tags, @world_id, @campaign_id, @forked_from, @session_date,
-                    @created_at, @modified_at
+                    @created_at, @modified_at, @type_specific_fields
                 )
                 ON CONFLICT(id) DO UPDATE SET
                     name = @name,
@@ -157,7 +156,8 @@ export class SQLiteEntityRepository implements IEntityRepository {
                     summary = @summary,
                     notes = @notes,
                     tags = @tags,
-                    modified_at = @modified_at
+                    modified_at = @modified_at,
+                    type_specific_fields = @type_specific_fields
             `);
 
             stmt.run(row);
@@ -176,11 +176,11 @@ export class SQLiteEntityRepository implements IEntityRepository {
                         INSERT INTO entities (
                             id, type, name, description, secrets, content, summary, notes,
                             tags, world_id, campaign_id, forked_from, session_date,
-                            created_at, modified_at
+                            created_at, modified_at, type_specific_fields
                         ) VALUES (
                             @id, @type, @name, @description, @secrets, @content, @summary, @notes,
                             @tags, @world_id, @campaign_id, @forked_from, @session_date,
-                            @created_at, @modified_at
+                            @created_at, @modified_at, @type_specific_fields
                         )
                         ON CONFLICT(id) DO UPDATE SET
                             name = @name,
@@ -190,7 +190,8 @@ export class SQLiteEntityRepository implements IEntityRepository {
                             summary = @summary,
                             notes = @notes,
                             tags = @tags,
-                            modified_at = @modified_at
+                            modified_at = @modified_at,
+                            type_specific_fields = @type_specific_fields
                     `).run(row);
                 }
             });

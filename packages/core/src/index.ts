@@ -105,6 +105,28 @@ export type {
     Unsubscribe
 } from './domain/events/IEventBus';
 
+// Type-specific fields
+export {
+    TYPE_SPECIFIC_FIELD_NAMES,
+    TypeSpecificFieldsWrapper,
+    type CharacterFields,
+    type LocationFields,
+    type FactionFields,
+    type NoteFields,
+    type SessionFields,
+    type TypeSpecificFields,
+} from './domain/value-objects/TypeSpecificFields';
+
+// Primer prompts
+export {
+    PRIMER_PROMPTS,
+    getRandomPrimerPrompt,
+    getPrimerPrompt,
+    getAllPrimerPrompts,
+    getPrimerPromptCount,
+    getPrimerPromptsForType,
+} from './domain/constants/primerPrompts';
+
 // ==============================
 //      APPLICATION LAYER
 // ==============================

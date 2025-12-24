@@ -42,3 +42,6 @@ export { DeleteCampaignUseCase } from './DeleteCampaignUseCase';
 export { AddQuickNoteUseCase } from './AddQuickNoteUseCase';
 export { RemoveQuickNoteUseCase } from './RemoveQuickNoteUseCase';
 export { EndSessionWithSummaryUseCase } from './EndSessionWithSummaryUseCase';
+
+// Mentions use case
+export { ResolveMentionUseCase } from './ResolveMentionUseCase';

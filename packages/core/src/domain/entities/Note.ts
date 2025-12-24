@@ -7,6 +7,7 @@ import { TagCollection } from "../value-objects/TagCollection";
 import { Timestamps } from "../value-objects/Timestamps";
 import { BaseEntity } from "./BaseEntity";
 import { EntityType } from "./EntityType";
+import { TypeSpecificFieldsWrapper, NoteFields } from "../value-objects/TypeSpecificFields";
 
 /**
  * Props required to create a new Note.
@@ -28,6 +29,7 @@ export interface NoteProps {
     worldID: EntityID;
     campaignID: EntityID;
     timestamps: Timestamps;
+    typeSpecificFields?: TypeSpecificFieldsWrapper<EntityType.NOTE>;
 }
 
 /**
@@ -41,6 +43,7 @@ export class Note extends BaseEntity {
     private _tags: TagCollection;
     private readonly _worldID: EntityID;
     private readonly _campaignID: EntityID;
+    private _typeSpecificFields: TypeSpecificFieldsWrapper<EntityType.NOTE>;
 
     get name(): Name {
         return this._name;
@@ -69,6 +72,20 @@ export class Note extends BaseEntity {
         return true;
     }
 
+    /**
+     * Type-specific fields for this note.
+     */
+    get typeSpecificFields(): NoteFields {
+        return this._typeSpecificFields.toFields();
+    }
+
+    /**
+     * Returns the raw wrapper for persistence.
+     */
+    get typeSpecificFieldsWrapper(): TypeSpecificFieldsWrapper<EntityType.NOTE> {
+        return this._typeSpecificFields;
+    }
+
     private constructor(props: NoteProps) {
         super(props.id, EntityType.NOTE, props.timestamps);
         this._name = props.name;
@@ -76,6 +93,7 @@ export class Note extends BaseEntity {
         this._tags = props.tags;
         this._worldID = props.worldID;
         this._campaignID = props.campaignID;
+        this._typeSpecificFields = props.typeSpecificFields ?? TypeSpecificFieldsWrapper.createForType(EntityType.NOTE);
     }
 
     /**
@@ -95,7 +113,8 @@ export class Note extends BaseEntity {
             tags: TagCollection.empty(),
             worldID: props.worldID,
             campaignID: props.campaignID,
-            timestamps: Timestamps.now()
+            timestamps: Timestamps.now(),
+            typeSpecificFields: TypeSpecificFieldsWrapper.createForType(EntityType.NOTE),
         });
 
         return Result.ok(note);
@@ -165,5 +184,28 @@ export class Note extends BaseEntity {
     removeTag(tag: string): void {
         this._tags = this._tags.remove(tag);
         this.touch();
+    }
+
+    /**
+     * Sets a type-specific field value.
+     * Returns failure if the field name is not valid for notes.
+     */
+    setTypeSpecificField(field: string, value: string | undefined): Result<void, ValidationError> {
+        const updated = this._typeSpecificFields.setField(field, value);
+        if (updated === null) {
+            return Result.fail(
+                ValidationError.invalid('field', `'${field}' is not a valid note field`)
+            );
+        }
+        this._typeSpecificFields = updated;
+        this.touch();
+        return Result.okVoid();
+    }
+
+    /**
+     * Gets a type-specific field value by name.
+     */
+    getTypeSpecificField(field: keyof Omit<NoteFields, 'type'>): string | undefined {
+        return this._typeSpecificFields.getField(field);
     }
 }

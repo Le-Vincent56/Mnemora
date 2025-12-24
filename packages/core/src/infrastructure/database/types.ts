@@ -18,6 +18,8 @@ export interface EntityRow {
     session_date: string | null;    // ISO string, only for Session
     created_at: string;             // ISO string
     modified_at: string;            // ISO string
+    duration?: number | null;
+    type_specific_fields?: string | null;
 }
 
 /**

@@ -109,6 +109,18 @@ export class DatabaseManager {
                     db.exec(schema.ALTER_ENTITIES_ADD_DURATION);
                     db.prepare('INSERT INTO schema_version (version) VALUES (?)').run(4);
                 }
+
+                if (currentVersion < 5) {
+                    // Add type_specific_fields column if it doesn't exist
+                    const columns = db.prepare(
+                        "SELECT name FROM pragma_table_info('entities') WHERE name = 'type_specific_fields'"
+                    ).get();
+
+                    if (!columns) {
+                        db.exec(schema.ALTER_ENTITIES_ADD_TYPE_SPECIFIC_FIELDS);
+                    }
+                    db.prepare('INSERT INTO schema_version (version) VALUES (?)').run(5);
+                }
             })();
         }
     }

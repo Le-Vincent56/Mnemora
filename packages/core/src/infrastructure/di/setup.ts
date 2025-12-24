@@ -36,7 +36,8 @@ import {
     ConfigureSafetyToolsUseCase,
     AddQuickNoteUseCase,
     RemoveQuickNoteUseCase,
-    EndSessionWithSummaryUseCase
+    EndSessionWithSummaryUseCase,
+    ResolveMentionUseCase
 } from '../../application/use-cases';
 import { EntityEditorViewModel } from '../../presentation';
 import { SearchViewModel } from '../../presentation';
@@ -225,6 +226,12 @@ export function createContainer(config: DatabaseConfig): Container {
             container.resolve(TOKENS.QuickNoteRepository)
         )
     );
+
+    container.register(TOKENS.ResolveMentionUseCase, () =>
+          new ResolveMentionUseCase(
+              container.resolve(TOKENS.EntityRepository)
+          )
+      );
 
     // ViewModels (transient)
     container.register(TOKENS.EntityEditorViewModel, () =>

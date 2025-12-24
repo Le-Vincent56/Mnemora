@@ -1,0 +1,122 @@
+.warning-modal {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+    border-radius: 16px;
+}
+
+.warning-modal__card {
+    width: 100%;
+    max-width: 360px;
+    padding: 28px;
+    background: var(--surface);
+    border-radius: 14px;
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+}
+
+.warning-modal__card--delete {
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.warning-modal__title {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 600;
+    font-variation-settings: 'opsz' 20, 'SOFT' 50;
+    color: var(--text-primary);
+    margin: 0 0 12px;
+}
+
+.warning-modal__title--danger {
+    color: #dc2626;
+}
+
+.warning-modal__text {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin: 0 0 24px;
+}
+
+.warning-modal__entity-name {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.warning-modal__actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.warning-modal__btn {
+    padding: 10px 18px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 500;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition:
+        background-color 0.15s var(--easing-organic),
+        transform 0.1s var(--easing-organic);
+}
+
+.warning-modal__btn:active {
+    transform: scale(0.98);
+}
+
+.warning-modal__btn--ghost {
+    background: transparent;
+    color: var(--text-tertiary);
+}
+
+.warning-modal__btn--ghost:hover {
+    color: var(--text-secondary);
+}
+
+.warning-modal__btn--secondary {
+    background: transparent;
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+}
+
+.warning-modal__btn--secondary:hover {
+    background: var(--surface);
+    border-color: var(--border-default);
+}
+
+.warning-modal__btn--primary {
+    background: var(--primary);
+    color: white;
+}
+
+.warning-modal__btn--primary:hover {
+    background: var(--primary-hover);
+}
+
+.warning-modal__btn--danger {
+    background: #ef4444;
+    color: white;
+}
+
+.warning-modal__btn--danger:hover {
+    background: #dc2626;
+}
+
+/* Focus states */
+.warning-modal__btn:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-glow);
+}
+
+.warning-modal__btn--danger:focus-visible {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25);
+}

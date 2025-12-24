@@ -48,6 +48,8 @@ export const TOKENS = {
     RemoveQuickNoteUseCase: Symbol('RemoveQuickNoteUseCase'),
     EndSessionWithSummaryUseCase: Symbol('EndSessionWithSummaryUseCase'),
 
+    ResolveMentionUseCase: Symbol('ResolveMentionUseCase'),
+
     // ViewModels
     EntityEditorViewModel: Symbol('EntityEditorViewModel'),
     SearchViewModel: Symbol('SearchViewModel'),

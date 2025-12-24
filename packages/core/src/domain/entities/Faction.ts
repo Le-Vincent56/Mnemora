@@ -7,6 +7,7 @@ import { TagCollection } from "../value-objects/TagCollection";
 import { Timestamps } from "../value-objects/Timestamps";
 import { BaseEntity } from "./BaseEntity";
 import { EntityType } from "./EntityType";
+import { TypeSpecificFieldsWrapper, FactionFields } from "../value-objects/TypeSpecificFields";
 
 /**
  * Props required to create a new Faction.
@@ -30,6 +31,7 @@ export interface FactionProps {
     campaignID: EntityID | null;
     forkedFrom: EntityID | null;
     timestamps: Timestamps;
+    typeSpecificFields?: TypeSpecificFieldsWrapper<EntityType.FACTION>;
 }
 
 /**
@@ -45,6 +47,7 @@ export class Faction extends BaseEntity {
     private readonly _worldID: EntityID;
     private readonly _campaignID: EntityID | null;
     private readonly _forkedFrom: EntityID | null;
+    private _typeSpecificFields: TypeSpecificFieldsWrapper<EntityType.FACTION>;
 
     get name(): Name {
         return this._name;
@@ -88,6 +91,20 @@ export class Faction extends BaseEntity {
         return this._forkedFrom !== null;
     }
 
+    /**
+     * Type-specific fields for this faction.
+     */
+    get typeSpecificFields(): FactionFields {
+        return this._typeSpecificFields.toFields();
+    }
+
+    /**
+     * Returns the raw wrapper for persistence.
+     */
+    get typeSpecificFieldsWrapper(): TypeSpecificFieldsWrapper<EntityType.FACTION> {
+        return this._typeSpecificFields;
+    }
+
     private constructor(props: FactionProps) {
         super(props.id, EntityType.FACTION, props.timestamps);
         this._name = props.name;
@@ -97,6 +114,7 @@ export class Faction extends BaseEntity {
         this._worldID = props.worldID;
         this._campaignID = props.campaignID;
         this._forkedFrom = props.forkedFrom;
+        this._typeSpecificFields = props.typeSpecificFields ?? TypeSpecificFieldsWrapper.createForType(EntityType.FACTION);
     }
 
     /**
@@ -118,7 +136,8 @@ export class Faction extends BaseEntity {
             worldID: props.worldID,
             campaignID: props.campaignID ?? null,
             forkedFrom: null,
-            timestamps: Timestamps.now()
+            timestamps: Timestamps.now(),
+            typeSpecificFields: TypeSpecificFieldsWrapper.createForType(EntityType.FACTION),
         });
 
         return Result.ok(faction);
@@ -212,7 +231,31 @@ export class Faction extends BaseEntity {
             worldID: this._worldID,
             campaignID: intoCampaign,
             forkedFrom: this.id,
-            timestamps: Timestamps.now()
+            timestamps: Timestamps.now(),
+            typeSpecificFields: this._typeSpecificFields,
         });
+    }
+
+    /**
+     * Sets a type-specific field value.
+     * Returns failure if the field name is not valid for factions.
+     */
+    setTypeSpecificField(field: string, value: string | undefined): Result<void, ValidationError> {
+        const updated = this._typeSpecificFields.setField(field, value);
+        if (updated === null) {
+            return Result.fail(
+                ValidationError.invalid('field', `'${field}' is not a valid faction field`)
+            );
+        }
+        this._typeSpecificFields = updated;
+        this.touch();
+        return Result.okVoid();
+    }
+
+    /**
+     * Gets a type-specific field value by name.
+     */
+    getTypeSpecificField(field: keyof Omit<FactionFields, 'type'>): string | undefined {
+        return this._typeSpecificFields.getField(field);
     }
 }

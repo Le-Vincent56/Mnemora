@@ -65,6 +65,12 @@ export class EntityMapper {
             forkedFrom: character.forkedFrom?.toString() ?? null,
             createdAt: character.createdAt.toISOString(),
             modifiedAt: character.modifiedAt.toISOString(),
+            typeSpecificFields: {
+                appearance: character.typeSpecificFields.appearance,
+                personality: character.typeSpecificFields.personality,
+                motivation: character.typeSpecificFields.motivation,
+                voiceMannerisms: character.typeSpecificFields.voiceMannerisms,
+            }
         };
     }
 
@@ -81,6 +87,11 @@ export class EntityMapper {
             forkedFrom: location.forkedFrom?.toString() ?? null,
             createdAt: location.createdAt.toISOString(),
             modifiedAt: location.modifiedAt.toISOString(),
+            typeSpecificFields: {
+                appearance: location.typeSpecificFields.appearance,
+                atmosphere: location.typeSpecificFields.atmosphere,
+                notableFeatures: location.typeSpecificFields.notableFeatures,
+            },
         };
     }
 
@@ -97,6 +108,12 @@ export class EntityMapper {
             forkedFrom: faction.forkedFrom?.toString() ?? null,
             createdAt: faction.createdAt.toISOString(),
             modifiedAt: faction.modifiedAt.toISOString(),
+            typeSpecificFields: {
+                ideology: faction.typeSpecificFields.ideology,
+                goals: faction.typeSpecificFields.goals,
+                resources: faction.typeSpecificFields.resources,
+                structure: faction.typeSpecificFields.structure,
+            },
         };
     }
 
@@ -114,6 +131,9 @@ export class EntityMapper {
             campaignID: session.campaignID.toString(),
             createdAt: session.createdAt.toISOString(),
             modifiedAt: session.modifiedAt.toISOString(),
+            typeSpecificFields: {
+                prepNotes: session.typeSpecificFields.prepNotes,
+            },
         };
     }
 
@@ -128,6 +148,9 @@ export class EntityMapper {
             campaignID: note.campaignID.toString(),
             createdAt: note.createdAt.toISOString(),
             modifiedAt: note.modifiedAt.toISOString(),
+            typeSpecificFields: {
+                content: note.typeSpecificFields.content,
+            },
         };
     }
 

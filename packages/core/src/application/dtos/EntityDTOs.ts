@@ -7,6 +7,39 @@ import { EntityType } from "../../domain/entities/EntityType";
  */
 
 /**
+ * Type-specific fields for DTOs.
+ * These mirror the domain TypeSpecificFields but with explicit undefined types
+ * to satisfy exactOptionalPropertyTypes.
+ */
+export interface CharacterTypeSpecificFieldsDTO {
+    readonly appearance: string | undefined;
+    readonly personality: string | undefined;
+    readonly motivation: string | undefined;
+    readonly voiceMannerisms: string | undefined;
+}
+
+export interface LocationTypeSpecificFieldsDTO {
+    readonly appearance: string | undefined;
+    readonly atmosphere: string | undefined;
+    readonly notableFeatures: string | undefined;
+}
+
+export interface FactionTypeSpecificFieldsDTO {
+    readonly ideology: string | undefined;
+    readonly goals: string | undefined;
+    readonly resources: string | undefined;
+    readonly structure: string | undefined;
+}
+
+export interface SessionTypeSpecificFieldsDTO {
+    readonly prepNotes: string | undefined;
+}
+
+export interface NoteTypeSpecificFieldsDTO {
+    readonly content: string | undefined;
+}
+
+/**
  * Base fields shared by all entity DTOs
  */
 export interface BaseEntityDTO {
@@ -28,6 +61,7 @@ export interface CharacterDTO extends BaseEntityDTO {
     readonly description: string;
     readonly secrets: string;
     readonly forkedFrom: string | null;
+    readonly typeSpecificFields: CharacterTypeSpecificFieldsDTO;
 }
 
 /**
@@ -38,6 +72,7 @@ export interface LocationDTO extends BaseEntityDTO {
     readonly description: string;
     readonly secrets: string;
     readonly forkedFrom: string | null;
+    readonly typeSpecificFields: LocationTypeSpecificFieldsDTO;
 }
 
 /**
@@ -48,6 +83,7 @@ export interface FactionDTO extends BaseEntityDTO {
     readonly description: string;
     readonly secrets: string;
     readonly forkedFrom: string | null;
+    readonly typeSpecificFields: FactionTypeSpecificFieldsDTO;
 }
 
 /**
@@ -59,6 +95,7 @@ export interface SessionDTO extends BaseEntityDTO {
     readonly notes: string;
     readonly secrets: string;
     readonly sessionDate: string | null;
+    readonly typeSpecificFields: SessionTypeSpecificFieldsDTO;
 }
 
 /**
@@ -67,6 +104,7 @@ export interface SessionDTO extends BaseEntityDTO {
 export interface NoteDTO extends BaseEntityDTO {
     readonly type: EntityType.NOTE;
     readonly content: string;
+    readonly typeSpecificFields: NoteTypeSpecificFieldsDTO;
 }
 
 export type EntityDTO =

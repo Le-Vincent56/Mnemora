@@ -1,0 +1,113 @@
+type-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.type-layout__section-label {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    color: var(--text-tertiary);
+}
+
+/* Field dimming on focus */
+.type-layout__field {
+    transition: opacity 0.2s ease-out;
+}
+
+.type-layout__field--dimmed {
+    opacity: 0.65;
+}
+
+/* Character: 2x2 Grid */
+.type-layout--character .type-layout__grid--2x2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+@media (min-width: 1200px) {
+    .type-layout--character .type-layout__grid--2x2 {
+        gap: 32px;
+    }
+}
+
+@media (max-width: 700px) {
+    .type-layout--character .type-layout__grid--2x2 {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}
+
+/* Location: Vertical Stack */
+.type-layout--location .type-layout__stack {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* First field (atmosphere) gets more visual weight */
+.type-layout--location .type-layout__field:first-child {
+    padding-bottom: 4px;
+}
+
+/* Faction: Cascade Layout */
+.type-layout--faction .type-layout__cascade {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Subtle left-border cascade effect */
+.type-layout__field--cascade {
+    position: relative;
+    padding-left: calc(var(--cascade-depth) * 8px);
+}
+
+.type-layout__field--cascade::before {
+    content: '';
+    position: absolute;
+    left: calc(var(--cascade-depth) * 8px - 2px);
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: color-mix(in srgb, var(--entity-faction) 20%, transparent);
+    border-radius: 1px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.type-layout__field--cascade:hover::before {
+    opacity: 1;
+}
+
+@media (max-width: 600px) {
+    .type-layout__field--cascade {
+        padding-left: 0;
+    }
+
+    .type-layout__field--cascade::before {
+        display: none;
+    }
+}
+
+/* Pure Canvas */
+.type-layout--note .type-layout__canvas {
+    min-height: 240px;
+}
+
+/* Hide section label for notes - they're pure writing surfaces */
+.type-layout--note .type-layout__section-label {
+    display: none;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+
+    .type-layout__field,
+    .type-layout__field--cascade::before {
+        transition: none;
+    }
+}

@@ -1,0 +1,407 @@
+.session-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Section containers */
+.session-layout__section {
+    transition: opacity 0.2s ease-out;
+}
+
+.session-layout__section--dimmed {
+    opacity: 0.65;
+}
+
+/* Section headers */
+.session-layout__section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.session-layout__section-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-tertiary);
+}
+
+.session-layout__section-hint {
+    font-size: 12px;
+    font-style: italic;
+    color: var(--text-tertiary);
+    opacity: 0.8;
+}
+
+/* Prep Notes Canvas */
+.session-layout__prep-canvas {
+    min-height: 200px;
+}
+
+/* Temporal Divider */
+.session-layout__temporal-divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 8px 0;
+}
+
+.session-layout__divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right,
+            transparent,
+            var(--border-subtle) 20%,
+            var(--border-subtle) 80%,
+            transparent);
+}
+
+.session-layout__divider-label {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 500;
+    font-variation-settings: 'opsz' 14, 'SOFT' 50;
+    color: var(--text-tertiary);
+    white-space: nowrap;
+}
+
+/* Section Toggle */
+.session-layout__section-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--primary-ghost);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    cursor: pointer;
+    transition:
+        background-color 0.15s var(--easing-organic),
+        border-color 0.15s var(--easing-organic);
+}
+
+.session-layout__section-toggle:hover {
+    background: var(--primary-subtle);
+    border-color: var(--border-default);
+}
+
+.session-layout__section-toggle:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-glow);
+}
+
+.session-layout__toggle-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.session-layout__toggle-icon {
+    color: var(--text-tertiary);
+}
+
+.session-layout__toggle-icon--gold {
+    color: var(--secret-gold);
+}
+
+.session-layout__count-badge {
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    background: var(--surface);
+    border-radius: 12px;
+}
+
+/* Timeline Container */
+.session-layout__timeline {
+    overflow: hidden;
+    margin-top: 12px;
+}
+
+/* Empty State */
+.session-layout__empty-state {
+    position: relative;
+    padding: 40px 24px;
+    text-align: center;
+}
+
+.session-layout__constellation {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.session-layout__star {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: var(--primary);
+    border-radius: 50%;
+    opacity: 0.4;
+    animation: star-twinkle 3s ease-in-out infinite;
+}
+
+.session-layout__star:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.session-layout__star:nth-child(2) {
+    animation-delay: 0.5s;
+}
+
+.session-layout__star:nth-child(3) {
+    animation-delay: 1s;
+}
+
+.session-layout__star:nth-child(4) {
+    animation-delay: 1.5s;
+}
+
+@keyframes star-twinkle {
+
+    0%,
+    100% {
+        opacity: 0.3;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.7;
+        transform: scale(1.2);
+    }
+}
+
+.session-layout__empty-text {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.session-layout__empty-hint {
+    font-size: 12px;
+    color: var(--text-tertiary);
+}
+
+.session-layout__empty-hint kbd {
+    display: inline-block;
+    padding: 2px 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    background: var(--surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 4px;
+}
+
+/* Notes List */
+.session-layout__notes-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.session-layout__note-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    transition: border-color 0.15s ease;
+}
+
+.session-layout__note-item:hover {
+    border-color: var(--border-default);
+}
+
+.session-layout__note-time {
+    flex-shrink: 0;
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--text-tertiary);
+    padding-top: 2px;
+}
+
+.session-layout__note-content {
+    flex: 1;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text-primary);
+}
+
+/* Feedback Section (Stars & Wishes) */
+.session-layout__section--feedback {
+    margin-top: 8px;
+}
+
+.session-layout__section--feedback .session-layout__section-toggle {
+    background: rgba(184, 134, 11, 0.04);
+    border-color: rgba(184, 134, 11, 0.15);
+}
+
+.session-layout__section--feedback .session-layout__section-toggle:hover {
+    background: rgba(184, 134, 11, 0.08);
+    border-color: rgba(184, 134, 11, 0.25);
+}
+
+.session-layout__feedback-content {
+    overflow: hidden;
+    padding-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.session-layout__feedback-group {
+    padding: 16px;
+    background: rgba(184, 134, 11, 0.03);
+    border: 1px solid rgba(184, 134, 11, 0.1);
+    border-radius: 10px;
+}
+
+.session-layout__feedback-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.session-layout__feedback-icon--star {
+    color: #C9A227;
+}
+
+.session-layout__feedback-icon--wish {
+    color: #9F8B6B;
+}
+
+.session-layout__feedback-label {
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 500;
+    font-variation-settings: 'opsz' 14, 'SOFT' 50;
+    color: var(--text-primary);
+}
+
+.session-layout__feedback-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.session-layout__feedback-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 12px;
+    background: var(--surface);
+    border-radius: 6px;
+}
+
+.session-layout__feedback-text {
+    flex: 1;
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--text-primary);
+}
+
+.session-layout__feedback-remove {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s ease, color 0.15s ease;
+}
+
+.session-layout__feedback-item:hover .session-layout__feedback-remove {
+    opacity: 1;
+}
+
+.session-layout__feedback-remove:hover {
+    color: #dc2626;
+}
+
+.session-layout__feedback-input-row {
+    display: flex;
+    gap: 8px;
+}
+
+.session-layout__feedback-input {
+    flex: 1;
+    padding: 10px 14px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--text-primary);
+    background: var(--surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.session-layout__feedback-input::placeholder {
+    color: var(--text-tertiary);
+}
+
+.session-layout__feedback-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: var(--shadow-glow);
+}
+
+.session-layout__feedback-add {
+    flex-shrink: 0;
+    padding: 10px 16px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    color: white;
+    background: var(--primary);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.session-layout__feedback-add:hover:not(:disabled) {
+    background: var(--primary-hover);
+}
+
+.session-layout__feedback-add:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+
+    .session-layout__section,
+    .session-layout__note-item,
+    .session-layout__feedback-remove {
+        transition: none;
+    }
+
+    .session-layout__star {
+        animation: none;
+        opacity: 0.5;
+    }
+}

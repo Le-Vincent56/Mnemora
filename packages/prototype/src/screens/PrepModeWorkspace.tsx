@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import { PrepModeHeader } from '@/components/prep/PrepModeHeader';
 import { EntityBrowser } from '@/components/prep/EntityBrowser';
-import { EntityEditor } from '@/components/editor/EntityEditor';
+import { ManuscriptEditor } from '@/components/editor/ManuscriptEditor';
 import { ViewMode } from '@/components/prep/ViewToggle';
 import {
     EntityType,
@@ -98,6 +98,11 @@ export function PrepModeWorkspace({
         setEditingEntity(null);
     }, []);
 
+    // Handle entity selection from within the editor (index panel)
+    const handleEntitySelectFromEditor = useCallback((entity: Entity) => {
+        setEditingEntity(entity);
+    }, []);
+
     // Handle connection click - open in QuickRefCard for peek
     const handleConnectionClick = useCallback((id: string) => {
         const entity = getEntityByID(id);
@@ -136,15 +141,18 @@ export function PrepModeWorkspace({
                 onStartSession={onStartSession}
             />
 
-            {/* Entity Editor Overlay */}
-            <EntityEditor
+            {/* Manuscript Editor - Full Page Codex Layout */}
+            <ManuscriptEditor
                 entity={editingEntity}
+                entities={entities}
                 onClose={handleCloseEditor}
                 onSave={handleSaveEntity}
                 onDelete={handleDeleteEntity}
+                onEntitySelect={handleEntitySelectFromEditor}
+                onCreateEntity={handleCreateEntity}
                 availableTags={availableTags}
-                allEntities={entities}
                 onConnectionClick={handleConnectionClick}
+                hasStarsAndWishes={false} // TODO: Get from campaign safety tools
             />
         </div>
     );

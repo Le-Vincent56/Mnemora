@@ -9,6 +9,7 @@ import { BaseEntity } from "./BaseEntity";
 import { EntityType } from "./EntityType";
 import { QuickNote } from '../value-objects/QuickNote';
 import { StarsAndWishes } from '../value-objects/StarsAndWishes';
+import { TypeSpecificFieldsWrapper, SessionFields } from "../value-objects/TypeSpecificFields";
 
 /**
  * Props required to create a new Session.
@@ -37,6 +38,7 @@ export interface SessionProps {
     quickNotes: QuickNote[];
     starsAndWishes: StarsAndWishes | null;
     duration: number | null;
+    typeSpecificFields?: TypeSpecificFieldsWrapper<EntityType.SESSION>;
 }
 
 /**
@@ -56,6 +58,7 @@ export class Session extends BaseEntity {
     private _quickNotes: QuickNote[];
     private _starsAndWishes: StarsAndWishes | null;
     private _duration: number | null;
+    private _typeSpecificFields: TypeSpecificFieldsWrapper<EntityType.SESSION>;
 
     get name(): Name {
         return this._name;
@@ -115,6 +118,20 @@ export class Session extends BaseEntity {
         return this._duration !== null;
     }
 
+    /**
+         * Type-specific fields for this session.
+         */
+    get typeSpecificFields(): SessionFields {
+        return this._typeSpecificFields.toFields();
+    }
+
+    /**
+     * Returns the raw wrapper for persistence.
+     */
+    get typeSpecificFieldsWrapper(): TypeSpecificFieldsWrapper<EntityType.SESSION> {
+        return this._typeSpecificFields;
+    }
+
     private constructor(props: SessionProps) {
         super(props.id, EntityType.SESSION, props.timestamps);
         this._name = props.name;
@@ -128,6 +145,7 @@ export class Session extends BaseEntity {
         this._quickNotes = props.quickNotes;
         this._starsAndWishes = props.starsAndWishes;
         this._duration = props.duration;
+        this._typeSpecificFields = props.typeSpecificFields ?? TypeSpecificFieldsWrapper.createForType(EntityType.SESSION);
     }
 
     /**
@@ -153,7 +171,8 @@ export class Session extends BaseEntity {
             timestamps: Timestamps.now(),
             quickNotes: [],
             starsAndWishes: null,
-            duration: null
+            duration: null,
+            typeSpecificFields: TypeSpecificFieldsWrapper.createForType(EntityType.SESSION),
         });
 
         return Result.ok(session);
@@ -305,5 +324,28 @@ export class Session extends BaseEntity {
         this._duration = durationSeconds;
         this.touch();
         return Result.okVoid();
+    }
+
+    /**
+     * Sets a type-specific field value.
+     * Returns failure if the field name is not valid for sessions.
+     */
+    setTypeSpecificField(field: string, value: string | undefined): Result<void, ValidationError> {
+        const updated = this._typeSpecificFields.setField(field, value);
+        if (updated === null) {
+            return Result.fail(
+                ValidationError.invalid('field', `'${field}' is not a valid session field`)
+            );
+        }
+        this._typeSpecificFields = updated;
+        this.touch();
+        return Result.okVoid();
+    }
+
+    /**
+     * Gets a type-specific field value by name.
+     */
+    getTypeSpecificField(field: keyof Omit<SessionFields, 'type'>): string | undefined {
+        return this._typeSpecificFields.getField(field);
     }
 }

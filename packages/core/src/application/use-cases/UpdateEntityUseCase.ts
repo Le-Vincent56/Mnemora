@@ -151,6 +151,19 @@ export class UpdateEntityUseCase implements IUseCase<UpdateEntityRequest, Entity
             changedFields.push('tags');
         }
 
+        // Type-specific fields
+        if (request.typeSpecificFields) {
+            for (const [field, value] of Object.entries(request.typeSpecificFields)) {
+                const result = character.setTypeSpecificField(field, value);
+                if (result.isFailure) {
+                    return Result.fail(
+                        UseCaseError.validation(result.error.message, `typeSpecificFields.${field}`)
+                    );
+                }
+                changedFields.push(`typeSpecificFields.${field}`);
+            }
+        }
+
         return Result.ok(changedFields);
     }
 
@@ -190,6 +203,18 @@ export class UpdateEntityUseCase implements IUseCase<UpdateEntityRequest, Entity
             changedFields.push('tags');
         }
 
+        if (request.typeSpecificFields) {
+            for (const [field, value] of Object.entries(request.typeSpecificFields)) {
+                const result = location.setTypeSpecificField(field, value);
+                if (result.isFailure) {
+                    return Result.fail(
+                        UseCaseError.validation(result.error.message, `typeSpecificFields.${field}`)
+                    );
+                }
+                changedFields.push(`typeSpecificFields.${field}`);
+            }
+        }
+
         return Result.ok(changedFields);
     }
 
@@ -227,6 +252,18 @@ export class UpdateEntityUseCase implements IUseCase<UpdateEntityRequest, Entity
                 );
             }
             changedFields.push('tags');
+        }
+
+        if (request.typeSpecificFields) {
+            for (const [field, value] of Object.entries(request.typeSpecificFields)) {
+                const result = faction.setTypeSpecificField(field, value);
+                if (result.isFailure) {
+                    return Result.fail(
+                        UseCaseError.validation(result.error.message, `typeSpecificFields.${field}`)
+                    );
+                }
+                changedFields.push(`typeSpecificFields.${field}`);
+            }
         }
 
         return Result.ok(changedFields);
@@ -291,6 +328,18 @@ export class UpdateEntityUseCase implements IUseCase<UpdateEntityRequest, Entity
             changedFields.push('tags');
         }
 
+        if (request.typeSpecificFields) {
+            for (const [field, value] of Object.entries(request.typeSpecificFields)) {
+                const result = session.setTypeSpecificField(field, value);
+                if (result.isFailure) {
+                    return Result.fail(
+                        UseCaseError.validation(result.error.message, `typeSpecificFields.${field}`)
+                    );
+                }
+                changedFields.push(`typeSpecificFields.${field}`);
+            }
+        }
+
         return Result.ok(changedFields);
     }
 
@@ -324,6 +373,18 @@ export class UpdateEntityUseCase implements IUseCase<UpdateEntityRequest, Entity
                 );
             }
             changedFields.push('tags');
+        }
+
+        if (request.typeSpecificFields) {
+            for (const [field, value] of Object.entries(request.typeSpecificFields)) {
+                const result = note.setTypeSpecificField(field, value);
+                if (result.isFailure) {
+                    return Result.fail(
+                        UseCaseError.validation(result.error.message, `typeSpecificFields.${field}`)
+                    );
+                }
+                changedFields.push(`typeSpecificFields.${field}`);
+            }
         }
 
         return Result.ok(changedFields);
