@@ -14,14 +14,13 @@
     height: 100vh;
     overflow-y: auto;
     overflow-x: hidden;
-    /* No top padding - let screens with headers handle their own layout */
-    padding: 0 24px 24px 24px;
+    /* No padding - each screen handles its own padding */
+    padding: 0;
 }
 
 /* Prep mode: disable outer scroll, let EntityBrowser handle scrolling */
 .app-shell[data-mode="prep"] .app-shell__content {
     overflow: hidden;
-    padding: 0; /* Prep workspace handles its own layout and padding */
 }
 
 /* Tablet: adjust for narrower rail */
