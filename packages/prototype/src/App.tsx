@@ -18,7 +18,7 @@ import { SessionSummary } from '@/types/session';
 import { useActiveSession } from '@/hooks/useActiveSession';
 import { SafetyTool } from '@/components/session/SafetyToolQuickRef';
 import { QuickNote } from '@/components/session/QuickNoteIconRailItem';
-import { SessionShortcutsProvider } from '@/components/session/SessionShortcutsProvider';
+import { SessionShortcutsProvider, useSessionShortcutsContext } from '@/components/session/SessionShortcutsProvider';
 
 // Types
 type AppMode = 'prep' | 'session';
@@ -75,6 +75,38 @@ const contentVariants = {
     },
 };
 
+// Inner component that has access to SessionShortcutsContext
+function SessionModeContent({
+    activeSessionContext,
+    openEntity,
+    handleModeChange,
+    onEndSession,
+}: {
+    activeSessionContext: ReturnType<typeof useActiveSession>;
+    openEntity: (entity: Entity, event?: React.MouseEvent) => void;
+    handleModeChange: (mode: AppMode) => void;
+    onEndSession: () => void;
+}) {
+    return (
+        <SessionDashboard
+            activeSession={activeSessionContext.activeSession}
+            recentEntities={activeSessionContext.recentEntities}
+            timerVisible={activeSessionContext.timerVisible}
+            formattedDuration={activeSessionContext.formattedDuration}
+            onEntityClick={openEntity}
+            onToggleTimerVisibility={activeSessionContext.toggleTimerVisibility}
+            onToggleTimer={activeSessionContext.toggleTimer}
+            onResetTimer={activeSessionContext.resetTimer}
+            onClearRecent={activeSessionContext.clearRecent}
+            onSwitchSession={(sessionEntity) => {
+                activeSessionContext.switchSession(sessionEntity, activeSessionContext.activeSession!.campaign)
+            }}
+            onEndSession={onEndSession}
+            onGoToPrep={() => handleModeChange('prep')}
+        />
+    );
+}
+
 // Main App Component
 export default function App() {
     // Mode and Prep State
@@ -100,6 +132,9 @@ export default function App() {
     const [reflection, setReflection] = useState('');
     const [stars, setStars] = useState<string[]>([]);
     const [wishes, setWishes] = useState<string[]>([]);
+
+    // Prep Mode UI State
+    const [isFilterActive, setIsFilterActive] = useState(false);
 
     // Check if Stars & Wishes tool is enabled
     const isStarsWishesEnabled = MOCK_SAFETY_TOOLS.some(tool => tool.id === 'starswishes');
@@ -277,6 +312,33 @@ export default function App() {
         setWishes(prev => prev.filter((_, i) => i !== index));
     }, []);
 
+    // IconRail action handlers
+    const handleSearchClick = useCallback(() => {
+        // TODO: Open global search modal
+        console.log('Open search');
+    }, []);
+
+    const handleSettingsClick = useCallback(() => {
+        // TODO: Open settings panel
+        console.log('Open settings');
+    }, []);
+
+    const handleCreateClick = useCallback(() => {
+        // TODO: Open create entity dropdown/modal
+        console.log('Create entity');
+    }, []);
+
+    const handleFilterClick = useCallback(() => {
+        setIsFilterActive(prev => !prev);
+    }, []);
+
+    const handleEndSession = useCallback(() => {
+        const summary = activeSessionContext.endSession();
+        if (summary) {
+            setSessionSummary(summary);
+        }
+    }, [activeSessionContext]);
+
     // Render
     // Prep Mode: Title Page (full screen, no AppShell)
     if (mode === 'prep' && prepState === 'title-page') {
@@ -315,68 +377,66 @@ export default function App() {
     // Session Mode or Prep Mode Workspace (with AppShell)
     return (
         <>
-            <AppShell mode={mode} onModeChange={handleModeChange}>
-                <AnimatePresence mode="wait">
-                    <motion.div
-                        key={`${mode}-${prepState}`}
-                        variants={contentVariants}
-                        initial="initial"
-                        animate="animate"
-                        exit="exit"
-                        style={{ height: '100%' }}
-                    >
-                        {mode === 'session' ? (
-                            <SessionShortcutsProvider
-                                isSessionActive={!!activeSessionContext.activeSession}
-                                safetyTools={MOCK_SAFETY_TOOLS}
-                                onSaveQuickNote={handleSaveNote}
-                            >
-                                <SessionDashboard
-                                    activeSession={activeSessionContext.activeSession}
-                                    recentEntities={activeSessionContext.recentEntities}
-                                    timerVisible={activeSessionContext.timerVisible}
-                                    formattedDuration={activeSessionContext.formattedDuration}
-                                    safetyTools={MOCK_SAFETY_TOOLS}
-                                    quickNotes={quickNotes}
-                                    onSaveNote={handleSaveNote}
-                                    onEntityClick={openEntity}
-                                    onToggleTimerVisibility={activeSessionContext.toggleTimerVisibility}
-                                    onToggleTimer={activeSessionContext.toggleTimer}
-                                    onResetTimer={activeSessionContext.resetTimer}
-                                    onClearRecent={activeSessionContext.clearRecent}
-                                    onSwitchSession={(sessionEntity) => {
-                                        activeSessionContext.switchSession(sessionEntity, activeSessionContext.activeSession!.campaign)
-                                    }}
-                                    onEndSession={() => {
-                                        const summary = activeSessionContext.endSession()
-                                        if (summary) {
-                                            setSessionSummary(summary)
-                                        }
-                                    }}
-                                    onGoToPrep={() => handleModeChange('prep')}
+            <SessionShortcutsProvider
+                isSessionActive={mode === 'session' && !!activeSessionContext.activeSession}
+                safetyTools={MOCK_SAFETY_TOOLS}
+                onSaveQuickNote={handleSaveNote}
+            >
+                <AppShellWithIconRail
+                    mode={mode}
+                    onModeChange={handleModeChange}
+                    // IconRail props
+                    onSearchClick={handleSearchClick}
+                    onSettingsClick={handleSettingsClick}
+                    // Prep mode props
+                    onCreateClick={handleCreateClick}
+                    onFilterClick={handleFilterClick}
+                    isFilterActive={isFilterActive}
+                    // Session mode props
+                    isSessionActive={!!activeSessionContext.activeSession}
+                    safetyToolCount={MOCK_SAFETY_TOOLS.length}
+                    quickNoteCount={quickNotes.length}
+                    timerVisible={activeSessionContext.timerVisible}
+                    onTimerToggle={activeSessionContext.toggleTimerVisibility}
+                >
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={`${mode}-${prepState}`}
+                            variants={contentVariants}
+                            initial="initial"
+                            animate="animate"
+                            exit="exit"
+                            style={{ height: '100%' }}
+                        >
+                            {mode === 'session' ? (
+                                <SessionModeContent
+                                    activeSessionContext={activeSessionContext}
+                                    openEntity={openEntity}
+                                    handleModeChange={handleModeChange}
+                                    onEndSession={handleEndSession}
                                 />
-                            </SessionShortcutsProvider>
-                        ) : (
-                            // Prep Mode Workspace
-                            prepContext.world && (
-                                <PrepModeWorkspace
-                                    world={prepContext.world}
-                                    campaign={prepContext.campaign}
-                                    onSwitchWorld={handleSwitchWorld}
-                                    onEntityClick={openEntity}
-                                    activeSessionID={activeSessionContext.activeSession?.sessionID}
-                                    onStartSession={handleStartSession}
-                                />
-                            )
-                        )}
-                    </motion.div>
-                </AnimatePresence>
-            </AppShell>
+                            ) : (
+                                // Prep Mode Workspace
+                                prepContext.world && (
+                                    <PrepModeWorkspace
+                                        world={prepContext.world}
+                                        campaign={prepContext.campaign}
+                                        onSwitchWorld={handleSwitchWorld}
+                                        onEntityClick={openEntity}
+                                        activeSessionID={activeSessionContext.activeSession?.sessionID}
+                                        onStartSession={handleStartSession}
+                                    />
+                                )
+                            )}
+                        </motion.div>
+                    </AnimatePresence>
+                </AppShellWithIconRail>
+            </SessionShortcutsProvider>
 
             <QuickRefCard
                 entity={selectedEntity}
                 onClose={closeEntity}
-                onEdit={mode === 'prep' ? handleEditFromQuickRef : undefined}  // Only show in prep mode
+                onEdit={mode === 'prep' ? handleEditFromQuickRef : undefined}
                 onNavigate={navigateToEntity}
                 onPrev={goToPrev}
                 onNext={goToNext}
@@ -391,12 +451,10 @@ export default function App() {
                 onCopyNotes={() => {
                     if (sessionSummary) {
                         navigator.clipboard.writeText(sessionSummary.generatedNotes);
-                        // Could add a toast notification here
                     }
                     setSessionSummary(null);
                 }}
                 onSaveToSession={() => {
-                    // TODO: Append notes to session entity
                     console.log('Saving notes to session...');
                     setSessionSummary(null);
                 }}
@@ -413,5 +471,70 @@ export default function App() {
                 onRemoveWish={handleRemoveWish}
             />
         </>
+    );
+}
+
+// Wrapper component that connects IconRail to SessionShortcutsContext
+interface AppShellWithIconRailProps {
+    mode: AppMode;
+    onModeChange: (mode: AppMode) => void;
+    onSearchClick?: () => void;
+    onSettingsClick?: () => void;
+    onCreateClick?: () => void;
+    onFilterClick?: () => void;
+    isFilterActive?: boolean;
+    isSessionActive?: boolean;
+    safetyToolCount?: number;
+    quickNoteCount?: number;
+    timerVisible?: boolean;
+    onTimerToggle?: () => void;
+    children: React.ReactNode;
+}
+
+function AppShellWithIconRail({
+    mode,
+    onModeChange,
+    onSearchClick,
+    onSettingsClick,
+    onCreateClick,
+    onFilterClick,
+    isFilterActive,
+    isSessionActive,
+    safetyToolCount,
+    quickNoteCount,
+    timerVisible,
+    onTimerToggle,
+    children,
+}: AppShellWithIconRailProps) {
+    // Access session shortcuts context for opening safety tools and quick notes
+    const shortcutsContext = useSessionShortcutsContext();
+
+    const handleSafetyToolsClick = useCallback(() => {
+        shortcutsContext.openSafetyTools();
+    }, [shortcutsContext]);
+
+    const handleQuickNotesClick = useCallback(() => {
+        shortcutsContext.openQuickNote();
+    }, [shortcutsContext]);
+
+    return (
+        <AppShell
+            mode={mode}
+            onModeChange={onModeChange}
+            onSearchClick={onSearchClick}
+            onSettingsClick={onSettingsClick}
+            onCreateClick={onCreateClick}
+            onFilterClick={onFilterClick}
+            isFilterActive={isFilterActive}
+            isSessionActive={isSessionActive}
+            safetyToolCount={safetyToolCount}
+            quickNoteCount={quickNoteCount}
+            timerVisible={timerVisible}
+            onSafetyToolsClick={handleSafetyToolsClick}
+            onQuickNotesClick={handleQuickNotesClick}
+            onTimerToggle={onTimerToggle}
+        >
+            {children}
+        </AppShell>
     );
 }

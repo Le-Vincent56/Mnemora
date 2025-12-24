@@ -8,12 +8,12 @@
     border: none;
     background: transparent;
     color: var(--text-secondary);
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     cursor: pointer;
     transition:
-        background-color var(--timing-fast) var(--easing-standard),
-        color var(--timing-fast) var(--easing-standard),
-        box-shadow 0.3s ease;
+        background-color var(--duration-fast) ease,
+        color var(--duration-fast) ease;
+    flex-shrink: 0;
 }
 
 .icon-rail-item:hover {
@@ -21,12 +21,30 @@
     color: var(--text-primary);
 }
 
-.icon-rail-item--active {
-    color: var(--primary);
-    /* Subtle glow when active */
-    box-shadow: 0 0 12px rgba(92, 122, 138, 0.15);
+.icon-rail-item:focus-visible {
+    outline: none;
+    box-shadow:
+        0 0 0 2px var(--surface),
+        0 0 0 4px var(--primary);
 }
 
+/* Active state */
+.icon-rail-item--active {
+    color: var(--primary);
+}
+
+/* Disabled state */
+.icon-rail-item--disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.icon-rail-item--disabled:hover {
+    background: transparent;
+    color: var(--text-secondary);
+}
+
+/* Left indicator bar */
 .icon-rail-item__indicator {
     position: absolute;
     left: -6px;
@@ -34,4 +52,47 @@
     height: 20px;
     background: var(--primary);
     border-radius: 0 2px 2px 0;
+}
+
+/* Icon wrapper */
+.icon-rail-item__icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+/* Glow effect (pseudo for performance) */
+.icon-rail-item__glow {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: 0 0 12px rgba(92, 122, 138, 0.2);
+    opacity: 0;
+    transition: opacity var(--duration-normal) ease;
+    pointer-events: none;
+}
+
+.icon-rail-item__glow--visible {
+    opacity: 1;
+}
+
+/* Mobile: larger touch target */
+@media (max-width: 767px) {
+    .icon-rail-item {
+        width: 44px;
+        height: 44px;
+    }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .icon-rail-item {
+        transition: none;
+    }
+
+    .icon-rail-item__glow {
+        transition: none;
+    }
 }

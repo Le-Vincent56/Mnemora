@@ -22,6 +22,25 @@
     overflow: hidden;
 }
 
+/* Scrollbar styling for scrollable areas */
+.session-summary-modal ::-webkit-scrollbar {
+    width: 8px;
+}
+
+.session-summary-modal ::-webkit-scrollbar-track {
+    background: var(--canvas);
+    border-radius: var(--radius-full);
+}
+
+.session-summary-modal ::-webkit-scrollbar-thumb {
+    background: var(--border-default);
+    border-radius: var(--radius-full);
+}
+
+.session-summary-modal ::-webkit-scrollbar-thumb:hover {
+    background: var(--border-emphasis);
+}
+
 /* Header */
 .session-summary__header {
     display: flex;
@@ -105,6 +124,7 @@
 .session-summary__section:last-of-type {
     overflow-y: auto;
     flex: 1;
+    scrollbar-gutter: stable;
 }
 
 /* Legacy Entities Section (kept for backwards compatibility) */
@@ -113,6 +133,7 @@
     border-bottom: 1px solid var(--border-subtle);
     overflow-y: auto;
     flex: 1;
+    scrollbar-gutter: stable;
 }
 
 .session-summary__section-title {
@@ -184,6 +205,7 @@
     border-bottom: 1px solid var(--border-subtle);
     max-height: 200px;
     overflow-y: auto;
+    scrollbar-gutter: stable;
 }
 
 .session-summary__notes-content {

@@ -1,12 +1,16 @@
 .entity-browser {
     display: flex;
     flex-direction: column;
-    height: 100%;
-    padding: 0 24px;
+    /* Fill remaining space in parent flex container */
+    flex: 1;
+    min-height: 0; /* Critical for nested flex scroll */
+    /* Horizontal padding for content */
+    padding: 0 var(--space-6);
 }
 
 .entity-browser__content {
     flex: 1;
+    min-height: 0; /* Allow flex child to shrink and scroll */
     overflow-y: auto;
     padding: 20px 0;
 }
@@ -46,7 +50,7 @@
 /* Responsive */
 @media (max-width: 768px) {
     .entity-browser {
-        padding: 0 16px;
+        padding: 0 var(--space-4);
     }
 
     .entity-browser__content {

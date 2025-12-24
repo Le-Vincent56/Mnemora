@@ -1,13 +1,50 @@
 .app-shell {
     display: flex;
-    min-height: 100vh;
+    height: 100vh;
     background: var(--canvas);
     /* Smooth canvas transition when mode changes */
     transition: background-color 600ms cubic-bezier(0.23, 1, 0.32, 1);
 }
 
+/* Content area - scrolls independently */
 .app-shell__content {
     flex: 1;
-    padding: 24px;
+    margin-left: 48px;
+    /* Offset for fixed rail */
+    height: 100vh;
     overflow-y: auto;
+    overflow-x: hidden;
+    /* No top padding - let screens with headers handle their own layout */
+    padding: 0 24px 24px 24px;
+}
+
+/* Prep mode: disable outer scroll, let EntityBrowser handle scrolling */
+.app-shell[data-mode="prep"] .app-shell__content {
+    overflow: hidden;
+    padding: 0; /* Prep workspace handles its own layout and padding */
+}
+
+/* Tablet: adjust for narrower rail */
+@media (max-width: 1023px) and (min-width: 768px) {
+    .app-shell__content {
+        margin-left: 44px;
+    }
+}
+
+/* Custom scrollbar for content area */
+.app-shell__content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.app-shell__content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.app-shell__content::-webkit-scrollbar-thumb {
+    background: var(--border-default);
+    border-radius: var(--radius-full);
+}
+
+.app-shell__content::-webkit-scrollbar-thumb:hover {
+    background: var(--border-emphasis);
 }

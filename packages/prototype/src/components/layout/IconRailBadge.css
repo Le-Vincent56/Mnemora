@@ -1,0 +1,49 @@
+.icon-rail-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    min-width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    font-family: var(--font-body);
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1;
+    border-radius: var(--radius-full);
+    pointer-events: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+
+/* Prep Mode: slate blue (primary) */
+.icon-rail-badge--prep {
+    background: var(--primary);
+    color: #FAF8F5;
+}
+
+/* Session Mode: taupe (session entity color) */
+.icon-rail-badge--session {
+    background: var(--entity-session);
+    color: #FAF8F5;
+}
+
+/* Mobile: slightly larger */
+@media (max-width: 767px) {
+    .icon-rail-badge {
+        top: 0;
+        right: 0;
+        min-width: 18px;
+        height: 18px;
+        font-size: 11px;
+    }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .icon-rail-badge {
+        animation: none !important;
+        transition: none !important;
+    }
+}

@@ -1,6 +1,9 @@
 .prep-workspace {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    /* Fill exactly the viewport height minus nothing - no overflow */
+    height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
     background: var(--canvas);
 }
