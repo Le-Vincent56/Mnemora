@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 import { SafetyToolsSection, SafetyToolState, DEFAULT_SAFETY_TOOLS } from '../safety/SafetyToolsSection';
+import { LinesAndVeilsEditor } from '../safety/LinesAndVeilsEditor';
 import './CampaignCreationModal.css';
 
 interface CampaignCreationModalProps {
@@ -64,6 +65,7 @@ export function CampaignCreationModal({
     const [touched, setTouched] = useState({ name: false, world: false });
     const [boundariesExpanded, setBoundariesExpanded] = useState(false);
     const [safetyTools, setSafetyTools] = useState<SafetyToolState>(DEFAULT_SAFETY_TOOLS);
+    const [isLinesAndVeilsOpen, setIsLinesAndVeilsOpen] = useState(false)
 
     const nameInputRef = useRef<HTMLInputElement>(null);
     const modalRef = useRef<HTMLDivElement>(null);
@@ -204,6 +206,17 @@ export function CampaignCreationModal({
     const toggleBoundaries = () => {
         setBoundariesExpanded(prev => !prev);
     };
+
+    const handleSaveLinesAndVeils = useCallback((lines: string[], veils: string[]) => {
+        setSafetyTools(prev => ({
+            ...prev,
+            linesAndVeils: {
+                ...prev.linesAndVeils,
+                lines,
+                veils
+            }
+        }))
+    }, [])
 
     const isValid = !validateName(name) && !validateWorld(worldId);
 
@@ -358,10 +371,7 @@ export function CampaignCreationModal({
                                             <SafetyToolsSection
                                                 value={safetyTools}
                                                 onChange={setSafetyTools}
-                                                onSetupLinesAndVeils={() => {
-                                                    // TODO: Open LinesAndVeilsEditor modal
-                                                    console.log('Setup Lines & Veils');
-                                                }}
+                                                onSetupLinesAndVeils={() => setIsLinesAndVeilsOpen(true)}
                                                 onAddCustomBoundary={() => {
                                                     // TODO: Open CustomBoundaryEditor modal
                                                     console.log('Add custom boundary');
@@ -393,6 +403,14 @@ export function CampaignCreationModal({
                     </motion.div>
                 </motion.div>
             )}
+
+            <LinesAndVeilsEditor
+                isOpen={isLinesAndVeilsOpen}
+                onClose={() => setIsLinesAndVeilsOpen(false)}
+                lines={safetyTools.linesAndVeils.lines}
+                veils={safetyTools.linesAndVeils.veils}
+                onSave={handleSaveLinesAndVeils}
+            />
         </AnimatePresence>
     );
 }
