@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Plus } from 'lucide-react';
 import {
     World,
@@ -6,6 +6,9 @@ import {
     getWorldsSortedByRecent,
     formatRelativeTime,
 } from '@/data/mockWorldData';
+import { WorldCreationModal } from '../components/modal/WorldCreationModal';
+import { CampaignCreationModal } from '../components/modal/CampaignCreationModal';
+import type { SafetyToolState } from '../components/safety/SafetyToolsSection';
 import './WorldTitlePage.css';
 
 // Types
@@ -17,7 +20,6 @@ type Phase =
 
 interface WorldTitlePageProps {
     onEnterWorkspace: (worldId: string, campaignId?: string) => void;
-    onCreateWorld: () => void;
 }
 
 
@@ -97,8 +99,13 @@ function CampaignCard({ campaign, onClick, index }: { campaign: Campaign; onClic
 }
 
 // Main Component
-export function WorldTitlePage({ onEnterWorkspace, onCreateWorld }: WorldTitlePageProps) {
-    const worlds = useMemo(() => getWorldsSortedByRecent(), []);
+export function WorldTitlePage({ onEnterWorkspace }: WorldTitlePageProps) {
+    // Modal states
+    const [showCreateWorld, setShowCreateWorld] = useState(false);
+    const [showCreateCampaign, setShowCreateCampaign] = useState(false);
+
+    // Use state for worlds so we can update after creation
+    const [worlds, setWorlds] = useState(() => getWorldsSortedByRecent());
 
     const initialPhase: Phase = worlds.length === 0 ? 'title-reveal'
         : worlds.length === 1 ? 'title-reveal' : 'world-select';
@@ -114,7 +121,7 @@ export function WorldTitlePage({ onEnterWorkspace, onCreateWorld }: WorldTitlePa
 
     const exitTimeoutRef = useRef<number>();
 
-    // Sequenced Animations 
+    // Sequenced Animations
 
     // Title reveal sequence
     useEffect(() => {
@@ -193,19 +200,102 @@ export function WorldTitlePage({ onEnterWorkspace, onCreateWorld }: WorldTitlePa
         }
     }, [selectedWorld, triggerExit]);
 
+    const handleCreateWorld = useCallback(() => {
+        setShowCreateWorld(true);
+    }, []);
+
+    const handleWorldCreated = useCallback((world: { name: string; tagline?: string }) => {
+        // Create a new world object (in real app, this would come from the use case)
+        const now = new Date();
+        const newWorld: World = {
+            id: `world-${Date.now()}`,
+            name: world.name,
+            tagline: world.tagline,
+            campaigns: [],
+            entityCount: 0,
+            createdAt: now,
+            lastOpenedAt: now,
+        };
+
+        // Add to worlds list
+        setWorlds(prev => [newWorld, ...prev]);
+
+        // Close modal
+        setShowCreateWorld(false);
+
+        // Select the new world and show title reveal
+        setSelectedWorld(newWorld);
+        setShowConstellation(false);
+        setShowTitle(false);
+        setShowCampaigns(false);
+        setPhase('title-reveal');
+    }, []);
+
+    const handleCreateCampaign = useCallback(() => {
+        setShowCreateCampaign(true);
+    }, []);
+
+    const handleCampaignCreated = useCallback((campaign: {
+        name: string;
+        description?: string;
+        worldId: string;
+        safetyTools: SafetyToolState;
+    }) => {
+        // Create a new campaign object
+        const newCampaign: Campaign = {
+            id: `camp-${Date.now()}`,
+            name: campaign.name,
+            description: campaign.description,
+            sessionCount: 0,
+            entityCount: 0,
+            lastOpenedAt: new Date(),
+        };
+
+        // Find the world and add the campaign
+        setWorlds(prev => prev.map(world => {
+            if (world.id === campaign.worldId) {
+                return {
+                    ...world,
+                    campaigns: [...world.campaigns, newCampaign],
+                };
+            }
+            return world;
+        }));
+
+        // Update selectedWorld if it's the one we added to
+        if (selectedWorld?.id === campaign.worldId) {
+            setSelectedWorld(prev => prev ? {
+                ...prev,
+                campaigns: [...prev.campaigns, newCampaign],
+            } : null);
+        }
+
+        // Close modal
+        setShowCreateCampaign(false);
+
+        // Log safety tools configuration (in real app, this would be persisted)
+        console.log('Campaign created with safety tools:', campaign.safetyTools);
+    }, [selectedWorld]);
+
     // Render
-    
+
     // Empty state
-    if (worlds.length === 0) {
+    if (worlds.length === 0 && !showCreateWorld) {
         return (
             <div className={`world-title-page ${isExiting ? 'world-title-page--exiting' : ''}`}>
                 <div className="title-page__empty">
                     <Constellation visible={true} />
                     <p className="title-page__empty-text">Every world begins with a name.</p>
-                    <button className="title-page__create-btn" onClick={onCreateWorld}>
+                    <button className="title-page__create-btn" onClick={handleCreateWorld}>
                         Create Your World
                     </button>
                 </div>
+
+                <WorldCreationModal
+                    isOpen={showCreateWorld}
+                    onClose={() => setShowCreateWorld(false)}
+                    onCreate={handleWorldCreated}
+                />
             </div>
         );
     }
@@ -229,7 +319,7 @@ export function WorldTitlePage({ onEnterWorkspace, onCreateWorld }: WorldTitlePa
                         ))}
                     </div>
 
-                    <button className="title-page__new-world" onClick={onCreateWorld}>
+                    <button className="title-page__new-world" onClick={handleCreateWorld}>
                         <Plus size={14} />
                         <span>Create new world</span>
                     </button>
@@ -267,29 +357,63 @@ export function WorldTitlePage({ onEnterWorkspace, onCreateWorld }: WorldTitlePa
                                 </div>
                             </div>
                         )}
+
+                        {/* No campaigns: prompt to create */}
+                        {phase === 'title-reveal' && selectedWorld.campaigns.length === 0 && showTitle && (
+                            <div className="title-page__no-campaigns">
+                                <p className="title-page__no-campaigns-text">
+                                    This world awaits its first story.
+                                </p>
+                                <button
+                                    className="title-page__create-campaign-btn"
+                                    onClick={handleCreateCampaign}
+                                >
+                                    <Plus size={14} />
+                                    <span>Create Campaign</span>
+                                </button>
+                            </div>
+                        )}
                     </div>
 
                     {/* Lower section: campaign cards (slides up from below) */}
-                    <div className={`title-page__campaign-section ${showCampaigns ? 'title-page__campaign-section--visible' : ''}`}>
-                        <p className="title-page__campaign-prompt">Choose your campaign</p>
+                    {selectedWorld.campaigns.length > 1 && (
+                        <div className={`title-page__campaign-section ${showCampaigns ? 'title-page__campaign-section--visible' : ''}`}>
+                            <p className="title-page__campaign-prompt">Choose your campaign</p>
 
-                        <div className="title-page__campaign-grid">
-                            {selectedWorld.campaigns.map((campaign, i) => (
-                                <CampaignCard
-                                    key={campaign.id}
-                                    campaign={campaign}
-                                    onClick={() => handleCampaignSelect(campaign)}
-                                    index={i}
-                                />
-                            ))}
+                            <div className="title-page__campaign-grid">
+                                {selectedWorld.campaigns.map((campaign, i) => (
+                                    <CampaignCard
+                                        key={campaign.id}
+                                        campaign={campaign}
+                                        onClick={() => handleCampaignSelect(campaign)}
+                                        index={i}
+                                    />
+                                ))}
+                            </div>
+
+                            <button className="title-page__view-all" onClick={handleViewAll}>
+                                View all campaigns
+                            </button>
                         </div>
-
-                        <button className="title-page__view-all" onClick={handleViewAll}>
-                            View all campaigns
-                        </button>
-                    </div>
+                    )}
                 </div>
             )}
+
+            {/* World Creation Modal */}
+            <WorldCreationModal
+                isOpen={showCreateWorld}
+                onClose={() => setShowCreateWorld(false)}
+                onCreate={handleWorldCreated}
+            />
+
+            {/* Campaign Creation Modal */}
+            <CampaignCreationModal
+                isOpen={showCreateCampaign}
+                onClose={() => setShowCreateCampaign(false)}
+                onCreate={handleCampaignCreated}
+                worlds={worlds.map(w => ({ id: w.id, name: w.name }))}
+                preselectedWorldId={selectedWorld?.id}
+            />
         </div>
     );
 }

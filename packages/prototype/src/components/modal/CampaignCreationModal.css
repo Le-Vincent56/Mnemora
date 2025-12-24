@@ -1,0 +1,230 @@
+/* Campaign-specific modal sizing */
+.creation-modal__card--campaign {
+    max-width: 520px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+/* Textarea */
+.creation-modal__textarea {
+    width: 100%;
+    padding: var(--space-3) var(--space-4);
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    color: var(--text-primary);
+    background: var(--canvas);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    resize: vertical;
+    min-height: 80px;
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.creation-modal__textarea::placeholder {
+    color: var(--text-tertiary);
+}
+
+.creation-modal__textarea:hover {
+    border-color: var(--border-emphasis);
+}
+
+.creation-modal__textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow:
+        0 0 0 3px rgba(92, 122, 138, 0.2),
+        0 0 12px rgba(92, 122, 138, 0.1);
+}
+
+/* Select dropdown */
+.creation-modal__select {
+    width: 100%;
+    padding: var(--space-3) var(--space-4);
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    color: var(--text-primary);
+    background: var(--canvas);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2357534E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right var(--space-3) center;
+    padding-right: var(--space-10);
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.creation-modal__select:hover {
+    border-color: var(--border-emphasis);
+}
+
+.creation-modal__select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow:
+        0 0 0 3px rgba(92, 122, 138, 0.2),
+        0 0 12px rgba(92, 122, 138, 0.1);
+}
+
+.creation-modal__select--error {
+    border-color: #ef4444;
+}
+
+.creation-modal__select--error:focus {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+}
+
+/* Placeholder option styling */
+.creation-modal__select option[value=""] {
+    color: var(--text-tertiary);
+}
+
+/* Table Boundaries section */
+.creation-modal__boundaries {
+    margin-top: var(--space-2);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.creation-modal__boundaries-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    transition: background-color 0.15s ease;
+}
+
+.creation-modal__boundaries-toggle:hover {
+    background: var(--canvas);
+}
+
+.creation-modal__boundaries-toggle:focus-visible {
+    outline: none;
+    box-shadow: inset var(--shadow-glow);
+}
+
+.creation-modal__boundaries-chevron {
+    color: var(--text-tertiary);
+    flex-shrink: 0;
+    transition: transform 0.2s var(--ease-memory);
+}
+
+.creation-modal__boundaries-chevron--expanded {
+    transform: rotate(90deg);
+}
+
+.creation-modal__boundaries-label {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--text-primary);
+    flex: 1;
+}
+
+.creation-modal__boundaries-badge {
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    color: var(--text-tertiary);
+    padding: var(--space-1) var(--space-2);
+    background: var(--canvas);
+    border-radius: var(--radius-sm);
+    pointer-events: none; /* Prevent intercepting clicks on parent button */
+}
+
+.creation-modal__boundaries-content {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.25s var(--ease-memory);
+}
+
+.creation-modal__boundaries-content--expanded {
+    grid-template-rows: 1fr;
+}
+
+.creation-modal__boundaries-inner {
+    overflow: hidden;
+}
+
+.creation-modal__boundaries-description {
+    padding: var(--space-3) var(--space-4) var(--space-3);
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Safety Tools Placeholder (temporary) */
+.safety-tools-placeholder {
+    padding: 0 var(--space-4) var(--space-4);
+}
+
+.safety-tools-placeholder__text {
+    font-size: var(--text-xs);
+    color: var(--text-tertiary);
+    font-style: italic;
+    margin: 0 0 var(--space-3);
+}
+
+.safety-tools-placeholder__preview {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.safety-tools-placeholder__item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    background: var(--canvas);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+.safety-tools-placeholder__checkbox {
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+}
+
+.creation-modal__boundaries-tools {
+    padding: 0 var(--space-4) var(--space-4);
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .creation-modal__card--campaign {
+        max-height: 85vh;
+    }
+
+    .creation-modal__boundaries-toggle {
+        padding: var(--space-3);
+    }
+
+    .creation-modal__boundaries-description {
+        padding: 0 var(--space-3) var(--space-3);
+    }
+
+    .safety-tools-placeholder {
+        padding: 0 var(--space-3) var(--space-3);
+    }
+
+    .creation-modal__boundaries-tools {
+        padding: 0 var(--space-3) var(--space-3);
+    }
+}

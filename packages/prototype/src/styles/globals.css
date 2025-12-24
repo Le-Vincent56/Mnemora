@@ -7,16 +7,59 @@
     --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
 
-    /* Animation (matches packages/core/src/presentation/animations.ts) */
+    /* Type Scale (1.25 Major Third) */
+    --text-xs: 0.75rem;    /* 12px */
+    --text-sm: 0.875rem;   /* 14px */
+    --text-base: 1rem;     /* 16px */
+    --text-lg: 1.125rem;   /* 18px */
+    --text-xl: 1.25rem;    /* 20px */
+    --text-2xl: 1.5rem;    /* 24px */
+    --text-3xl: 1.875rem;  /* 30px */
+    --text-4xl: 2.25rem;   /* 36px */
+    --text-5xl: 3rem;      /* 48px */
+
+    /* Spacing Scale (4px base) */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-10: 40px;
+    --space-12: 48px;
+    --space-16: 64px;
+
+    /* Border Radius */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-full: 9999px;
+
+    /* Animation Timing */
     --timing-fast: 150ms;
     --timing-normal: 200ms;
     --timing-gentle: 300ms;
     --timing-stagger: 50ms;
+    --duration-instant: 100ms;
+    --duration-fast: 150ms;
+    --duration-normal: 200ms;
+    --duration-gentle: 300ms;
+    --duration-dramatic: 400ms;
+    --stagger-delay: 55ms;
 
+    /* Easing Curves */
     --easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
     --easing-enter: cubic-bezier(0, 0, 0.2, 1);
     --easing-exit: cubic-bezier(0.4, 0, 1, 1);
     --easing-organic: cubic-bezier(0.23, 1, 0.32, 1);
+    --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
+    --ease-in: cubic-bezier(0.32, 0, 0.67, 0);
+    --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-gentle: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-memory: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 /* SESSION MODE (default for prototype) */
@@ -38,6 +81,7 @@
 
     --border-subtle: #E2E8F0;
     --border-default: #CBD5E1;
+    --border-emphasis: #94A3B8;
 
     --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(15, 23, 42, 0.07);
     --shadow-md: 0 2px 4px rgba(15, 23, 42, 0.05), 0 4px 12px rgba(15, 23, 42, 0.1);
@@ -71,6 +115,7 @@
     /* Warm borders */
     --border-subtle: #EBE8E4;
     --border-default: #E0DCD7;
+    --border-emphasis: #D1CBC4;
 }
 
 /* Entity type colors (from design-principles.md) */

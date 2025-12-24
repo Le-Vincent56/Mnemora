@@ -142,6 +142,64 @@
     box-shadow: 0 4px 20px rgba(139, 115, 85, 0.3);
 }
 
+.title-page__create-btn:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-glow);
+}
+
+/* No Campaigns State */
+.title-page__no-campaigns {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+    margin-top: var(--space-6);
+    opacity: 0;
+    animation: fadeSlideUp 0.4s ease 0.3s forwards;
+}
+
+.title-page__no-campaigns-text {
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    font-style: italic;
+    color: var(--text-secondary);
+}
+
+.title-page__create-campaign-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: white;
+    background: var(--primary);
+    border: none;
+    border-radius: var(--radius-md);
+    padding: var(--space-3) var(--space-5);
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        box-shadow 0.15s ease,
+        transform 0.1s ease;
+}
+
+.title-page__create-campaign-btn:hover {
+    background: var(--primary-hover);
+    box-shadow: 0 4px 16px rgba(92, 122, 138, 0.25);
+}
+
+.title-page__create-campaign-btn:active {
+    transform: scale(0.98);
+}
+
+.title-page__create-campaign-btn:focus-visible {
+    outline: none;
+    box-shadow:
+        0 0 0 3px rgba(92, 122, 138, 0.2),
+        0 0 12px rgba(92, 122, 138, 0.1);
+}
+
 /* World Selection */
 .title-page__world-select {
     display: flex;
