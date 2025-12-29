@@ -135,7 +135,7 @@ export interface TimelinePhase {
     /** Animation keyframes (if applicable) */
     animation?: AnimationKeyframes | 'color-sequence';
     /** Imperative action (for mode-switch phase) */
-    action?: 'SWITCH-MODE'
+    action?: 'SWITCH_MODE'
     /** Bokeh particle configuration (if applicable) */
     particleConfig?: BokehConfig;
     /** Easing curve override (default: memory easing) */
@@ -221,5 +221,5 @@ export type CeremonyAction =
     | { type: 'START_CEREMONY'; ceremony: CeremonyType; bypass: boolean }
     | { type: 'PHASE_CHANGE'; phase: CeremonyPhase }
     | { type: 'PROGRESS_UPDATE'; progress: number }
-    | { type: 'CEREMONY_COMPLETE '}
+    | { type: 'CEREMONY_COMPLETE' }
     | { type: 'RESET' }
