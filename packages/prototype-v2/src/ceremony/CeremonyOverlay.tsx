@@ -1,66 +1,342 @@
-import { useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { AnimatePresence, motion, type Variants } from 'framer-motion';
-
-import { EASING, toSeconds, TIMING } from '@/tokens';
-
+import { AnimatePresence, motion } from 'framer-motion';
 import { useCeremony } from './CeremonyProvider';
-import { BokehParticle, useBokehParticles } from './BokehParticle';
-import type { CeremonyPhase } from './types';
-import { BOKEH_COLORS } from './types';
 
-// ===============================
-//          PHASE MAPPING
-// ===============================
+// ═══════════════════════════════════════════════════════════════════
+// VIVID DREAM PALETTE (Much stronger colors)
+// ═══════════════════════════════════════════════════════════════════
 
-type ParticlePhase = 'idle' | 'entering' | 'color-shift' | 'exiting';
+const DREAM_COLORS = {
+    violet: 'rgba(147, 112, 219, 0.92)',
+    violetDeep: 'rgba(127, 90, 199, 0.88)',
+    cornflower: 'rgba(100, 149, 237, 0.9)',
+    turquoise: 'rgba(72, 209, 204, 0.85)',
+    blush: 'rgba(255, 182, 193, 0.82)',
+    blushWarm: 'rgba(255, 160, 180, 0.78)',
+};
 
-function getParticlePhase(ceremonyPhase: CeremonyPhase): ParticlePhase {
-    switch (ceremonyPhase) {
-        case 'bokeh-in':
-            return 'entering';
-        case 'color-shift':
-            return 'color-shift';
-        case 'bokeh-out':
-            return 'exiting';
-        default:
-            return 'idle';
-    }
+// ═══════════════════════════════════════════════════════════════════
+// ORB CONFIGURATION
+// Larger orbs, more coverage, slower timing
+// ═══════════════════════════════════════════════════════════════════
+
+interface OrbConfig {
+    id: string;
+    x: string;
+    y: string;
+    size: string;
+    color: string;
+    delay: number;
+    duration: number;
+    drift: { x: number; y: number };
+    blur: number;
+    gradientStop: number; // Where gradient fades to transparent (higher = more coverage)
 }
 
-function getPhaseDuration(ceremonyPhase: CeremonyPhase): number {
-    switch (ceremonyPhase) {
-        case 'bokeh-in':
-            return 300;
-        case 'color-shift':
-            return 400;
-        case 'bokeh-out':
-            return 250;
-        default:
-            return 300;
-    }
+const MEMORY_ORBS: OrbConfig[] = [
+    // === FOUNDATION LAYER (massive, diffuse, fills the space) ===
+    {
+        id: 'foundation-1',
+        x: '50%',
+        y: '50%',
+        size: '250vh',
+        color: DREAM_COLORS.violetDeep,
+        delay: 0,
+        duration: 1.4,
+        drift: { x: 0, y: -20 },
+        blur: 100,
+        gradientStop: 85,
+    },
+    {
+        id: 'foundation-2',
+        x: '0%',
+        y: '100%',
+        size: '200vh',
+        color: DREAM_COLORS.cornflower,
+        delay: 0.05,
+        duration: 1.35,
+        drift: { x: 20, y: -30 },
+        blur: 90,
+        gradientStop: 80,
+    },
+    {
+        id: 'foundation-3',
+        x: '100%',
+        y: '0%',
+        size: '200vh',
+        color: DREAM_COLORS.blush,
+        delay: 0.08,
+        duration: 1.3,
+        drift: { x: -20, y: 25 },
+        blur: 95,
+        gradientStop: 80,
+    },
+
+    // === DEEP LAYER (large, set the mood) ===
+    {
+        id: 'deep-1',
+        x: '25%',
+        y: '75%',
+        size: '160vh',
+        color: DREAM_COLORS.violet,
+        delay: 0.1,
+        duration: 1.25,
+        drift: { x: 10, y: -40 },
+        blur: 80,
+        gradientStop: 75,
+    },
+    {
+        id: 'deep-2',
+        x: '80%',
+        y: '35%',
+        size: '150vh',
+        color: DREAM_COLORS.turquoise,
+        delay: 0.12,
+        duration: 1.2,
+        drift: { x: -15, y: -25 },
+        blur: 85,
+        gradientStop: 75,
+    },
+
+    // === MID LAYER (build visual richness) ===
+    {
+        id: 'mid-1',
+        x: '50%',
+        y: '45%',
+        size: '120vh',
+        color: DREAM_COLORS.violet,
+        delay: 0.15,
+        duration: 1.15,
+        drift: { x: 5, y: -50 },
+        blur: 70,
+        gradientStop: 70,
+    },
+    {
+        id: 'mid-2',
+        x: '15%',
+        y: '20%',
+        size: '110vh',
+        color: DREAM_COLORS.cornflower,
+        delay: 0.18,
+        duration: 1.1,
+        drift: { x: 20, y: -35 },
+        blur: 65,
+        gradientStop: 70,
+    },
+    {
+        id: 'mid-3',
+        x: '85%',
+        y: '80%',
+        size: '130vh',
+        color: DREAM_COLORS.blushWarm,
+        delay: 0.2,
+        duration: 1.12,
+        drift: { x: -12, y: -45 },
+        blur: 70,
+        gradientStop: 72,
+    },
+
+    // === ACCENT LAYER (add depth and highlights) ===
+    {
+        id: 'accent-1',
+        x: '35%',
+        y: '30%',
+        size: '80vh',
+        color: DREAM_COLORS.blush,
+        delay: 0.25,
+        duration: 1.0,
+        drift: { x: 8, y: -60 },
+        blur: 50,
+        gradientStop: 65,
+    },
+    {
+        id: 'accent-2',
+        x: '70%',
+        y: '65%',
+        size: '90vh',
+        color: DREAM_COLORS.turquoise,
+        delay: 0.22,
+        duration: 1.05,
+        drift: { x: -10, y: -55 },
+        blur: 55,
+        gradientStop: 68,
+    },
+    {
+        id: 'accent-3',
+        x: '55%',
+        y: '15%',
+        size: '70vh',
+        color: DREAM_COLORS.violet,
+        delay: 0.28,
+        duration: 0.95,
+        drift: { x: 0, y: -40 },
+        blur: 45,
+        gradientStop: 65,
+    },
+    {
+        id: 'accent-4',
+        x: '20%',
+        y: '55%',
+        size: '75vh',
+        color: DREAM_COLORS.cornflower,
+        delay: 0.3,
+        duration: 0.98,
+        drift: { x: 15, y: -45 },
+        blur: 48,
+        gradientStop: 66,
+    },
+];
+
+// ═══════════════════════════════════════════════════════════════════
+// MEMORY ORB COMPONENT
+// ═══════════════════════════════════════════════════════════════════
+
+function MemoryOrb({ config }: { config: OrbConfig }) {
+    return (
+        <motion.div
+            style={{
+                position: 'absolute',
+                left: config.x,
+                top: config.y,
+                width: config.size,
+                height: config.size,
+                marginLeft: `calc(-${config.size} / 2)`,
+                marginTop: `calc(-${config.size} / 2)`,
+                borderRadius: '50%',
+                background: `radial-gradient(circle at center, ${config.color} 0%, ${config.color.replace(/[\d.]+\)$/, '0.4)')} 50%, transparent ${config.gradientStop}%)`,
+                filter: `blur(${config.blur}px)`,
+                willChange: 'transform, opacity',
+            }}
+            initial={{
+                scale: 0.2,
+                opacity: 0,
+                x: 0,
+                y: 0,
+            }}
+            animate={{
+                scale: [0.2, 0.8, 1.05, 1],
+                opacity: [0, 0.7, 1, 1, 1, 0.9, 0],
+                x: [0, config.drift.x * 0.3, config.drift.x * 0.7, config.drift.x],
+                y: [0, config.drift.y * 0.4, config.drift.y * 0.75, config.drift.y],
+            }}
+            transition={{
+                duration: config.duration,
+                delay: config.delay,
+                ease: [0.23, 1, 0.32, 1],
+                opacity: {
+                    duration: config.duration,
+                    delay: config.delay,
+                    times: [0, 0.15, 0.35, 0.5, 0.7, 0.88, 1], // Longer hold at peak
+                },
+                scale: {
+                    duration: config.duration,
+                    delay: config.delay,
+                    times: [0, 0.3, 0.7, 1],
+                },
+            }}
+        />
+    );
 }
 
-function getStaggerDelay(ceremonyPhase: CeremonyPhase): number {
-    switch (ceremonyPhase) {
-        case 'bokeh-in':
-            return 300; // Particles stagger over 200ms
-        case 'bokeh-out':
-            return 200;
-        default:
-            return 0;
-    }
+// ═══════════════════════════════════════════════════════════════════
+// ETHEREAL VEIL (stronger, fuller coverage)
+// ═══════════════════════════════════════════════════════════════════
+
+function EtherealVeil() {
+    return (
+        <motion.div
+            style={{
+                position: 'absolute',
+                inset: '-50%',
+                width: '200%',
+                height: '200%',
+                background: `
+            radial-gradient(ellipse 100% 80% at 50% 120%, ${DREAM_COLORS.violet} 0%, transparent 60%),
+            radial-gradient(ellipse 80% 60% at 20% -20%, ${DREAM_COLORS.cornflower} 0%, transparent 50%),
+            radial-gradient(ellipse 70% 70% at 100% 50%, ${DREAM_COLORS.blush} 0%, transparent 55%),
+            radial-gradient(ellipse 90% 50% at 0% 50%, ${DREAM_COLORS.turquoise} 0%, transparent 45%)
+          `,
+                filter: 'blur(60px)',
+                opacity: 0,
+            }}
+            animate={{
+                opacity: [0, 0.5, 0.7, 0.7, 0.6, 0.4, 0],
+            }}
+            transition={{
+                duration: 1.4,
+                times: [0, 0.1, 0.3, 0.5, 0.7, 0.9, 1],
+                ease: 'easeInOut',
+            }}
+        />
+    );
 }
 
-function getStaggerDirection(
-    ceremonyPhase: CeremonyPhase
-): 'left-to-right' | 'right-to-left' {
-    return ceremonyPhase === 'bokeh-out' ? 'right-to-left' : 'left-to-right';
+// ═══════════════════════════════════════════════════════════════════
+// SOFT PULSE (at the crossing moment)
+// ═══════════════════════════════════════════════════════════════════
+
+function SoftPulse() {
+    return (
+        <motion.div
+            style={{
+                position: 'absolute',
+                inset: '-25%',
+                width: '150%',
+                height: '150%',
+                background: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.05) 40%, transparent 70%)',
+            }}
+            initial={{ scale: 0.6, opacity: 0 }}
+            animate={{
+                scale: [0.6, 1, 1.3],
+                opacity: [0, 0.8, 0],
+            }}
+            transition={{
+                duration: 0.8,
+                delay: 0.4,
+                ease: 'easeOut',
+            }}
+        />
+    );
 }
 
-// ===============================
-//              STYLES
-// ===============================
+// ═══════════════════════════════════════════════════════════════════
+// MEMORY SURFACING CEREMONY
+// ═══════════════════════════════════════════════════════════════════
+
+function MemorySurfacing({ isActive }: { isActive: boolean | undefined }) {
+    return (
+        <AnimatePresence>
+            {isActive && (
+                <motion.div
+                    key="memory-surfacing"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0, transition: { duration: 0.3 } }}
+                    style={{
+                        position: 'absolute',
+                        inset: 0,
+                        overflow: 'hidden',
+                    }}
+                >
+                    {/* Base veil for full coverage */}
+                    <EtherealVeil />
+
+                    {/* Memory orbs blooming */}
+                    {MEMORY_ORBS.map((orb) => (
+                        <MemoryOrb key={orb.id} config={orb} />
+                    ))}
+
+                    {/* Soft pulse at peak */}
+                    <SoftPulse />
+                </motion.div>
+            )}
+        </AnimatePresence>
+    );
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// MAIN OVERLAY
+// ═══════════════════════════════════════════════════════════════════
 
 const overlayStyles: React.CSSProperties = {
     position: 'fixed',
@@ -70,178 +346,8 @@ const overlayStyles: React.CSSProperties = {
     overflow: 'hidden',
 };
 
-// ===============================
-//         GRADIENT WASH
-// ===============================
-
-/**
- * Creates a sweeping color wash effect from left to right.
- * Uses multiple gradient layers with staggered timing for depth.
- */
-function DirectionalWash({ isActive }: { isActive: boolean | undefined }) {
-    // Base gradient: wide linear gradient containing all ceremony coloers
-    // Positioned to sweep from off-screen left to off-screen right
-    const baseGradient = `linear-gradient(
-        90deg,
-        transparent 0%,
-        ${BOKEH_COLORS.violet} 15%,
-        ${BOKEH_COLORS.cornflower} 35%,
-        ${BOKEH_COLORS.turquoise} 55%,
-        ${BOKEH_COLORS.blush} 75%,
-        transparent 100%
-    )`;
-
-    // Softer overlay gradient for dreamy quality
-    const softGradient = `linear-gradient(
-        90deg,
-        transparent 0%,
-        ${BOKEH_COLORS.cornflower.replace('0.4', '0.25')} 25%,
-        ${BOKEH_COLORS.turquoise.replace('0.4', '0.3')} 50%,
-        ${BOKEH_COLORS.blush.replace('0.3', '0.2')} 75%,
-        transparent 100%
-    )`;
-
-    // Accent gradient with vertical variation
-    const accentGradient = `radial-gradient(
-        ellipse 80% 120% at 50% 30%,
-        ${BOKEH_COLORS.violet.replace('0.4', '0.35')} 0%,
-        transparent 60%
-    ), radial-gradient (
-        ellipse 60% 80% at 50% 70%,
-        ${BOKEH_COLORS.blush.replace('0.3', '0.25')} 0%,
-        transparent 50%
-    )`;
-
-    // Animation: sweep from -100% to +100% (panel is 300vw wide)
-    const sweepVariants: Variants = {
-        initial: {
-            x: '100%',
-            opacity: 0,
-        },
-        animate: {
-            x: '100%',
-            opacity: [0, 1, 1, 1, 0],
-            transition: {
-                x: {
-                    duration: 1,
-                    ease: [0.23, 1, 0.32, 1],
-                },
-                opacity: {
-                    duration: 1,
-                    times: [0, 0.1, 0.5, 0.9, 1],
-                    ease: 'easeInOut',
-                },
-            },
-        },
-        exit: {
-            opacity: 0,
-            transition: { duration: 0.15 },
-        },
-    };
-
-    // Staggered layer variants (slight delay for depth)
-    const layerVariants = (delay: number): Variants => ({
-        initial: {
-            x: '-100%',
-            opacity: 0,
-        },
-        animate: {
-            x: '100%',
-            opacity: [0, 0.8, 0.8, 0.8, 0],
-            transition: {
-                x: {
-                    duration: 1,
-                    ease: [0.23, 1, 0.32, 1],
-                    delay,
-                },
-                opacity: {
-                    duration: 1,
-                    times: [0, 0.15, 0.5, 0.85, 1],
-                    ease: 'easeInOut',
-                    delay,
-                },
-            },
-        },
-        exit: {
-            opacity: 0,
-            transition: { duration: 0.1 },
-        },
-    });
-
-    // Shared layer styles
-    const layerStyle: React.CSSProperties = {
-        position: 'absolute',
-        top: '-20%',
-        left: 0,
-        width: '300vw',
-        height: '140%',
-        willChange: 'transform, opacity',
-    };
-
-    return (
-        <AnimatePresence>
-            {isActive && (
-                <>
-                    {/* Layer 1: Main sweep (primary colors) */}
-                    <motion.div
-                        key="wash-main"
-                        style={{
-                            ...layerStyle,
-                            background: baseGradient,
-                            filter: 'blur(40px)',
-                        }}
-                        variants={sweepVariants}
-                        initial="initial"
-                        animate="animate"
-                        exit="exit"
-                    />
-
-                    {/* Layer 2: Soft overlay (slightly delayed for depth) */}
-                    <motion.div
-                        key="wash-soft"
-                        style={{
-                            ...layerStyle,
-                            background: softGradient,
-                            filter: 'blur(60px)',
-                        }}
-                        variants={layerVariants(0.05)}
-                        initial="initial"
-                        animate="animate"
-                        exit="exit"
-                    />
-
-                    {/* Layer 3: Vertical accent shapes (more delay) */}
-                    <motion.div
-                        key="wash-accent"
-                        style={{
-                            ...layerStyle,
-                            background: accentGradient,
-                            filter: 'blur(30px)',
-                            mixBlendMode: 'screen',
-                        }}
-                        variants={layerVariants(0.08)}
-                        initial="initial"
-                        animate="animate"
-                        exit="exit"
-                    />
-                </>
-            )}
-        </AnimatePresence>
-    );
-}
-
-// ===============================
-//         MAIN COMPONENT
-// ===============================
-
 export function CeremonyOverlay() {
     const { state, timeline, reducedMotion } = useCeremony();
-
-    // Smaller accent particles (fewer, for depth)
-    const particles = useBokehParticles(
-        12,
-        timeline?.phases.find((p) => p.particleConfig)?.particleConfig?.colorBias ?? 'neutral'
-    );
 
     const shouldShowOverlay =
         !reducedMotion &&
@@ -249,86 +355,14 @@ export function CeremonyOverlay() {
         state.status === 'running' &&
         ['bokeh-in', 'color-shift', 'bokeh-out'].includes(state.phase);
 
-    const particlePhase = getParticlePhase(state.phase);
-    const phaseDuration = getPhaseDuration(state.phase);
-    const staggerDelay = getStaggerDelay(state.phase);
-    const staggerDirection = getStaggerDirection(state.phase);
-
     if (!timeline?.hasBokeh || reducedMotion) {
         return null;
     }
 
     return createPortal(
         <div style={overlayStyles}>
-            <DirectionalWash isActive={shouldShowOverlay}/>
-
-            {/* Accent particles (follow the sweep) */}
-            <AnimatePresence>
-                {shouldShowOverlay && (
-                    <motion.div
-                        key="particles-container"
-                        initial={{ opacity: 0}}
-                        animate={{ opacity: 1}}
-                        exit={{ opacity: 0}}
-                        transition={{ duration: 0.2 }}
-                        style={{ position: 'absolute', inset: 0 }}
-                    >
-                        {particles.map((particle) => (
-                            <BokehParticle
-                                key={particle.id}
-                                particle={particle}
-                                phase={particlePhase}
-                                staggerDelay={staggerDelay}
-                                staggerDirection={staggerDirection}
-                                phaseDuration={phaseDuration}
-                            />
-                        ))}
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            <MemorySurfacing isActive={shouldShowOverlay} />
         </div>,
         document.body
-    );
-}
-
-// ===============================
-//    STANDALONE PARTICLE FIELD
-// ===============================
-
-interface ParticleFieldProps {
-    particles: ReturnType<typeof useBokehParticles>;
-    phase: ParticlePhase;
-    phaseDuration?: number;
-    staggerDelay?: number;
-    staggerDirection?: 'left-to-right' | 'right-to-left'
-}
-
-export function ParticleField({
-    particles,
-    phase,
-    phaseDuration = 300,
-    staggerDelay = 300,
-    staggerDirection = 'left-to-right',
-}: ParticleFieldProps) {
-    return (
-        <div
-            style={{
-                position: 'fixed',
-                inset: 0,
-                pointerEvents: 'none',
-                overflow: 'hidden',
-            }}
-        >
-            {particles.map((particle) => (
-                <BokehParticle
-                    key={particle.id}
-                    particle={particle}
-                    phase={phase}
-                    staggerDelay={staggerDelay}
-                    staggerDirection={staggerDirection}
-                    phaseDuration={phaseDuration}
-                />
-            ))}
-        </div>
     );
 }
