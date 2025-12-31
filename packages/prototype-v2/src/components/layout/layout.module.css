@@ -1,0 +1,655 @@
+/* 
+=====================================
+  APP SHELL - Main layout container
+=====================================
+*/
+
+.shell {
+    min-height: 100vh;
+    min-height: 100dvh;
+    background-color: var(--canvas);
+    transition: background-color var(--duration-gentle) var(--ease-out);
+}
+
+/* 
+=====================================
+ICON RAIL - Fixed vertical navigation
+=====================================
+*/
+
+.rail {
+    position: fixed;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: var(--icon-rail-width);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-block: var(--space-4);
+    gap: var(--space-1);
+    background-color: var(--surface);
+    border-inline-end: 1px solid var(--border-subtle);
+    transition:
+        background-color var(--duration-gentle) var(--ease-out),
+        border-color var(--duration-gentle) var(--ease-out);
+    z-index: 100;
+}
+
+.railGroup {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-1);
+    width: 100%;
+}
+
+.railGroupBottom {
+    margin-block-start: auto;
+}
+
+.railSeparator {
+    width: 24px;
+    height: 1px;
+    background-color: var(--border-subtle);
+    margin-block: var(--space-2);
+    border-radius: var(--radius-full);
+}
+
+/* 
+=====================================
+ICON RAIL ITEM - Individual navigation buttons
+=====================================
+*/
+
+.railItem {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: var(--radius-md);
+    background-color: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition:
+        background-color var(--duration-fast) var(--ease-out),
+        color var(--duration-fast) var(--ease-out),
+        transform var(--duration-fast) var(--ease-out);
+}
+
+.railItem:hover {
+    background-color: var(--surface-hover);
+    color: var(--text-primary);
+}
+
+.railItem:active {
+    transform: scale(0.96);
+    background-color: var(--surface-active);
+}
+
+.railItem:focus-visible {
+    box-shadow: var(--focus-ring);
+}
+
+.railItemActive {
+    background-color: var(--primary-subtle);
+    color: var(--primary);
+}
+
+.railItemActive:hover {
+    background-color: var(--primary-subtle);
+    color: var(--primary-hover);
+}
+
+.railItemIcon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+/* 
+=====================================
+        MODE SWITCH BUTTON
+=====================================
+*/
+
+.modeSwitch {
+    background-color: var(--primary-subtle);
+    color: var(--primary);
+}
+
+.modeSwitch:hover {
+    background-color: var(--primary);
+    color: var(--text-inverse);
+}
+
+.modeSwitch:active {
+    background-color: var(--primary-active);
+}
+
+.modeSwitch[data-ceremony-active="true"] {
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.modeswitchEnhanced {
+    /* Enable GPU acceleration for smooth animations */
+    will-change: transform;
+    transform: translateZ(0);
+
+    /* Remove default :active transform - Framer handles this */
+    &:active {
+        transform: none;
+    }
+}
+
+.ceremonyGlow {
+    position: absolute;
+    inset: -4px;
+    border-radius: calc(var(--radius-md) + 4px);
+    background: radial-gradient(circle at center,
+            transparent 30%,
+            var(--primary) 70%,
+            transparent 100%);
+    opacity: 0;
+    pointer-events: none;
+    z-index: -1;
+    filter: blur(8px);
+}
+
+/* Session mode glow shifts cooler */
+[data-mode="session"] .ceremonyGlow {
+    background: radial-gradient(circle at center,
+            transparent 30%,
+            var(--primary) 60%,
+            rgba(100, 149, 237, 0.4) 100%);
+}
+
+/* Prep mode glow stays warm */
+[data-mode="prep"] .ceremonyGlow {
+    background: radial-gradient(circle at center,
+            transparent 30%,
+            var(--primary) 60%,
+            rgba(255, 182, 193, 0.3) 100%);
+}
+
+/* 
+=====================================
+    TOOLTIP - Label on hover/focus
+=====================================
+*/
+
+.tooltip {
+    position: absolute;
+    left: calc(100% + var(--space-2));
+    top: 50%;
+    transform: translateY(-50%);
+    padding: var(--space-1) var(--space-2);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--text-inverse);
+    white-space: nowrap;
+    background-color: var(--text-primary);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-md);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+        opacity var(--duration-fast) var(--ease-out),
+        visibility var(--duration-fast) var(--ease-out);
+    z-index: 110;
+}
+
+.tooltip::before {
+    content: '';
+    position: absolute;
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 5px solid transparent;
+    border-right-color: var(--text-primary);
+}
+
+.railItem:hover .tooltip,
+.railItem:focus-visible .tooltip {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* 
+=====================================
+            CONTENT AREA
+=====================================
+*/
+
+.content {
+    margin-inline-start: var(--icon-rail-width);
+    padding: var(--space-6);
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+.contentHeader {
+    margin-block-end: var(--space-6);
+}
+
+.contentTitle {
+    font-family: var(--font-display);
+    font-size: var(--text-3xl);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    line-height: var(--leading-tight);
+    letter-spacing: -0.01em;
+}
+
+.contentSubtitle {
+    margin-block-start: var(--space-1);
+    font-size: var(--text-base);
+    color: var(--text-secondary);
+}
+
+/* 
+=====================================
+        SESSION TIMER DISPLAY
+=====================================
+*/
+
+.timerDisplay {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    width: 44px;
+    height: 44px;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
+    color: var(--text-secondary);
+    background-color: transparent;
+    border-radius: var(--radius-md);
+}
+
+.timerDisplayIcon {
+    width: 14px;
+    height: 14px;
+    color: var(--text-tertiary);
+}
+
+.timerDisplayTime {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+}
+
+/* 
+=====================================
+            RESPONSIVENESS
+=====================================
+*/
+
+@media (max-width: 640px) {
+    .content {
+        padding: var(--space-4);
+    }
+}
+
+/* 
+=====================================
+            REDUCED MOTION
+=====================================
+*/
+
+@media (prefers-reduced-motion: reduce) {
+
+    .shell,
+    .rail,
+    .railItem,
+    .modeSwitch,
+    .tooltip {
+        transition: none;
+    }
+
+    .modeSwitchEnhanced {
+        will-change: auto;
+    }
+
+    .ceremonyGlow {
+        /* 
+=====================================
+  APP SHELL - Main layout container
+=====================================
+*/
+
+.shell {
+    min-height: 100vh;
+    min-height: 100dvh;
+    background-color: var(--canvas);
+    transition: background-color var(--duration-gentle) var(--ease-out);
+}
+
+/* 
+=====================================
+ICON RAIL - Fixed vertical navigation
+=====================================
+*/
+
+.rail {
+    position: fixed;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: var(--icon-rail-width);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-block: var(--space-4);
+    gap: var(--space-1);
+    background-color: var(--surface);
+    border-inline-end: 1px solid var(--border-subtle);
+    transition:
+        background-color var(--duration-gentle) var(--ease-out),
+        border-color var(--duration-gentle) var(--ease-out);
+    z-index: 100;
+}
+
+.railGroup {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-1);
+    width: 100%;
+}
+
+.railGroupBottom {
+    margin-block-start: auto;
+}
+
+.railSeparator {
+    width: 24px;
+    height: 1px;
+    background-color: var(--border-subtle);
+    margin-block: var(--space-2);
+    border-radius: var(--radius-full);
+}
+
+/* 
+=====================================
+ICON RAIL ITEM - Individual navigation buttons
+=====================================
+*/
+
+.railItem {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: var(--radius-md);
+    background-color: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition:
+        background-color var(--duration-fast) var(--ease-out),
+        color var(--duration-fast) var(--ease-out),
+        transform var(--duration-fast) var(--ease-out);
+}
+
+.railItem:hover {
+    background-color: var(--surface-hover);
+    color: var(--text-primary);
+}
+
+.railItem:active {
+    transform: scale(0.96);
+    background-color: var(--surface-active);
+}
+
+.railItem:focus-visible {
+    box-shadow: var(--focus-ring);
+}
+
+.railItemActive {
+    background-color: var(--primary-subtle);
+    color: var(--primary);
+}
+
+.railItemActive:hover {
+    background-color: var(--primary-subtle);
+    color: var(--primary-hover);
+}
+
+.railItemIcon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+/* 
+=====================================
+        MODE SWITCH BUTTON
+=====================================
+*/
+
+.modeSwitch {
+    background-color: var(--primary-subtle);
+    color: var(--primary);
+}
+
+.modeSwitch:hover {
+    background-color: var(--primary);
+    color: var(--text-inverse);
+}
+
+.modeSwitch:active {
+    background-color: var(--primary-active);
+}
+
+.modeSwitch[data-ceremony-active="true"] {
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.modeswitchEnhanced {
+    /* Enable GPU acceleration for smooth animations */
+    will-change: transform;
+    transform: translateZ(0);
+
+    /* Remove default :active transform - Framer handles this */
+    &:active {
+        transform: none;
+    }
+}
+
+.ceremonyGlow {
+    position: absolute;
+    inset: -4px;
+    border-radius: calc(var(--radius-md) + 4px);
+    background: radial-gradient(
+        circle at center,
+        transparent 30%,
+        var(--primary) 70%,
+        transparent 100%
+    );
+    opacity: 0;
+    pointer-events: none;
+    z-index: -1;
+    filter: blur(8px);
+}
+
+/* Session mode glow shifts cooler */
+[data-mode="session"] .ceremonyGlow {
+    background: radial-gradient(
+        circle at center,
+        transparent 30%,
+        var(--primary) 60%,
+        rgba(100, 149, 237, 0.4) 100%
+    );
+}
+
+/* Prep mode glow stays warm */
+[data-mode="prep"] .ceremonyGlow {
+    background: radial-gradient(
+        circle at center,
+        transparent 30%,
+        var(--primary) 60%,
+        rgba(255, 182, 193, 0.3) 100%
+    );
+}
+
+/* 
+=====================================
+    TOOLTIP - Label on hover/focus
+=====================================
+*/
+
+.tooltip {
+    position: absolute;
+    left: calc(100% + var(--space-2));
+    top: 50%;
+    transform: translateY(-50%);
+    padding: var(--space-1) var(--space-2);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--text-inverse);
+    white-space: nowrap;
+    background-color: var(--text-primary);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-md);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+        opacity var(--duration-fast) var(--ease-out),
+        visibility var(--duration-fast) var(--ease-out);
+    z-index: 110;
+}
+
+.tooltip::before {
+    content: '';
+    position: absolute;
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 5px solid transparent;
+    border-right-color: var(--text-primary);
+}
+
+.railItem:hover .tooltip,
+.railItem:focus-visible .tooltip {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* 
+=====================================
+            CONTENT AREA
+=====================================
+*/
+
+.content {
+    margin-inline-start: var(--icon-rail-width);
+    padding: var(--space-6);
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+.contentHeader {
+    margin-block-end: var(--space-6);
+}
+
+.contentTitle {
+    font-family: var(--font-display);
+    font-size: var(--text-3xl);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    line-height: var(--leading-tight);
+    letter-spacing: -0.01em;
+}
+
+.contentSubtitle {
+    margin-block-start: var(--space-1);
+    font-size: var(--text-base);
+    color: var(--text-secondary);
+}
+
+/* 
+=====================================
+        SESSION TIMER DISPLAY
+=====================================
+*/
+
+.timerDisplay {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    width: 44px;
+    height: 44px;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
+    color: var(--text-secondary);
+    background-color: transparent;
+    border-radius: var(--radius-md);
+}
+
+.timerDisplayIcon {
+    width: 14px;
+    height: 14px;
+    color: var(--text-tertiary);
+}
+
+.timerDisplayTime {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+}
+
+/* 
+=====================================
+            RESPONSIVENESS
+=====================================
+*/
+
+@media (max-width: 640px) {
+    .content {
+        padding: var(--space-4);
+    }
+}
+
+/* 
+=====================================
+            REDUCED MOTION
+=====================================
+*/
+
+@media (prefers-reduced-motion: reduce) {
+
+    .shell,
+    .rail,
+    .railItem,
+    .modeSwitch,
+    .tooltip {
+        transition: none;
+    }
+
+    .modeSwitchEnhanced {
+        will-change: auto;
+    }
+
+    .ceremonyGlow {
+        display: none;
+    }
+}display: none;
+    }
+}

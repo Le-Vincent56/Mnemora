@@ -45,6 +45,41 @@ export const EASING = {
      * Use for: General-purpose when no specific feel is needed.
      */
     standard: [0.4, 0, 0.2, 1] as EasingTuple,
+
+    /**
+     * Out Quart - Immediate response, quick settle.
+     * Physical sensation: Snappy, responsive, and confident.
+     * Use for: Button press acknowledgement, immediate feedback
+     */
+    outQuart: [0.25, 1, 0.5, 1] as EasingTuple,
+
+    /**
+     * In Quad - Gentle start, accelerates to finish.
+     * Physical sensation: Gathering momentum, building tension
+     * Use for: Gathering threads flowing inward during ceremony.
+     */
+    inQuad: [0.55, 0.085, 0.68, 0.53] as EasingTuple,
+
+    /**
+     * Out Expo - Explosive start, very long tail.
+     * Physical sensation: Burst of energy, satisfying release.
+     * Use for: Radial burst expansion during ceremony transform.
+     */
+    outExpo: [0.16, 1, 0.3, 1] as EasingTuple,
+
+    /**
+     * In-Out Sine - Organic, wave-like acceleration.
+     * Physical sensation: Natural rhythm, breathing quality.
+     * Use for: Shimmer pass, settling animations.
+     */
+    inOutSine: [0.37, 0, 0.63, 1] as EasingTuple,
+
+    /**
+     * Linear - No acceleration.
+     * Physical sensation: Mechanical, uniform, held tension.
+     * Use for: Held breath pause (stillness through absence of curve).
+     */
+    linear: [0, 0, 1, 1] as EasingTuple,
 } as const;
 
 /** Type for easing keys */
