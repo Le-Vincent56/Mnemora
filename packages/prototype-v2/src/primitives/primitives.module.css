@@ -374,3 +374,336 @@
 .button-danger:active:not(:disabled) {
     background: #7A2020;
 }
+
+/*
+-------------------------------------
+                ICON
+-------------------------------------
+*/
+
+.icon {
+    flex-shrink: 0;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.icon-color-primary {
+    color: var(--text-primary);
+}
+
+.icon-color-secondary {
+    color: var(--text-secondary);
+}
+
+.icon-color-muted {
+    color: var(--text-tertiary);
+}
+
+.icon-color-inherit {
+    color: inherit;
+}
+
+.icon-color-danger {
+    color: var(--danger);
+}
+
+.icon-color-success {
+    color: var(--success);
+}
+
+/*
+-------------------------------------
+                BADGE
+-------------------------------------
+*/
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-full);
+    font-family: var(--font-body);
+    font-weight: var(--font-medium);
+    white-space: nowrap;
+}
+
+/* Sizes */
+.badge-sm {
+    height: 20px;
+    padding: 0 var(--space-2);
+    font-size: var(--text-xs);
+}
+
+.badge-md {
+    height: 24px;
+    padding: 0 var(--space-3);
+    font-size: var(--text-sm);
+}
+
+/* Variants */
+.badge-default {
+    background: var(--surface-hover);
+    color: var(--text-secondary);
+}
+
+.badge-character {
+    background: var(--entity-character-subtle);
+    color: var(--entity-character);
+}
+
+.badge-location {
+    background: var(--entity-location-subtle);
+    color: var(--entity-location);
+}
+
+.badge-faction {
+    background: var(--entity-faction-subtle);
+    color: var(--entity-faction);
+}
+
+.badge-session {
+    background: var(--entity-session-subtle);
+    color: var(--entity-session);
+}
+
+.badge-note {
+    background: var(--entity-note-subtle);
+    color: var(--entity-note);
+}
+
+/*
+-------------------------------------
+                DIVIDER
+-------------------------------------
+*/
+
+.divider {
+    border: none;
+    background: var(--border-subtle);
+    flex-shrink: 0;
+}
+
+.divider-horizontal {
+    width: 100%;
+    height: 1px;
+}
+
+.divider-vertical {
+    width: 1px;
+    height: 100%;
+    align-self: stretch;
+}
+
+/* Spacing for horizontal */
+.divider-horizontal.divider-spacing-sm {
+    margin-top: var(--space-2);
+    margin-bottom: var(--space-2);
+}
+
+.divider-horizontal.divider-spacing-md {
+    margin-top: var(--space-4);
+    margin-bottom: var(--space-4);
+}
+
+.divider-horizontal.divider-spacing-lg {
+    margin-top: var(--space-6);
+    margin-bottom: var(--space-6);
+}
+
+/* Spacing for vertical */
+.divider-vertical.divider-spacing-sm {
+    margin-left: var(--space-2);
+    margin-right: var(--space-2);
+}
+
+.divider-vertical.divider-spacing-md {
+    margin-left: var(--space-4);
+    margin-right: var(--space-4);
+}
+
+.divider-vertical.divider-spacing-lg {
+    margin-left: var(--space-6);
+    margin-right: var(--space-6);
+}
+
+/*
+-------------------------------------
+            EMPTY STATE
+-------------------------------------
+*/
+
+.emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-4);
+    padding: var(--space-8);
+    text-align: center;
+}
+
+.emptyStateIcon {
+    width: 48px;
+    height: 48px;
+}
+
+.emptyStateTitle {
+    font-family: var(--font-body);
+    font-size: var(--text-lg);
+    font-weight: var(--font-semibold);
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.emptyStateDescription {
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--text-tertiary);
+    max-width: 280px;
+    margin: 0;
+}
+
+.emptyStateAction {
+    margin-top: var(--space-2);
+}
+
+/*
+-------------------------------------
+               SPINNER
+-------------------------------------
+*/
+
+.spinner {
+    display: inline-block;
+    border: 2px solid var(--border-default);
+    border-top-color: var(--primary);
+    border-radius: var(--radius-full);
+    animation: spin 0.8s linear infinite;
+}
+
+.spinner-sm {
+    width: 16px;
+    height: 16px;
+}
+
+.spinner-md {
+    width: 20px;
+    height: 20px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .spinner {
+        animation: none;
+        border-color: var(--primary);
+        border-top-color: transparent;
+        border-right-color: transparent;
+    }
+}
+
+/*
+-------------------------------------
+               TOOLTIP
+-------------------------------------
+*/
+
+.tooltip {
+    position: absolute;
+    z-index: 50;
+    max-width: 200px;
+
+    background: var(--surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+
+    /* Memory surfacing animation */
+    animation: tooltipEnter var(--duration-fast) var(--ease-memory) forwards;
+}
+
+.tooltipContent {
+    display: block;
+    padding: var(--space-2) var(--space-3);
+
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    line-height: var(--leading-normal);
+    color: var(--text-primary);
+}
+
+/* Arrow - CSS triangle technique */
+.tooltipArrow {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border-subtle);
+    transform: rotate(45deg);
+}
+
+/* Arrow positioning per side */
+.tooltip-top .tooltipArrow {
+    bottom: -5px;
+    left: 50%;
+    margin-left: -4px;
+    border-top: none;
+    border-left: none;
+}
+
+.tooltip-bottom .tooltipArrow {
+    top: -5px;
+    left: 50%;
+    margin-left: -4px;
+    border-bottom: none;
+    border-right: none;
+}
+
+.tooltip-left .tooltipArrow {
+    right: -5px;
+    top: 50%;
+    margin-top: -4px;
+    border-bottom: none;
+    border-left: none;
+}
+
+.tooltip-right .tooltipArrow {
+    left: -5px;
+    top: 50%;
+    margin-top: -4px;
+    border-top: none;
+    border-right: none;
+}
+
+/* Entry animation - memory surfacing from below */
+@keyframes tooltipEnter {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Exit state */
+.tooltipExiting {
+    opacity: 0;
+    transition: opacity var(--duration-instant) var(--ease-out);
+}
+
+/* Reduced motion: no animation */
+@media (prefers-reduced-motion: reduce) {
+    .tooltip {
+        animation: none;
+    }
+
+    .tooltipExiting {
+        transition: none;
+    }
+}

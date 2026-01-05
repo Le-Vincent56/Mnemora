@@ -17,15 +17,24 @@ INVARIANT TOKENS (same in all modes)
     --font-mono: 'JetBrains Mono', monospace;
 
     /* Type Scale */
-    --text-xs: 0.75rem;     /* 12px */
-    --text-sm: 0.875rem;    /* 14px */
-    --text-base: 1rem;      /* 16px */
-    --text-lg: 1.125rem;    /* 18px */
-    --text-xl: 1.25rem;     /* 20px */
-    --text-2xl: 1.5rem;     /* 24px */
-    --text-3xl: 1.875rem;   /* 30px */
-    --text-4xl: 2.25rem;    /* 36px */
-    --text-5xl: 3rem;       /* 48px */
+    --text-xs: 0.75rem;
+    /* 12px */
+    --text-sm: 0.875rem;
+    /* 14px */
+    --text-base: 1rem;
+    /* 16px */
+    --text-lg: 1.125rem;
+    /* 18px */
+    --text-xl: 1.25rem;
+    /* 20px */
+    --text-2xl: 1.5rem;
+    /* 24px */
+    --text-3xl: 1.875rem;
+    /* 30px */
+    --text-4xl: 2.25rem;
+    /* 36px */
+    --text-5xl: 3rem;
+    /* 48px */
 
     /* Line Heights */
     --leading-none: 1;
@@ -75,7 +84,7 @@ INVARIANT TOKENS (same in all modes)
     --entity-character-subtle: rgba(159, 107, 142, 0.12);
     --entity-location-subtle: rgba(107, 142, 159, 0.12);
     --entity-faction-subtle: rgba(139, 159, 107, 0.12);
-    --entiyy-session-subtle: rgba(159, 139, 107, 0.12);
+    --entity-session-subtle: rgba(159, 139, 107, 0.12);
     --entity-note-subtle: rgba(138, 138, 135, 0.12);
 
     /* Primary Brand */
@@ -114,7 +123,8 @@ INVARIANT TOKENS (same in all modes)
     --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
     --ease-in: cubic-bezier(0.32, 0, 0.67, 0);
     --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-    --ease-memory: cubic-bezier(0.23, 1, 0.32, 1);  /* Signature easing */
+    --ease-memory: cubic-bezier(0.23, 1, 0.32, 1);
+    /* Signature easing */
     --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
 
     /*
@@ -220,8 +230,8 @@ body {
     line-height: var(--leading-normal);
     color: var(--text-primary);
     background-color: var(--canvas);
-    transition: 
-        background-color var(--duration-normal) var(--ease-out), 
+    transition:
+        background-color var(--duration-normal) var(--ease-out),
         color var(--duration-normal) var(--ease-out);
 }
 
@@ -231,6 +241,7 @@ body {
 -------------------------------------
 */
 @media (prefers-reduced-motion: reduce) {
+
     *,
     *::before,
     *::after {
