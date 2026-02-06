@@ -5,13 +5,13 @@ describe('EventOutcome', () => {
     describe('parseEventOutcomes', () => {
         it('should parse valid JSON array', () => {
             const json = JSON.stringify([
-                { entityId: 'abc-123', field: 'status', toValue: 'dead', fromValue: 'alive', description: 'Killed in battle' },
+                { entityID: 'abc-123', field: 'status', toValue: 'dead', fromValue: 'alive', description: 'Killed in battle' },
             ]);
 
             const outcomes = parseEventOutcomes(json);
 
             expect(outcomes).toHaveLength(1);
-            expect(outcomes[0].entityId).toBe('abc-123');
+            expect(outcomes[0].entityID).toBe('abc-123');
             expect(outcomes[0].field).toBe('status');
             expect(outcomes[0].toValue).toBe('dead');
             expect(outcomes[0].fromValue).toBe('alive');
@@ -20,7 +20,7 @@ describe('EventOutcome', () => {
 
         it('should parse outcomes without optional fields', () => {
             const json = JSON.stringify([
-                { entityId: 'abc', field: 'location', toValue: 'Mordor' },
+                { entityID: 'abc', field: 'location', toValue: 'Mordor' },
             ]);
 
             const outcomes = parseEventOutcomes(json);
@@ -48,10 +48,10 @@ describe('EventOutcome', () => {
 
         it('should filter out invalid entries from array', () => {
             const json = JSON.stringify([
-                { entityId: 'valid', field: 'status', toValue: 'alive' },
-                { entityId: 123, field: 'status', toValue: 'dead' },  // entityId not string
-                { entityId: 'valid2', toValue: 'value' },  // missing field
-                { entityId: 'valid3', field: 'status' },   // missing toValue
+                { entityID: 'valid', field: 'status', toValue: 'alive' },
+                { entityID: 123, field: 'status', toValue: 'dead' },  // entityId not string
+                { entityID: 'valid2', toValue: 'value' },  // missing field
+                { entityID: 'valid3', field: 'status' },   // missing toValue
                 null,
                 'string entry',
             ]);
@@ -59,14 +59,14 @@ describe('EventOutcome', () => {
             const outcomes = parseEventOutcomes(json);
 
             expect(outcomes).toHaveLength(1);
-            expect(outcomes[0].entityId).toBe('valid');
+            expect(outcomes[0].entityID).toBe('valid');
         });
 
         it('should handle multiple valid outcomes', () => {
             const json = JSON.stringify([
-                { entityId: 'a', field: 'status', toValue: 'dead' },
-                { entityId: 'b', field: 'location', toValue: 'Mordor' },
-                { entityId: 'c', field: 'loyalty', toValue: 'enemy', fromValue: 'ally' },
+                { entityID: 'a', field: 'status', toValue: 'dead' },
+                { entityID: 'b', field: 'location', toValue: 'Mordor' },
+                { entityID: 'c', field: 'loyalty', toValue: 'enemy', fromValue: 'ally' },
             ]);
 
             const outcomes = parseEventOutcomes(json);
@@ -78,14 +78,14 @@ describe('EventOutcome', () => {
     describe('serializeEventOutcomes', () => {
         it('should serialize outcomes to JSON string', () => {
             const outcomes: EventOutcome[] = [
-                { entityId: 'abc', field: 'status', toValue: 'dead' },
+                { entityID: 'abc', field: 'status', toValue: 'dead' },
             ];
 
             const json = serializeEventOutcomes(outcomes);
             const parsed = JSON.parse(json);
 
             expect(parsed).toHaveLength(1);
-            expect(parsed[0].entityId).toBe('abc');
+            expect(parsed[0].entityID).toBe('abc');
         });
 
         it('should serialize empty array', () => {
@@ -97,18 +97,18 @@ describe('EventOutcome', () => {
     describe('roundtrip', () => {
         it('should survive serialize -> parse roundtrip', () => {
             const original: EventOutcome[] = [
-                { entityId: 'abc-123', field: 'status', toValue: 'dead', fromValue: 'alive', description: 'Killed in battle' },
-                { entityId: 'def-456', field: 'location', toValue: 'Mordor' },
+                { entityID: 'abc-123', field: 'status', toValue: 'dead', fromValue: 'alive', description: 'Killed in battle' },
+                { entityID: 'def-456', field: 'location', toValue: 'Mordor' },
             ];
 
             const json = serializeEventOutcomes(original);
             const parsed = parseEventOutcomes(json);
 
             expect(parsed).toHaveLength(2);
-            expect(parsed[0].entityId).toBe('abc-123');
+            expect(parsed[0].entityID).toBe('abc-123');
             expect(parsed[0].fromValue).toBe('alive');
             expect(parsed[0].description).toBe('Killed in battle');
-            expect(parsed[1].entityId).toBe('def-456');
+            expect(parsed[1].entityID).toBe('def-456');
             expect(parsed[1].fromValue).toBeUndefined();
             expect(parsed[1].description).toBeUndefined();
         });

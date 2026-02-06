@@ -1,8 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { ListContinuitiesUseCase } from './ListContinuitiesUseCase';
 import { SQLiteContinuityRepository } from '../../infrastructure/repositories/SQLiteContinuityRepository';
+import { SQLiteWorldRepository } from '../../infrastructure/repositories/SQLiteWorldRepository';
 import { DatabaseManager } from '../../infrastructure/database/DatabaseManager';
 import { Continuity } from '../../domain/entities/Continuity';
+import { World } from '../../domain/entities/World';
 import { EntityID } from '../../domain/value-objects/EntityID';
 
 describe('ListContinuitiesUseCase', () => {
@@ -11,12 +13,16 @@ describe('ListContinuitiesUseCase', () => {
     let useCase: ListContinuitiesUseCase;
     let worldID: EntityID;
 
-    beforeEach(() => {
+    beforeEach(async () => {
         dbManager = new DatabaseManager({ filepath: ':memory:' });
         dbManager.initialize();
-        repo = new SQLiteContinuityRepository(dbManager.getDatabase());
+        const db = dbManager.getDatabase();
+        repo = new SQLiteContinuityRepository(db);
         useCase = new ListContinuitiesUseCase(repo);
-        worldID = EntityID.generate();
+
+        const world = World.create({ name: 'Test World' }).value;
+        await new SQLiteWorldRepository(db).save(world);
+        worldID = world.id;
     });
 
     afterEach(() => {
@@ -43,8 +49,9 @@ describe('ListContinuitiesUseCase', () => {
     });
 
     it('should not return continuities from other worlds', async () => {
-        const otherWorldID = EntityID.generate();
-        const c = Continuity.create({ name: 'Other', worldID: otherWorldID }).value;
+        const otherWorld = World.create({ name: 'Other World' }).value;
+        await new SQLiteWorldRepository(dbManager.getDatabase()).save(otherWorld);
+        const c = Continuity.create({ name: 'Other', worldID: otherWorld.id }).value;
         await repo.save(c);
 
         const result = await useCase.execute({ worldID: worldID.toString() });

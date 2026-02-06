@@ -6,6 +6,7 @@ import type { IEntityRepository } from '../../domain/repositories/IEntityReposit
 import type { IContinuityRepository } from '../../domain/repositories/IContinuityRepository';
 import { EntityCreatedEvent } from '../../domain/events/entityLifecycleEvents';
 import type { IEventBus } from '../../domain/events/IEventBus';
+import { EventStatePropagator } from '../../domain/services/EventStatePropagator';
 import type { IUseCase } from './IUseCase';
 import { UseCaseError } from './UseCaseError';
 import type { CreateEventRequest } from '../dtos/RequestDTOs';
@@ -16,7 +17,8 @@ export class CreateEventUseCase implements IUseCase<CreateEventRequest, EventDTO
     constructor(
         private readonly entityRepository: IEntityRepository,
         private readonly continuityRepository: IContinuityRepository,
-        private readonly eventBus: IEventBus
+        private readonly eventBus: IEventBus,
+        private readonly propagator: EventStatePropagator
     ) { }
 
     async execute(request: CreateEventRequest): Promise<Result<EventDTO, UseCaseError>> {
@@ -84,6 +86,9 @@ export class CreateEventUseCase implements IUseCase<CreateEventRequest, EventDTO
         if (saveResult.isFailure) {
             return Result.fail(UseCaseError.repositoryError('Failed to save event', saveResult.error));
         }
+
+        // Propagate outcomes to target entities (no-op if no outcomes set)
+        await this.propagator.propagateOutcomes(event);
 
         await this.eventBus.publish(
             new EntityCreatedEvent(event.id, EntityType.EVENT, event.worldID, event.campaignID)

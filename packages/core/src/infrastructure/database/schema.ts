@@ -1,4 +1,4 @@
-export const SCHEMA_VERSION = 6;
+export const SCHEMA_VERSION = 7;
 
 export const CREATE_ENTITIES_TABLE = `
     CREATE TABLE IF NOT EXISTS entities (
@@ -257,4 +257,30 @@ export const CREATE_ENTITIES_INDEXES_V6 = `
     CREATE INDEX IF NOT EXISTS idx_entities_forked_from ON entities(forked_from);
     CREATE INDEX IF NOT EXISTS idx_entities_modified ON entities(modified_at DESC);
     CREATE INDEX IF NOT EXISTS idx_entities_continuity ON entities(continuity_id);
+`;
+
+// ============================================================================
+// Schema Version 7: Entity Drifts table (drift detection)
+// ============================================================================
+  
+export const CREATE_ENTITY_DRIFTS_TABLE = `
+    CREATE TABLE IF NOT EXISTS entity_drifts (
+        id TEXT PRIMARY KEY,
+        entity_id TEXT NOT NULL,
+        continuity_id TEXT NOT NULL,
+        field TEXT NOT NULL,
+        event_derived_value TEXT NOT NULL,
+        current_value TEXT NOT NULL,
+        detected_at TEXT NOT NULL,
+        resolved_at TEXT,
+        FOREIGN KEY (entity_id) REFERENCES entities(id) ON DELETE CASCADE,
+        FOREIGN KEY (continuity_id) REFERENCES continuities(id) ON DELETE CASCADE,
+        UNIQUE(entity_id, continuity_id, field)
+    );
+`;
+
+export const CREATE_ENTITY_DRIFTS_INDEXES = `
+    CREATE INDEX IF NOT EXISTS idx_entity_drifts_entity ON entity_drifts(entity_id);
+    CREATE INDEX IF NOT EXISTS idx_entity_drifts_continuity ON entity_drifts(continuity_id);
+    CREATE INDEX IF NOT EXISTS idx_entity_drifts_unresolved ON entity_drifts(resolved_at) WHERE resolved_at IS NULL;
 `;

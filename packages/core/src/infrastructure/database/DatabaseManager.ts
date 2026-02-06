@@ -181,9 +181,22 @@ export class DatabaseManager {
                     db.exec("INSERT INTO entities_fts(entities_fts) VALUES('rebuild')");
 
                     db.prepare('INSERT INTO schema_version (version) VALUES (?)').run(6);
-                })
+                })();
 
                 db.pragma('foreign_keys = ON');
+            }
+
+            // Re-check version after v6
+            const versionAfterV6 = (db.prepare(
+                'SELECT version FROM schema_version ORDER BY version DESC LIMIT 1'
+            ).get() as { version: number } | undefined)?.version ?? 0;
+
+            if (versionAfterV6 < 7) {
+                db.transaction(() => {
+                    db.exec(schema.CREATE_ENTITY_DRIFTS_TABLE);
+                    db.exec(schema.CREATE_ENTITY_DRIFTS_INDEXES);
+                    db.prepare('INSERT INTO schema_version (version) VALUES (?)').run(7);
+                })();
             }
         }
     }

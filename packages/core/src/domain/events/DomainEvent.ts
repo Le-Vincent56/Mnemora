@@ -26,7 +26,6 @@ export abstract class DomainEvent {
 
     constructor() {
         this.occurredAt = new Date();
-        Object.freeze(this);
     }
 }
 

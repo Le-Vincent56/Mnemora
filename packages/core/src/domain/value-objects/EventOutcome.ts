@@ -4,7 +4,7 @@
    * Used for drift detection: compare toValue against current entity state.
    */
 export interface EventOutcome {
-    readonly entityId: string;
+    readonly entityID: string;
     readonly field: string;
     readonly fromValue?: string;
     readonly toValue: string;
@@ -23,7 +23,7 @@ export function parseEventOutcomes(json: string | undefined): EventOutcome[] {
         return parsed.filter(
             (o: unknown): o is EventOutcome =>
                 typeof o === 'object' && o !== null &&
-                typeof (o as Record<string, unknown>).entityId === 'string' &&
+                typeof (o as Record<string, unknown>).entityID === 'string' &&
                 typeof (o as Record<string, unknown>).field === 'string' &&
                 typeof (o as Record<string, unknown>).toValue === 'string'
         );

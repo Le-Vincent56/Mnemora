@@ -2,11 +2,13 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { SQLiteSafetyToolRepository } from './SQLiteSafetyToolRepository';
 import { SQLiteWorldRepository } from './SQLiteWorldRepository';
 import { SQLiteCampaignRepository } from './SQLiteCampaignRepository';
+import { SQLiteContinuityRepository } from './SQLiteContinuityRepository';
 import { DatabaseManager } from '../database/DatabaseManager';
 import { SafetyToolConfiguration } from '../../domain/entities/SafetyToolConfiguration';
 import { SafetyToolType } from '../../domain/value-objects/SafetyToolType';
 import { World } from '../../domain/entities/World';
 import { Campaign } from '../../domain/entities/Campaign';
+import { Continuity } from '../../domain/entities/Continuity';
 import { EntityID } from '../../domain/value-objects/EntityID';
 
 describe('SQLiteSafetyToolRepository', () => {
@@ -14,6 +16,7 @@ describe('SQLiteSafetyToolRepository', () => {
     let safetyToolRepository: SQLiteSafetyToolRepository;
     let worldRepository: SQLiteWorldRepository;
     let campaignRepository: SQLiteCampaignRepository;
+    let continuityRepository: SQLiteContinuityRepository;
     let testWorld: World;
     let testCampaign: Campaign;
 
@@ -21,17 +24,23 @@ describe('SQLiteSafetyToolRepository', () => {
         dbManager = new DatabaseManager({ filepath: ':memory:' });
         dbManager.initialize();
 
-        safetyToolRepository = new SQLiteSafetyToolRepository(dbManager.getDatabase());
-        worldRepository = new SQLiteWorldRepository(dbManager.getDatabase());
-        campaignRepository = new SQLiteCampaignRepository(dbManager.getDatabase());
+        const db = dbManager.getDatabase();
+        safetyToolRepository = new SQLiteSafetyToolRepository(db);
+        worldRepository = new SQLiteWorldRepository(db);
+        campaignRepository = new SQLiteCampaignRepository(db);
+        continuityRepository = new SQLiteContinuityRepository(db);
 
-        // Create test world and campaign
+        // Create test world, continuity, and campaign
         testWorld = World.create({ name: 'Test World' }).value;
         await worldRepository.save(testWorld);
 
+        const testContinuity = Continuity.create({ name: 'Main Timeline', worldID: testWorld.id }).value;
+        await continuityRepository.save(testContinuity);
+
         testCampaign = Campaign.create({
             name: 'Test Campaign',
-            worldID: testWorld.id
+            worldID: testWorld.id,
+            continuityID: testContinuity.id,
         }).value;
         await campaignRepository.save(testCampaign);
     });

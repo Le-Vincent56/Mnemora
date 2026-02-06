@@ -2,9 +2,12 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { CreateEventUseCase } from './CreateEventUseCase';
 import { SQLiteEntityRepository } from '../../infrastructure/repositories/SQLiteEntityRepository';
 import { SQLiteContinuityRepository } from '../../infrastructure/repositories/SQLiteContinuityRepository';
+import { SQLiteWorldRepository } from '../../infrastructure/repositories/SQLiteWorldRepository';
 import { DatabaseManager } from '../../infrastructure/database/DatabaseManager';
 import { EventBus } from '../services/EventBus';
+import { EventStatePropagator } from '../../domain/services/EventStatePropagator';
 import { Continuity } from '../../domain/entities/Continuity';
+import { World } from '../../domain/entities/World';
 import { EntityID } from '../../domain/value-objects/EntityID';
 import { EntityType } from '../../domain/entities/EntityType';
 
@@ -20,12 +23,17 @@ describe('CreateEventUseCase', () => {
     beforeEach(async () => {
         dbManager = new DatabaseManager({ filepath: ':memory:' });
         dbManager.initialize();
-        entityRepo = new SQLiteEntityRepository(dbManager.getDatabase());
-        continuityRepo = new SQLiteContinuityRepository(dbManager.getDatabase());
+        const db = dbManager.getDatabase();
+        entityRepo = new SQLiteEntityRepository(db);
+        continuityRepo = new SQLiteContinuityRepository(db);
         eventBus = new EventBus();
-        useCase = new CreateEventUseCase(entityRepo, continuityRepo, eventBus);
+        const propagator = new EventStatePropagator(entityRepo);
+        useCase = new CreateEventUseCase(entityRepo, continuityRepo, eventBus, propagator);
 
-        worldID = EntityID.generate();
+        const world = World.create({ name: 'Test World' }).value;
+        await new SQLiteWorldRepository(db).save(world);
+        worldID = world.id;
+
         const continuity = Continuity.create({ name: 'Main', worldID }).value;
         await continuityRepo.save(continuity);
         continuityID = continuity.id.toString();

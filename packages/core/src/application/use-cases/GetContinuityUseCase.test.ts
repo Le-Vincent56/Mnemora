@@ -1,8 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { GetContinuityUseCase } from './GetContinuityUseCase';
 import { SQLiteContinuityRepository } from '../../infrastructure/repositories/SQLiteContinuityRepository';
+import { SQLiteWorldRepository } from '../../infrastructure/repositories/SQLiteWorldRepository';
 import { DatabaseManager } from '../../infrastructure/database/DatabaseManager';
 import { Continuity } from '../../domain/entities/Continuity';
+import { World } from '../../domain/entities/World';
 import { EntityID } from '../../domain/value-objects/EntityID';
 
 describe('GetContinuityUseCase', () => {
@@ -22,9 +24,12 @@ describe('GetContinuityUseCase', () => {
     });
 
     it('should return a continuity by ID', async () => {
+        const world = World.create({ name: 'Test World' }).value;
+        await new SQLiteWorldRepository(dbManager.getDatabase()).save(world);
+
         const continuity = Continuity.create({
             name: 'Main Timeline',
-            worldID: EntityID.generate(),
+            worldID: world.id,
         }).value;
         await repo.save(continuity);
 

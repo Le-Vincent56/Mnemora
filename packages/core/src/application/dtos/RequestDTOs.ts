@@ -261,3 +261,10 @@ export interface UpdateContinuityRequest {
 export interface DeleteContinuityRequest {
     readonly id: string;
 }
+
+export interface BranchContinuityRequest {
+    readonly name: string;
+    readonly parentContinuityID: string;
+    readonly branchPointEventID: string;
+    readonly description?: string;
+}

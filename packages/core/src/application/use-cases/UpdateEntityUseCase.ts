@@ -11,6 +11,8 @@ import { EntityID } from '../../domain/value-objects/EntityID';
 import type { IEntityRepository } from '../../domain/repositories/IEntityRepository';
 import { EntityUpdatedEvent } from '../../domain/events/entityLifecycleEvents';
 import type { IEventBus } from '../../domain/events/IEventBus';
+import { EventStatePropagator } from '../../domain/services/EventStatePropagator';
+import { DriftDetector, DriftCheckInput } from '../../domain/services/DriftDetector';
 import type { IUseCase } from './IUseCase';
 import { UseCaseError } from './UseCaseError';
 import type { UpdateEntityRequest } from '../dtos/RequestDTOs';
@@ -21,11 +23,16 @@ import { EntityMapper } from '../mappers/EntityMapper';
  * Update an existing entity.
  * This is a generic use case that handles all entity types.
  * It determines the entity type at runtime and applies the appropriate updates.
+ *
+ * For Event entities: propagates outcomes to target entities after save.
+ * For non-Event entities: checks for drift against event-derived state after save.
  */
 export class UpdateEntityUseCase implements IUseCase<UpdateEntityRequest, EntityDTO> {
     constructor(
         private readonly entityRepository: IEntityRepository,
-        private readonly eventBus: IEventBus
+        private readonly eventBus: IEventBus,
+        private readonly propagator: EventStatePropagator,
+        private readonly driftDetector: DriftDetector
     ) { }
 
     async execute(
@@ -77,13 +84,84 @@ export class UpdateEntityUseCase implements IUseCase<UpdateEntityRequest, Entity
             );
         }
 
-        // 7. Publish event
+        // 7. Post-save: propagation (Event) or drift detection (non-Event)
+        if (entity.type === EntityType.EVENT) {
+            // If outcomes or inWorldTime changed, propagate to target entities
+            const hasOutcomeChange = changedFields.some(
+                f => f === 'typeSpecificFields.outcomes' || f === 'typeSpecificFields.inWorldTime'
+            );
+            if (hasOutcomeChange) {
+                await this.propagator.propagateOutcomes(entity as Event);
+            }
+        } else {
+            // Drift detection for non-Event entities
+            const driftInput = this.buildDriftInput(entity, request, changedFields);
+            if (driftInput) {
+                await this.driftDetector.checkForDrifts(driftInput);
+            }
+        }
+
+        // 8. Publish event
         await this.eventBus.publish(
             new EntityUpdatedEvent(entity.id, entity.type, changedFields)
         );
 
-        // 8. Return updated DTO
+        // 9. Return updated DTO
         return Result.ok(EntityMapper.toDTO(entity));
+    }
+
+    /**
+     * Builds drift check input from the entity, request, and changed fields.
+     * Returns null if the entity type doesn't support drift checking.
+     */
+    private buildDriftInput(
+        entity: BaseEntity,
+        request: UpdateEntityRequest,
+        changedFields: string[]
+    ): DriftCheckInput | null {
+        const worldID = this.getWorldID(entity);
+        if (!worldID) return null;
+
+        const fieldValues: Array<{ field: string; newValue: string }> = [];
+
+        for (const field of changedFields) {
+            if (field === 'name' && request.name !== undefined) {
+                fieldValues.push({ field: 'name', newValue: request.name });
+            } else if (field === 'description' && request.description !== undefined) {
+                fieldValues.push({ field: 'description', newValue: request.description });
+            } else if (field === 'secrets' && request.secrets !== undefined) {
+                fieldValues.push({ field: 'secrets', newValue: request.secrets });
+            } else if (field.startsWith('typeSpecificFields.') && request.typeSpecificFields) {
+                const tsField = field.replace('typeSpecificFields.', '');
+                const value = request.typeSpecificFields[tsField];
+                if (value !== undefined) {
+                    fieldValues.push({ field: tsField, newValue: value });
+                }
+            }
+        }
+
+        if (fieldValues.length === 0) return null;
+
+        return {
+            entityID: entity.id,
+            worldID: worldID,
+            changedFields: fieldValues,
+        };
+    }
+
+    /**
+     * Extracts worldID from any entity type.
+     */
+    private getWorldID(entity: BaseEntity): EntityID | null {
+        switch (entity.type) {
+            case EntityType.CHARACTER: return (entity as Character).worldID;
+            case EntityType.LOCATION: return (entity as Location).worldID;
+            case EntityType.FACTION: return (entity as Faction).worldID;
+            case EntityType.SESSION: return (entity as Session).worldID;
+            case EntityType.NOTE: return (entity as Note).worldID;
+            case EntityType.EVENT: return (entity as Event).worldID;
+            default: return null;
+        }
     }
 
     /**
@@ -120,7 +198,6 @@ export class UpdateEntityUseCase implements IUseCase<UpdateEntityRequest, Entity
     ): Result<string[], UseCaseError> {
         const changedFields: string[] = [];
 
-        // Name
         if (request.name !== undefined) {
             const renameResult = character.rename(request.name);
             if (renameResult.isFailure) {
@@ -131,19 +208,16 @@ export class UpdateEntityUseCase implements IUseCase<UpdateEntityRequest, Entity
             changedFields.push('name');
         }
 
-        // Description
         if (request.description !== undefined) {
             character.updateDescription(request.description);
             changedFields.push('description');
         }
 
-        // Secrets
         if (request.secrets !== undefined) {
             character.updateSecrets(request.secrets);
             changedFields.push('secrets');
         }
 
-        // Tags
         if (request.tags !== undefined) {
             const tagsResult = character.setTags(request.tags as string[]);
             if (tagsResult.isFailure) {
@@ -154,7 +228,6 @@ export class UpdateEntityUseCase implements IUseCase<UpdateEntityRequest, Entity
             changedFields.push('tags');
         }
 
-        // Type-specific fields
         if (request.typeSpecificFields) {
             for (const [field, value] of Object.entries(request.typeSpecificFields)) {
                 const result = character.setTypeSpecificField(field, value);
@@ -288,13 +361,11 @@ export class UpdateEntityUseCase implements IUseCase<UpdateEntityRequest, Entity
             changedFields.push('name');
         }
 
-        // Session-specific: summary
         if (request.summary !== undefined) {
             session.updateSummary(request.summary);
             changedFields.push('summary');
         }
 
-        // Session-specific: notes (prep notes)
         if (request.notes !== undefined) {
             session.updateNotes(request.notes);
             changedFields.push('notes');
@@ -305,7 +376,6 @@ export class UpdateEntityUseCase implements IUseCase<UpdateEntityRequest, Entity
             changedFields.push('secrets');
         }
 
-        // Session-specific: sessionDate (can be null to clear)
         if (request.sessionDate !== undefined) {
             if (request.sessionDate === null) {
                 session.setSessionDate(null);
@@ -362,7 +432,6 @@ export class UpdateEntityUseCase implements IUseCase<UpdateEntityRequest, Entity
             changedFields.push('name');
         }
 
-        // Note-specific: content
         if (request.content !== undefined) {
             note.updateContent(request.content);
             changedFields.push('content');

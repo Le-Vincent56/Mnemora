@@ -1,9 +1,11 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { SQLiteWorldRepository } from './SQLiteWorldRepository';
 import { SQLiteCampaignRepository } from './SQLiteCampaignRepository';
+import { SQLiteContinuityRepository } from './SQLiteContinuityRepository';
 import { DatabaseManager } from '../database/DatabaseManager';
 import { World } from '../../domain/entities/World';
 import { Campaign } from '../../domain/entities/Campaign';
+import { Continuity } from '../../domain/entities/Continuity';
 import { EntityID } from '../../domain/value-objects/EntityID';
 
 describe('SQLiteWorldRepository', () => {
@@ -100,9 +102,14 @@ describe('SQLiteWorldRepository', () => {
             const world = World.create({ name: 'World with Campaigns' }).value;
             await worldRepository.save(world);
 
+            const continuityRepo = new SQLiteContinuityRepository(dbManager.getDatabase());
+            const continuity = Continuity.create({ name: 'Timeline', worldID: world.id }).value;
+            await continuityRepo.save(continuity);
+
             const campaign = Campaign.create({
                 name: 'Campaign 1',
-                worldID: world.id
+                worldID: world.id,
+                continuityID: continuity.id,
             }).value;
             await campaignRepository.save(campaign);
 

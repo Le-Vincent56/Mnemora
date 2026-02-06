@@ -1,6 +1,6 @@
 /**
-   * Use case exports.
-   */
+     * Use case exports.
+     */
 
 // Base
 export type { IUseCase } from './IUseCase';
@@ -28,6 +28,7 @@ export { ListWorldsUseCase } from './ListWorldsUseCase';
 export { ListCampaignsUseCase } from './ListCampaignsUseCase';
 export { ListContinuitiesUseCase } from './ListContinuitiesUseCase';
 export { GetSafetyToolsUseCase } from './GetSafetyToolsUseCase';
+export { ListDriftsUseCase } from './ListDriftsUseCase';
 
 // Update use cases
 export { UpdateEntityUseCase } from './UpdateEntityUseCase';
@@ -37,12 +38,16 @@ export { UpdateContinuityUseCase } from './UpdateContinuityUseCase';
 export { ConfigureSafetyToolsUseCase } from './ConfigureSafetyToolsUseCase';
 export { AddCustomSafetyToolUseCase } from './AddCustomSafetyToolUseCase';
 export { RemoveCustomSafetyToolUseCase } from './RemoveCustomSafetyToolUseCase';
+export { ResolveDriftUseCase } from './ResolveDriftUseCase';
 
 // Delete use cases
 export { DeleteEntityUseCase } from './DeleteEntityUseCase';
 export { DeleteWorldUseCase } from './DeleteWorldUseCase';
 export { DeleteCampaignUseCase } from './DeleteCampaignUseCase';
 export { DeleteContinuityUseCase } from './DeleteContinuityUseCase';
+
+// Branching
+export { BranchContinuityUseCase } from './BranchContinuityUseCase';
 
 // Session notes use cases
 export { AddQuickNoteUseCase } from './AddQuickNoteUseCase';

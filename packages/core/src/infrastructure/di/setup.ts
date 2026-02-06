@@ -8,8 +8,11 @@ import { SQLiteCampaignRepository } from '../repositories/SQLiteCampaignReposito
 import { SQLiteSafetyToolRepository } from '../repositories/SQLiteSafetyToolRepository';
 import { SQLiteQuickNoteRepository } from '../repositories/SQLiteQuickNoteRepository';
 import { SQLiteContinuityRepository } from '../repositories/SQLiteContinuityRepository';
+import { SQLiteDriftRepository } from '../repositories/SQLiteDriftRepository';
 import { EventBus } from '../../application/services/EventBus';
 import { CommandHistory } from '../../application/commands/CommandHistory';
+import { EventStatePropagator } from '../../domain/services/EventStatePropagator';
+import { DriftDetector } from '../../domain/services/DriftDetector';
 import {
     CreateCharacterUseCase,
     CreateLocationUseCase,
@@ -45,6 +48,9 @@ import {
     CreateEventUseCase,
     UpdateContinuityUseCase,
     DeleteContinuityUseCase,
+    BranchContinuityUseCase,
+    ListDriftsUseCase,
+    ResolveDriftUseCase,
 } from '../../application/use-cases';
 import { EntityEditorViewModel } from '../../presentation';
 import { SearchViewModel } from '../../presentation';
@@ -82,10 +88,24 @@ export function createContainer(config: DatabaseConfig): Container {
     container.register(TOKENS.ContinuityRepository, () =>
         new SQLiteContinuityRepository(container.resolve(TOKENS.Database)), true
     );
+    container.register(TOKENS.DriftRepository, () =>
+        new SQLiteDriftRepository(container.resolve(TOKENS.Database)), true
+    );
 
     // Services (singletons)
     container.register(TOKENS.EventBus, () => new EventBus(), true);
     container.register(TOKENS.CommandHistory, () => new CommandHistory(), true);
+
+    // Domain Services
+    container.register(TOKENS.EventStatePropagator, () =>
+        new EventStatePropagator(container.resolve(TOKENS.EntityRepository)), true
+    );
+    container.register(TOKENS.DriftDetector, () =>
+        new DriftDetector(
+            container.resolve(TOKENS.EntityRepository),
+            container.resolve(TOKENS.DriftRepository)
+        ), true
+    );
 
     // Use Cases (transient - new instance each time)
     container.register(TOKENS.CreateCharacterUseCase, () =>
@@ -131,7 +151,9 @@ export function createContainer(config: DatabaseConfig): Container {
     container.register(TOKENS.UpdateEntityUseCase, () =>
         new UpdateEntityUseCase(
             container.resolve(TOKENS.EntityRepository),
-            container.resolve(TOKENS.EventBus)
+            container.resolve(TOKENS.EventBus),
+            container.resolve(TOKENS.EventStatePropagator),
+            container.resolve(TOKENS.DriftDetector)
         )
     );
     container.register(TOKENS.DeleteEntityUseCase, () =>
@@ -262,7 +284,8 @@ export function createContainer(config: DatabaseConfig): Container {
         new CreateEventUseCase(
             container.resolve(TOKENS.EntityRepository),
             container.resolve(TOKENS.ContinuityRepository),
-            container.resolve(TOKENS.EventBus)
+            container.resolve(TOKENS.EventBus),
+            container.resolve(TOKENS.EventStatePropagator)
         )
     );
     container.register(TOKENS.UpdateContinuityUseCase, () =>
@@ -278,6 +301,21 @@ export function createContainer(config: DatabaseConfig): Container {
             container.resolve(TOKENS.EntityRepository),
             container.resolve(TOKENS.EventBus)
         )
+    );
+    container.register(TOKENS.BranchContinuityUseCase, () =>
+        new BranchContinuityUseCase(
+            container.resolve(TOKENS.ContinuityRepository),
+            container.resolve(TOKENS.EntityRepository),
+            container.resolve(TOKENS.EventBus)
+        )
+    );
+
+    // Drift use cases
+    container.register(TOKENS.ListDriftsUseCase, () =>
+        new ListDriftsUseCase(container.resolve(TOKENS.DriftRepository))
+    );
+    container.register(TOKENS.ResolveDriftUseCase, () =>
+        new ResolveDriftUseCase(container.resolve(TOKENS.DriftRepository))
     );
 
     // ViewModels (transient)

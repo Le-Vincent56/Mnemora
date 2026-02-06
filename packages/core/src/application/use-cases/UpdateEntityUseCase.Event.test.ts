@@ -3,6 +3,9 @@ import { UpdateEntityUseCase } from './UpdateEntityUseCase';
 import { SQLiteEntityRepository } from '../../infrastructure/repositories/SQLiteEntityRepository';
 import { DatabaseManager } from '../../infrastructure/database/DatabaseManager';
 import { EventBus } from '../services/EventBus';
+import { EventStatePropagator } from '../../domain/services/EventStatePropagator';
+import { DriftDetector } from '../../domain/services/DriftDetector';
+import { SQLiteDriftRepository } from '../../infrastructure/repositories/SQLiteDriftRepository';
 import { Event } from '../../domain/entities/Event';
 import { EntityID } from '../../domain/value-objects/EntityID';
 import { EntityType } from '../../domain/entities/EntityType';
@@ -21,7 +24,10 @@ describe('UpdateEntityUseCase — Event case', () => {
         dbManager.initialize();
         entityRepo = new SQLiteEntityRepository(dbManager.getDatabase());
         eventBus = new EventBus();
-        useCase = new UpdateEntityUseCase(entityRepo, eventBus);
+        const propagator = new EventStatePropagator(entityRepo);
+        const driftRepo = new SQLiteDriftRepository(dbManager.getDatabase());
+        const driftDetector = new DriftDetector(entityRepo, driftRepo);
+        useCase = new UpdateEntityUseCase(entityRepo, eventBus, propagator, driftDetector);
         worldID = EntityID.generate();
         continuityID = EntityID.generate();
     });
@@ -86,7 +92,8 @@ describe('UpdateEntityUseCase — Event case', () => {
         });
 
         expect(result.isSuccess).toBe(true);
-        expect(result.value.tags).toEqual(['combat', 'arc-1']);
+        expect(result.value.tags).toEqual(expect.arrayContaining(['combat', 'arc-1']));
+        expect(result.value.tags).toHaveLength(2);
     });
 
     it('should update event type-specific fields', async () => {
