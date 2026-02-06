@@ -7,15 +7,15 @@ import { EASING } from '@/tokens';
 
 const VIGNETTE_CONFIG = {
     /** Maximum darkness at edges (0-1) */
-    peakOpacity: 0.15,
+    peakOpacity: 0.35,
     /** Time to reach peak darkness (ms) */
-    darkenDuration: 200,
+    darkenDuration: 250,
     /** Time to release back to transparent (ms) */
     releaseDuration: 300,
     /** Gradient stops for smooth falloff */
     gradientStops: {
-        transparent: 55,    // Center stays clear until 55%
-        fade: 75,           // Gradual fade from 55-75%
+        transparent: 45,    // Center stays clear until 45%
+        fade: 65,           // Gradual fade from 45-65%
         dark: 100,          // Full darkness at edges
     },
 } as const;

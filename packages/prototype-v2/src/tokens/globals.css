@@ -111,7 +111,7 @@ INVARIANT TOKENS (same in all modes)
     --duration-fast: 150ms;
     --duration-normal: 200ms;
     --duration-gentle: 300ms;
-    --duration-ceremony: 1000ms;
+    --duration-ceremony: 2500ms;
     --duration-release: 350ms;
     --duration-bypass: 250ms;
 
@@ -129,13 +129,22 @@ INVARIANT TOKENS (same in all modes)
 
     /*
     -------------------------------------
-      CEREMONY TOKENS (bokeh particles)
+      CEREMONY TOKENS (monochrome + slate)
     -------------------------------------
     */
-    --ceremony-bokeh-1: rgba(147, 122, 219, 0.4);
-    --ceremony-bokeh-2: rgba(100, 149, 237, 0.4);
-    --ceremony-bokeh-3: rgba(72, 209, 204, 0.4);
-    --ceremony-bokeh-4: rgba(255, 182, 193, 0.3);
+    --ceremony-bokeh-1: rgba(161, 161, 170, 0.30);
+    --ceremony-bokeh-2: rgba(113, 113, 122, 0.25);
+    --ceremony-bokeh-3: rgba(82, 82, 91, 0.20);
+    --ceremony-bokeh-4: rgba(63, 63, 70, 0.15);
+
+    /*
+    -------------------------------------
+      GOLD TOKENS (Secrets & Magic only)
+    -------------------------------------
+    */
+    --gold: #D4AF37;
+    --gold-dim: rgba(212, 175, 55, 0.10);
+    --gold-glow: 0 0 20px rgba(212, 175, 55, 0.30);
 
     /*
     -------------------------------------
@@ -153,51 +162,67 @@ MODE-DEPENDENT TOKENS (same in all modes)
 -------------------------------------
 */
 
-/* Prep Mdoe (warm) */
+/* Prep Mode — "Day" (Ink on Stone: pure white, high contrast) */
 :root[data-mode="prep"] {
-    --canvas: #FAF8F5;
-    --surface: #FFFFFF;
-    --surface-hover: #FBF9F7;
-    --surface-active: #F5F2EE;
+    --canvas: #FFFFFF;
+    --surface: #F9FAFB;
+    --surface-hover: #F3F4F6;
+    --surface-active: #E5E7EB;
 
-    --text-primary: #1C1917;
-    --text-secondary: #57534E;
-    --text-tertiary: #A8A29E;
-    --text-inverse: #FAFAF9;
+    /* Ink tokens (Modern Grimoire canonical) */
+    --ink-primary: #09090B;
+    --ink-secondary: #52525B;
+    --ink-tertiary: #A1A1AA;
+    --ink-inverse: #FAFAFA;
 
-    --border-subtle: #EBE8E4;
-    --border-default: #E0DCD7;
-    --border-emphasis: #D1CBC4;
+    /* Backward-compat aliases */
+    --text-primary: var(--ink-primary);
+    --text-secondary: var(--ink-secondary);
+    --text-tertiary: var(--ink-tertiary);
+    --text-inverse: var(--ink-inverse);
 
-    --shadow-sm: 0 1px 2px rgba(28, 25, 23, 0.04);
-    --shadow-md: 0 2px 8px rgba(28, 25, 23, 0.08);
-    --shadow-lg: 0 4px 16px rgba(28, 25, 23, 0.12);
-    --shadow-xl: 0 8px 24px rgba(28, 25, 23, 0.16);
+    --border-subtle: #F4F4F5;
+    --border-default: #E4E4E7;
+    --border-emphasis: #D4D4D8;
+    --border-strong: #18181B;
+
+    --shadow-sm: 0 1px 2px rgba(9, 9, 11, 0.04);
+    --shadow-md: 0 2px 8px rgba(9, 9, 11, 0.06);
+    --shadow-lg: 0 4px 16px rgba(9, 9, 11, 0.08);
+    --shadow-xl: 0 8px 24px rgba(9, 9, 11, 0.12);
 
     /* Focus ring for accessibility */
     --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--primary);
 }
 
-/* Session Mode (cool) */
+/* Session Mode — "Night" (Deep Void: dark canvas, high contrast) */
 :root[data-mode="session"] {
-    --canvas: #F5F7F8;
-    --surface: #FFFFFF;
-    --surface-hover: #F8FAFB;
-    --surface-active: #EEF2F4;
+    --canvas: #09090B;
+    --surface: #18181B;
+    --surface-hover: #27272A;
+    --surface-active: #3F3F46;
 
-    --text-primary: #0F172A;
-    --text-secondary: #475569;
-    --text-tertiary: #94A3B8;
-    --text-inverse: #F8FAFC;
+    /* Ink tokens (Modern Grimoire canonical) */
+    --ink-primary: #FAFAFA;
+    --ink-secondary: #A1A1AA;
+    --ink-tertiary: #52525B;
+    --ink-inverse: #09090B;
 
-    --border-subtle: #E2E8F0;
-    --border-default: #CBD5E1;
-    --border-emphasis: #94A3B8;
+    /* Backward-compat aliases */
+    --text-primary: var(--ink-primary);
+    --text-secondary: var(--ink-secondary);
+    --text-tertiary: var(--ink-tertiary);
+    --text-inverse: var(--ink-inverse);
 
-    --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
-    --shadow-md: 0 2px 8px rgba(15, 23, 42, 0.08);
-    --shadow-lg: 0 4px 16px rgba(15, 23, 42, 0.12);
-    --shadow-xl: 0 8px 24px rgba(15, 23, 42, 0.16);
+    --border-subtle: #27272A;
+    --border-default: #3F3F46;
+    --border-emphasis: #52525B;
+    --border-strong: #A1A1AA;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.20);
+    --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.30);
+    --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.40);
+    --shadow-xl: 0 8px 24px rgba(0, 0, 0, 0.50);
 
     /* Focus ring for accessibility */
     --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--primary);
@@ -231,8 +256,8 @@ body {
     color: var(--text-primary);
     background-color: var(--canvas);
     transition:
-        background-color var(--duration-normal) var(--ease-out),
-        color var(--duration-normal) var(--ease-out);
+        background-color var(--duration-gentle) var(--ease-out),
+        color var(--duration-gentle) var(--ease-out);
 }
 
 /*

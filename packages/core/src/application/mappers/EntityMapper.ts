@@ -4,6 +4,7 @@ import { Location } from "../../domain/entities/Location";
 import { Faction } from "../../domain/entities/Faction";
 import { Session } from "../../domain/entities/Session";
 import { Note } from "../../domain/entities/Note";
+import { Event } from "../../domain/entities/Event";
 import { EntityType } from "../../domain/entities/EntityType";
 import type {
     EntityDTO,
@@ -11,11 +12,13 @@ import type {
     LocationDTO,
     FactionDTO,
     SessionDTO,
-    NoteDTO
+    NoteDTO,
+    EventDTO,
 } from '../dtos/EntityDTOs';
 import { World } from "../../domain/entities/World";
 import { Campaign } from "../../domain/entities/Campaign";
-import type { WorldDTO, CampaignDTO } from '../dtos/EntityDTOs';
+import { Continuity } from "../../domain/entities/Continuity";
+import type { WorldDTO, CampaignDTO, ContinuityDTO } from '../dtos/EntityDTOs';
 
 /**
  * Mapper to convert domain entities to DTOs.
@@ -40,6 +43,8 @@ export class EntityMapper {
                 return this.sessionToDTO(entity as Session);
             case EntityType.NOTE:
                 return this.noteToDTO(entity as Note);
+            case EntityType.EVENT:
+                return this.eventToDTO(entity as Event);
             default:
                 throw new Error(`Unknown entity type: ${entity.type}`);
         }
@@ -154,6 +159,30 @@ export class EntityMapper {
         };
     }
 
+    static eventToDTO(event: Event): EventDTO {
+        return {
+            id: event.id.toString(),
+            type: EntityType.EVENT,
+            name: event.name.toString(),
+            description: event.description.value,
+            secrets: event.secrets.value,
+            tags: event.tags.toArray(),
+            worldID: event.worldID.toString(),
+            campaignID: event.campaignID?.toString() ?? null,
+            forkedFrom: event.forkedFrom?.toString() ?? null,
+            continuityID: event.continuityID.toString(),
+            createdAt: event.createdAt.toISOString(),
+            modifiedAt: event.modifiedAt.toISOString(),
+            typeSpecificFields: {
+                inWorldTime: event.typeSpecificFields.inWorldTime,
+                realWorldAnchor: event.typeSpecificFields.realWorldAnchor,
+                involvedEntityIDs: event.typeSpecificFields.involvedEntityIDs,
+                locationID: event.typeSpecificFields.locationID,
+                outcomes: event.typeSpecificFields.outcomes,
+            },
+        };
+    }
+
     static worldToDTO(world: World): WorldDTO {
         return {
             id: world.id.toString(),
@@ -174,6 +203,7 @@ export class EntityMapper {
             name: campaign.name.toString(),
             description: campaign.description.toString(),
             worldID: campaign.worldID.toString(),
+            continuityID: campaign.continuityID.toString(),
             createdAt: campaign.createdAt.toISOString(),
             modifiedAt: campaign.modifiedAt.toISOString(),
         };
@@ -181,5 +211,18 @@ export class EntityMapper {
 
     static campaignsToDTOs(campaigns: readonly Campaign[]): CampaignDTO[] {
         return campaigns.map((c) => this.campaignToDTO(c));
+    }
+
+    static continuityToDTO(continuity: Continuity): ContinuityDTO {
+        return {
+            id: continuity.id.toString(),
+            name: continuity.name.toString(),
+            description: continuity.description.toString(),
+            worldID: continuity.worldID.toString(),
+            branchedFromID: continuity.branchedFromID?.toString() ?? null,
+            branchPointEventID: continuity.branchPointEventID?.toString() ?? null,
+            createdAt: continuity.createdAt.toISOString(),
+            modifiedAt: continuity.modifiedAt.toISOString(),
+        };
     }
 }

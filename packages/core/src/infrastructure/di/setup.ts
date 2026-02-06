@@ -7,6 +7,7 @@ import { SQLiteWorldRepository } from '../repositories/SQLiteWorldRepository';
 import { SQLiteCampaignRepository } from '../repositories/SQLiteCampaignRepository';
 import { SQLiteSafetyToolRepository } from '../repositories/SQLiteSafetyToolRepository';
 import { SQLiteQuickNoteRepository } from '../repositories/SQLiteQuickNoteRepository';
+import { SQLiteContinuityRepository } from '../repositories/SQLiteContinuityRepository';
 import { EventBus } from '../../application/services/EventBus';
 import { CommandHistory } from '../../application/commands/CommandHistory';
 import {
@@ -37,7 +38,13 @@ import {
     AddQuickNoteUseCase,
     RemoveQuickNoteUseCase,
     EndSessionWithSummaryUseCase,
-    ResolveMentionUseCase
+    ResolveMentionUseCase,
+    CreateContinuityUseCase,
+    GetContinuityUseCase,
+    ListContinuitiesUseCase,
+    CreateEventUseCase,
+    UpdateContinuityUseCase,
+    DeleteContinuityUseCase,
 } from '../../application/use-cases';
 import { EntityEditorViewModel } from '../../presentation';
 import { SearchViewModel } from '../../presentation';
@@ -71,6 +78,9 @@ export function createContainer(config: DatabaseConfig): Container {
     );
     container.register(TOKENS.QuickNoteRepository, () =>
         new SQLiteQuickNoteRepository(container.resolve(TOKENS.Database)), true
+    );
+    container.register(TOKENS.ContinuityRepository, () =>
+        new SQLiteContinuityRepository(container.resolve(TOKENS.Database)), true
     );
 
     // Services (singletons)
@@ -165,10 +175,11 @@ export function createContainer(config: DatabaseConfig): Container {
     container.register(TOKENS.CreateCampaignUseCase, () =>
         new CreateCampaignUseCase(
             container.resolve(TOKENS.CampaignRepository),
+            container.resolve(TOKENS.ContinuityRepository),
             container.resolve(TOKENS.WorldRepository),
             container.resolve(TOKENS.EventBus)
         )
-    );
+    )
     container.register(TOKENS.UpdateCampaignUseCase, () =>
         new UpdateCampaignUseCase(container.resolve(TOKENS.CampaignRepository),
             container.resolve(TOKENS.EventBus))
@@ -228,10 +239,46 @@ export function createContainer(config: DatabaseConfig): Container {
     );
 
     container.register(TOKENS.ResolveMentionUseCase, () =>
-          new ResolveMentionUseCase(
-              container.resolve(TOKENS.EntityRepository)
-          )
-      );
+        new ResolveMentionUseCase(
+            container.resolve(TOKENS.EntityRepository)
+        )
+    );
+
+    // Continuity use cases
+    container.register(TOKENS.CreateContinuityUseCase, () =>
+        new CreateContinuityUseCase(
+            container.resolve(TOKENS.ContinuityRepository),
+            container.resolve(TOKENS.WorldRepository),
+            container.resolve(TOKENS.EventBus)
+        )
+    );
+    container.register(TOKENS.GetContinuityUseCase, () =>
+        new GetContinuityUseCase(container.resolve(TOKENS.ContinuityRepository))
+    );
+    container.register(TOKENS.ListContinuitiesUseCase, () =>
+        new ListContinuitiesUseCase(container.resolve(TOKENS.ContinuityRepository))
+    );
+    container.register(TOKENS.CreateEventUseCase, () =>
+        new CreateEventUseCase(
+            container.resolve(TOKENS.EntityRepository),
+            container.resolve(TOKENS.ContinuityRepository),
+            container.resolve(TOKENS.EventBus)
+        )
+    );
+    container.register(TOKENS.UpdateContinuityUseCase, () =>
+        new UpdateContinuityUseCase(
+            container.resolve(TOKENS.ContinuityRepository),
+            container.resolve(TOKENS.EventBus)
+        )
+    );
+    container.register(TOKENS.DeleteContinuityUseCase, () =>
+        new DeleteContinuityUseCase(
+            container.resolve(TOKENS.ContinuityRepository),
+            container.resolve(TOKENS.CampaignRepository),
+            container.resolve(TOKENS.EntityRepository),
+            container.resolve(TOKENS.EventBus)
+        )
+    );
 
     // ViewModels (transient)
     container.register(TOKENS.EntityEditorViewModel, () =>

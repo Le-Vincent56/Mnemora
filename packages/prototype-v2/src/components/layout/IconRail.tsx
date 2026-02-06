@@ -9,6 +9,7 @@ import {
     FileText,
     Shield,
     Square,
+    Palette,
 } from 'lucide-react';
 import { useCeremony, CeremonyType } from '@/ceremony';
 import { cn } from '@/utils';
@@ -32,6 +33,7 @@ const PREP_NAV_ITEMS: NavItem[] = [
     { id: 'entities', icon: Library, label: 'Entities' },
     { id: 'search', icon: Search, label: 'Search' },
     { id: 'history', icon: History, label: 'Session History' },
+    { id: 'design-system', icon: Palette, label: 'Design System' },
 ];
 
 /**

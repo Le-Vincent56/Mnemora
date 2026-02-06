@@ -11,6 +11,7 @@ import { Timestamps } from "../value-objects/Timestamps";
 export interface CreateCampaignProps {
     name: string;
     worldID: EntityID;
+    continuityID: EntityID;
     description?: string;
 }
 
@@ -22,6 +23,7 @@ export interface CampaignProps {
     name: Name;
     description: RichText;
     worldID: EntityID;
+    continuityID: EntityID;
     timestamps: Timestamps;
 }
 
@@ -39,6 +41,7 @@ export class Campaign {
     private _name: Name;
     private _description: RichText;
     private readonly _worldID: EntityID;
+    private readonly _continuityID: EntityID;
     private _timestamps: Timestamps;
 
     /**
@@ -71,6 +74,14 @@ export class Campaign {
     }
 
     /**
+     * The ID of the Continuity this campaign uses.
+     * Campaigns sharing a Continuity share canon state.
+     */
+    get continuityID(): EntityID {
+        return this._continuityID;
+    }
+
+    /**
      * The creation and modification timestamps.
      */
     get timestamps(): Timestamps {
@@ -96,6 +107,7 @@ export class Campaign {
         this._name = props.name;
         this._description = props.description;
         this._worldID = props.worldID;
+        this._continuityID = props.continuityID;
         this._timestamps = props.timestamps;
     }
 
@@ -115,6 +127,7 @@ export class Campaign {
                 ? RichText.fromString(props.description)
                 : RichText.empty(),
             worldID: props.worldID,
+            continuityID: props.continuityID,
             timestamps: Timestamps.now()
         });
 

@@ -10,6 +10,7 @@ import { EntityType } from "../entities/EntityType";
 export interface EntityFilter {
     worldID?: EntityID;
     campaignID?: EntityID | null;
+    continuityID?: EntityID;
     types?: EntityType[];
     tags?: string[];
     includeForked?: boolean;

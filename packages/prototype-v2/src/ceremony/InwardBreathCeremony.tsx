@@ -20,18 +20,18 @@ const TIMELINE = {
     gather: { start: 0, end: 450 },
     peak: { start: 450, end: 550 },
     transform: { start: 550, end: 900 },
-    settle: { start: 900, end: 1400 },
+    settle: { start: 900, end: 1900 },
 
     // Key moments
     modeSwitch: 500,
-    totalDuration: 1400,
+    totalDuration: 1900,
 
     // Component activation windows
     threads: { start: 0, end: 450 },
     vignette: { start: 100, end: 1200 },
     heldBreath: { start: 450, end: 550 },
     burst: { start: 550, end: 950 },
-    settling: { start: 850, end: 1400 },
+    settling: { start: 850, end: 1900 },
     memorySurfacing: { start: 200, end: 1000 },
 } as const;
 
@@ -116,7 +116,7 @@ function calculatePhaseState(elapsed: number, isActive: boolean): PhaseState {
         vignette,
         heldBreath: elapsed >= TIMELINE.heldBreath.start && elapsed < TIMELINE.heldBreath.end,
         burst: elapsed >= TIMELINE.burst.start && elapsed < TIMELINE.burst.end,
-        settling: elapsed >= TIMELINE.settling.start && elapsed < TIMELINE.settling.end,
+        settling: elapsed >= TIMELINE.settling.start,
         memorySurfacing: elapsed >= TIMELINE.memorySurfacing.start && elapsed < TIMELINE.memorySurfacing.end,
     };
 }
@@ -187,20 +187,8 @@ export function InwardBreathCeremony({
                 onModeSwitch?.();
             }
 
-            // Fire completion callback at end (once)
-            if (
-                currentElapsed >= TIMELINE.totalDuration &&
-                !completeFiredRef.current
-            ) {
-                completeFiredRef.current = true;
-                onComplete?.();
-                return;
-            }
-
-            // Continue animation
-            if (currentElapsed < TIMELINE.totalDuration) {
-                rafRef.current = requestAnimationFrame(tick);
-            }
+            // Continue until settling phase signals completion
+            rafRef.current = requestAnimationFrame(tick);
         };
 
         rafRef.current = requestAnimationFrame(tick);

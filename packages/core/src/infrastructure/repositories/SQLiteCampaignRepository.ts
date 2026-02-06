@@ -56,13 +56,14 @@ export class SQLiteCampaignRepository implements ICampaignRepository {
             const row = WorldCampaignMapper.campaignToRow(campaign);
 
             this.db.prepare(`
-                  INSERT INTO campaigns (id, world_id, name, description, created_at, modified_at)
-                  VALUES (@id, @world_id, @name, @description, @created_at, @modified_at)
-                  ON CONFLICT(id) DO UPDATE SET
-                      name = @name,
-                      description = @description,
-                      modified_at = @modified_at
-              `).run(row);
+                INSERT INTO campaigns (id, world_id, name, description, continuity_id, created_at, modified_at)
+                VALUES (@id, @world_id, @name, @description, @continuity_id, @created_at, @modified_at)
+                ON CONFLICT(id) DO UPDATE SET
+                    name = @name,
+                    description = @description,
+                    continuity_id = @continuity_id,
+                    modified_at = @modified_at
+            `).run(row);
 
             return Result.ok(undefined);
         } catch (error) {
@@ -88,6 +89,18 @@ export class SQLiteCampaignRepository implements ICampaignRepository {
             return Result.ok(row.count);
         } catch (error) {
             return Result.fail(new RepositoryError('Failed to count campaigns', error));
+        }
+    }
+
+    async countByContinuity(continuityID: EntityID): Promise<Result<number, RepositoryError>> {
+        try {
+            const row = this.db.prepare(
+                'SELECT COUNT(*) as count FROM campaigns WHERE continuity_id = ?'
+            ).get(continuityID.toString()) as { count: number };
+
+            return Result.ok(row.count);
+        } catch (error) {
+            return Result.fail(new RepositoryError('Failed to count campaigns by continuity', error));
         }
     }
 

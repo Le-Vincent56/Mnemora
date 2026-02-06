@@ -20,6 +20,7 @@ export interface EntityRow {
     modified_at: string;            // ISO string
     duration?: number | null;
     type_specific_fields?: string | null;
+    continuity_id?: string | null;  // Only for Event
 }
 
 /**

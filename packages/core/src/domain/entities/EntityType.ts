@@ -8,6 +8,7 @@ export enum EntityType {
     FACTION = 'faction',
     SESSION = 'session',
     NOTE = 'note',
+    EVENT = 'event',
 }
 
 /**

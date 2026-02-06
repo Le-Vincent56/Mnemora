@@ -64,6 +64,17 @@ export interface CreateNoteRequest extends BaseCreateRequest {
 }
 
 /**
+ * Create a new Event.
+ * Continuity ID is required for events.
+ */
+export interface CreateEventRequest extends BaseCreateRequest {
+    readonly continuityID: string;
+    readonly campaignID?: string;
+    readonly description?: string;
+    readonly secrets?: string;
+}
+
+/**
  * Update an existing entity.
  * Only include fields you want to change.
  * Null means "clear this field" (where applicable).
@@ -131,8 +142,8 @@ export interface ListEntitiesRequest {
 }
 
 /**
-   * Create a new World.
-   */
+ * Create a new World.
+ */
 export interface CreateWorldRequest {
     readonly name: string;
     readonly tagline?: string;
@@ -170,11 +181,12 @@ export interface ListWorldsRequest {
 }
 
 /**
-   * Create a new Campaign.
-   */
+ * Create a new Campaign.
+ */
 export interface CreateCampaignRequest {
     readonly name: string;
     readonly worldID: string;
+    readonly continuityID: string;
     readonly description?: string;
 }
 
@@ -206,4 +218,46 @@ export interface GetCampaignRequest {
  */
 export interface ListCampaignsRequest {
     readonly worldID: string;
+}
+
+/**
+ * Create a new Continuity.
+ */
+export interface CreateContinuityRequest {
+    readonly name: string;
+    readonly worldID: string;
+    readonly description?: string;
+    readonly branchedFromID?: string;
+    readonly branchPointEventID?: string;
+}
+
+/**
+ * Get a single Continuity by ID.
+ */
+export interface GetContinuityRequest {
+    readonly id: string;
+}
+
+/**
+ * List Continuities for a World.
+ */
+export interface ListContinuitiesRequest {
+    readonly worldID: string;
+}
+
+/**
+ * Update an existing Continuity.
+ * Undefined = don't change
+ */
+export interface UpdateContinuityRequest {
+    readonly id: string;
+    readonly name?: string;
+    readonly description?: string;
+}
+
+/**
+ * Delete a Continuity by ID
+ */
+export interface DeleteContinuityRequest {
+    readonly id: string;
 }

@@ -70,6 +70,7 @@
 /* Border */
 .bordered {
     border: 1px solid var(--border-subtle);
+    transition: border-color var(--duration-gentle) var(--ease-out);
 }
 
 /* Hoverable lift effect - the signature quiet interaction */
@@ -212,14 +213,17 @@
 /* Colors */
 .color-primary {
     color: var(--text-primary);
+    transition: color var(--duration-gentle) var(--ease-out);
 }
 
 .color-secondary {
     color: var(--text-secondary);
+    transition: color var(--duration-gentle) var(--ease-out);
 }
 
 .color-tertiary {
     color: var(--text-tertiary);
+    transition: color var(--duration-gentle) var(--ease-out);
 }
 
 .color-inherit {

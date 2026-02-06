@@ -39,6 +39,14 @@ export interface NoteTypeSpecificFieldsDTO {
     readonly content: string | undefined;
 }
 
+export interface EventTypeSpecificFieldsDTO {
+    readonly inWorldTime: string | undefined;
+    readonly realWorldAnchor: string | undefined;
+    readonly involvedEntityIDs: string | undefined;
+    readonly locationID: string | undefined;
+    readonly outcomes: string | undefined;
+}
+
 /**
  * Base fields shared by all entity DTOs
  */
@@ -107,12 +115,25 @@ export interface NoteDTO extends BaseEntityDTO {
     readonly typeSpecificFields: NoteTypeSpecificFieldsDTO;
 }
 
+/**
+ * Event DTO: Canon occurrences within a continuity timeline.
+ */
+export interface EventDTO extends BaseEntityDTO {
+    readonly type: EntityType.EVENT;
+    readonly description: string;
+    readonly secrets: string;
+    readonly forkedFrom: string | null;
+    readonly continuityID: string;
+    readonly typeSpecificFields: EventTypeSpecificFieldsDTO;
+}
+
 export type EntityDTO =
     | CharacterDTO
     | LocationDTO
     | FactionDTO
     | SessionDTO
-    | NoteDTO;
+    | NoteDTO
+    | EventDTO;
 
 export function isCharacterDTO(dto: EntityDTO): dto is CharacterDTO {
     return dto.type === EntityType.CHARACTER;
@@ -134,6 +155,10 @@ export function isNoteDTO(dto: EntityDTO): dto is NoteDTO {
     return dto.type === EntityType.NOTE;
 }
 
+export function isEventDTO(dto: EntityDTO): dto is EventDTO {
+    return dto.type === EntityType.EVENT;
+}
+
 /**
    * World DTO: Top-level container for a game setting.
    */
@@ -153,6 +178,21 @@ export interface CampaignDTO {
     readonly name: string;
     readonly description: string;
     readonly worldID: string;
+    readonly continuityID: string;
     readonly createdAt: string;   // ISO date string
     readonly modifiedAt: string;  // ISO date string
+}
+
+/**
+ * Continuity DTO: A timeline within a World.
+ */
+export interface ContinuityDTO {
+    readonly id: string;
+    readonly name: string;
+    readonly description: string;
+    readonly worldID: string;
+    readonly branchedFromID: string | null;
+    readonly branchPointEventID: string | null;
+    readonly createdAt: string;
+    readonly modifiedAt: string;
 }

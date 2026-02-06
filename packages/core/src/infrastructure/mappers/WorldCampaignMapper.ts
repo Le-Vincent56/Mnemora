@@ -24,6 +24,7 @@ export interface CampaignRow {
     world_id: string;
     name: string;
     description: string | null;
+    continuity_id: string | null;
     created_at: string;
     modified_at: string;
 }
@@ -69,6 +70,7 @@ export class WorldCampaignMapper {
             name: Name.create(row.name).value,
             description: RichText.fromString(row.description ?? ''),
             worldID: EntityID.fromStringOrThrow(row.world_id),
+            continuityID: EntityID.fromStringOrThrow(row.continuity_id!),
             timestamps: Timestamps.fromStringsOrThrow(row.created_at, row.modified_at),
         };
 
@@ -84,6 +86,7 @@ export class WorldCampaignMapper {
             world_id: campaign.worldID.toString(),
             name: campaign.name.toString(),
             description: campaign.description.toString() || null,
+            continuity_id: campaign.continuityID.toString(),
             created_at: campaign.createdAt.toISOString(),
             modified_at: campaign.modifiedAt.toISOString(),
         };

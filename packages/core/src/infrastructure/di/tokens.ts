@@ -1,3 +1,5 @@
+import { UpdateContinuityUseCase } from "../../application/use-cases/UpdateContinuityUseCase";
+
 export const TOKENS = {
     // Infrastructure
     Database: Symbol('Dataase'),
@@ -10,6 +12,7 @@ export const TOKENS = {
     CampaignRepository: Symbol('CampaignRepository'),
     SafetyToolRepository: Symbol('SafetyToolRepository'),
     QuickNoteRepository: Symbol('QuickNoteRepository'),
+    ContinuityRepository: Symbol('ContinuityRepository'),
 
     // Services
     EventBus: Symbol('EventBus'),
@@ -26,6 +29,13 @@ export const TOKENS = {
     SearchEntitiesUseCase: Symbol('SearchEntitiesUseCase'),
     UpdateEntityUseCase: Symbol('UpdateEntityUseCase'),
     DeleteEntityUseCase: Symbol('DeleteEntityUseCase'),
+
+    CreateContinuityUseCase: Symbol('CreateContinuityUseCase'),
+    GetContinuityUseCase: Symbol('GetContinuityUseCase'),
+    ListContinuitiesUseCase: Symbol('ListContinuitiesUseCase'),
+    CreateEventUseCase: Symbol('CreateEventUseCase'),
+    UpdateContinuityUseCase: Symbol('UpdateContinuityUseCase'),
+    DeleteContinuityUseCase: Symbol('DeleteContinuityUseCase'),
 
     CreateWorldUseCase: Symbol('CreateWorldUseCase'),
     UpdateWorldUseCase: Symbol('UpdateWorldUseCase'),

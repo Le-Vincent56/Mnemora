@@ -56,7 +56,7 @@ function GlowPulse({ originX, originY }: { originX: number; originY: number }) {
                 background: `radial-gradient(
                       circle at center,
                       rgba(255, 255, 255, 0.9) 0%,
-                      rgba(147, 112, 219, 0.4) 40%,
+                      rgba(161, 161, 170, 0.4) 40%,
                       transparent 70%
                   )`,
                 filter: 'blur(12px)',

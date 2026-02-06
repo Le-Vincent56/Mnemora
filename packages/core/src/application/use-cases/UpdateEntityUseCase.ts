@@ -5,6 +5,7 @@ import { Location } from '../../domain/entities/Location';
 import { Faction } from '../../domain/entities/Faction';
 import { Session } from '../../domain/entities/Session';
 import { Note } from '../../domain/entities/Note';
+import { Event } from '../../domain/entities/Event';
 import { EntityType } from '../../domain/entities/EntityType';
 import { EntityID } from '../../domain/value-objects/EntityID';
 import type { IEntityRepository } from '../../domain/repositories/IEntityRepository';
@@ -104,6 +105,8 @@ export class UpdateEntityUseCase implements IUseCase<UpdateEntityRequest, Entity
                 return this.updateSession(entity as Session, request);
             case EntityType.NOTE:
                 return this.updateNote(entity as Note, request);
+            case EntityType.EVENT:
+                return this.updateEvent(entity as Event, request);
             default:
                 return Result.fail(
                     UseCaseError.invalidOperation(`Unknown entity type: ${entity.type}`)
@@ -378,6 +381,57 @@ export class UpdateEntityUseCase implements IUseCase<UpdateEntityRequest, Entity
         if (request.typeSpecificFields) {
             for (const [field, value] of Object.entries(request.typeSpecificFields)) {
                 const result = note.setTypeSpecificField(field, value);
+                if (result.isFailure) {
+                    return Result.fail(
+                        UseCaseError.validation(result.error.message, `typeSpecificFields.${field}`)
+                    );
+                }
+                changedFields.push(`typeSpecificFields.${field}`);
+            }
+        }
+
+        return Result.ok(changedFields);
+    }
+
+    private updateEvent(
+        event: Event,
+        request: UpdateEntityRequest
+    ): Result<string[], UseCaseError> {
+        const changedFields: string[] = [];
+
+        if (request.name !== undefined) {
+            const renameResult = event.rename(request.name);
+            if (renameResult.isFailure) {
+                return Result.fail(
+                    UseCaseError.validation(renameResult.error.message, 'name')
+                );
+            }
+            changedFields.push('name');
+        }
+
+        if (request.description !== undefined) {
+            event.updateDescription(request.description);
+            changedFields.push('description');
+        }
+
+        if (request.secrets !== undefined) {
+            event.updateSecrets(request.secrets);
+            changedFields.push('secrets');
+        }
+
+        if (request.tags !== undefined) {
+            const tagsResult = event.setTags(request.tags as string[]);
+            if (tagsResult.isFailure) {
+                return Result.fail(
+                    UseCaseError.validation(tagsResult.error.message, 'tags')
+                );
+            }
+            changedFields.push('tags');
+        }
+
+        if (request.typeSpecificFields) {
+            for (const [field, value] of Object.entries(request.typeSpecificFields)) {
+                const result = event.setTypeSpecificField(field, value);
                 if (result.isFailure) {
                     return Result.fail(
                         UseCaseError.validation(result.error.message, `typeSpecificFields.${field}`)

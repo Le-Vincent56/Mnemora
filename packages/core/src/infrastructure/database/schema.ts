@@ -1,4 +1,4 @@
-export const SCHEMA_VERSION = 5;
+export const SCHEMA_VERSION = 6;
 
 export const CREATE_ENTITIES_TABLE = `
     CREATE TABLE IF NOT EXISTS entities (
@@ -193,4 +193,68 @@ export const ALTER_ENTITIES_ADD_DURATION = `
 
 export const ALTER_ENTITIES_ADD_TYPE_SPECIFIC_FIELDS = `
     ALTER TABLE entities ADD COLUMN type_specific_fields TEXT DEFAULT '{}';
+`;
+
+// ============================================================================
+// Schema Version 6: Continuities + Event entity type + continuity_id columns
+// ============================================================================
+
+export const CREATE_CONTINUITIES_TABLE = `
+    CREATE TABLE IF NOT EXISTS continuities (
+        id TEXT PRIMARY KEY,
+        world_id TEXT NOT NULL REFERENCES worlds(id) ON DELETE CASCADE,
+        name TEXT NOT NULL,
+        description TEXT,
+        branched_from_id TEXT REFERENCES continuities(id) ON DELETE SET NULL,
+        branch_point_event_id TEXT,
+        created_at TEXT NOT NULL,
+        modified_at TEXT NOT NULL
+    );
+`;
+
+export const CREATE_CONTINUITIES_INDEXES = `
+    CREATE INDEX IF NOT EXISTS idx_continuities_world ON continuities(world_id);
+    CREATE INDEX IF NOT EXISTS idx_continuities_modified ON continuities(modified_at DESC);
+`;
+
+export const ALTER_CAMPAIGNS_ADD_CONTINUITY_ID = `
+    ALTER TABLE campaigns ADD COLUMN continuity_id TEXT REFERENCES continuities(id);
+`;
+
+/**
+ * Rebuilt entities table with 'event' in CHECK constraint and continuity_id column.
+ * Used during v6 migration to replace the original entities table.
+ * The FK on forked_from references 'entities' (the final name after rename).
+ */
+export const CREATE_ENTITIES_TABLE_REBUILD = `
+    CREATE TABLE entities_rebuild (
+        id TEXT PRIMARY KEY,
+        type TEXT NOT NULL CHECK(type IN ('character','location','faction','session','note','event')),
+        name TEXT NOT NULL,
+        description TEXT,
+        secrets TEXT,
+        content TEXT,
+        summary TEXT,
+        notes TEXT,
+        tags TEXT NOT NULL DEFAULT '[]',
+        world_id TEXT NOT NULL,
+        campaign_id TEXT,
+        forked_from TEXT,
+        session_date TEXT,
+        created_at TEXT NOT NULL,
+        modified_at TEXT NOT NULL,
+        duration INTEGER,
+        type_specific_fields TEXT DEFAULT '{}',
+        continuity_id TEXT,
+        FOREIGN KEY (forked_from) REFERENCES entities(id) ON DELETE SET NULL
+    );
+`;
+
+export const CREATE_ENTITIES_INDEXES_V6 = `
+    CREATE INDEX IF NOT EXISTS idx_entities_world ON entities(world_id);
+    CREATE INDEX IF NOT EXISTS idx_entities_campaign ON entities(campaign_id);
+    CREATE INDEX IF NOT EXISTS idx_entities_type ON entities(type);
+    CREATE INDEX IF NOT EXISTS idx_entities_forked_from ON entities(forked_from);
+    CREATE INDEX IF NOT EXISTS idx_entities_modified ON entities(modified_at DESC);
+    CREATE INDEX IF NOT EXISTS idx_entities_continuity ON entities(continuity_id);
 `;

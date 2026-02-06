@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import Database from 'better-sqlite3';
 import { Result } from '../../domain/core/Result';
 import { RepositoryError } from '../../domain/core/errors';
@@ -60,7 +61,10 @@ export class DatabaseManager {
     }
 
     /**
-     * Migrate the database based on version
+     * Migrate the database based on version.
+     * Versions 1-5 run in a single transaction.
+     * Version 6 runs separately because it requires PRAGMA foreign_keys = OFF
+     * outsides a transaction for the entities table rebuild.s
      */
     private runMigrations(): void {
         const db = this.getDatabase();
@@ -75,7 +79,7 @@ export class DatabaseManager {
         const currentVersion = row?.version ?? 0;
 
         if (currentVersion < schema.SCHEMA_VERSION) {
-            // Run migrations in a transaction
+            // Run migrations v1-v5 in a transaction
             db.transaction(() => {
                 if (currentVersion < 1) {
                     db.exec(schema.CREATE_ENTITIES_TABLE);
@@ -122,6 +126,65 @@ export class DatabaseManager {
                     db.prepare('INSERT INTO schema_version (version) VALUES (?)').run(5);
                 }
             })();
+
+            // Re-check version after v1-v5 transaction
+            const versionAfter = (db.prepare(
+                'SELECT version FROM schema_version ORDER BY version DESC LIMIT 1'
+            ).get() as { version: number } | undefined)?.version ?? 0;
+
+            if (versionAfter < 6) {
+                // v6 requires table rebuild -> must disable foreign keys outside a transaction
+                db.pragma('foreign_keys = OFF');
+                db.transaction(() => {
+                    // 1. Create continuities table
+                    db.exec(schema.CREATE_CONTINUITIES_TABLE);
+                    db.exec(schema.CREATE_CONTINUITIES_INDEXES);
+
+                    // 2. Add continuity_id to campaigns
+                    db.exec(schema.ALTER_CAMPAIGNS_ADD_CONTINUITY_ID);
+
+                    // 3. Create a default continuity for each world that has campaigns
+                    const worlds = db.prepare(
+                        'SELECT DISTINCT w.id FROM worlds w INNER JOIN campaigns c ON c.world_id = w.id'
+                    ).all() as { id: string }[];
+
+                    const insertContinuity = db.prepare(
+                        'INSERT INTO continuities (id, world_id, name, description, created_at, modified_at) VALUES (?, ?, ?, ?, ?, ?)'
+                    );
+
+                    const updateCampaigns = db.prepare(
+                        'UPDATE campaigns SET continuity_id = ? WHERE world_id = ?'
+                    );
+
+                    const now = new Date().toISOString();
+                    for (const world of worlds) {
+                        const continuityID = randomUUID();
+                        insertContinuity.run(continuityID, world.id, 'Default Timeline', '', now, now);
+                        updateCampaigns.run(continuityID, world.id);
+                    }
+
+                    // 4. Rebuild entities table to update CHECK constraint + add continuity_id
+                    db.exec(schema.CREATE_ENTITIES_TABLE_REBUILD);
+                    db.exec(`
+                          INSERT INTO entities_rebuild (id, type, name, description, secrets, content, summary, notes, tags,
+  world_id, campaign_id, forked_from, session_date, created_at, modified_at, duration, type_specific_fields, continuity_id)
+                          SELECT id, type, name, description, secrets, content, summary, notes, tags, world_id, campaign_id,
+  forked_from, session_date, created_at, modified_at, duration, type_specific_fields, NULL
+                          FROM entities
+                      `);
+                    db.exec('DROP TABLE entities');
+                    db.exec('ALTER TABLE entities_rebuild RENAME TO entities');
+
+                    // 5. Recreate indexes and FTS triggers (dropped with old table)
+                    db.exec(schema.CREATE_ENTITIES_INDEXES_V6);
+                    db.exec(schema.CREATE_FTS_TRIGGERS);
+                    db.exec("INSERT INTO entities_fts(entities_fts) VALUES('rebuild')");
+
+                    db.prepare('INSERT INTO schema_version (version) VALUES (?)').run(6);
+                })
+
+                db.pragma('foreign_keys = ON');
+            }
         }
     }
 }

@@ -46,6 +46,11 @@ export interface ICampaignRepository {
     countByWorld(worldID: EntityID): Promise<Result<number, RepositoryError>>;
 
     /**
+     * Counts the number of Campaigns that reference a specific Continuity.
+     */
+    countByContinuity(continuityID: EntityID): Promise<Result<number, RepositoryError>>;
+
+    /**
      * Checks if a Campaign with the given ID exists.
      */
     exists(id: EntityID): Promise<Result<boolean, RepositoryError>>;

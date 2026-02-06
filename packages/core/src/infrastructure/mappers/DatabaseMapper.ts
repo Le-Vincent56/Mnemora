@@ -5,6 +5,7 @@ import { Location, LocationProps } from '../../domain/entities/Location';
 import { Faction, FactionProps } from '../../domain/entities/Faction';
 import { Session, SessionProps } from '../../domain/entities/Session';
 import { Note, NoteProps } from '../../domain/entities/Note';
+import { Event, EventProps } from '../../domain/entities/Event';
 import { EntityType, toEntityType } from '../../domain/entities/EntityType';
 import { EntityID } from '../../domain/value-objects/EntityID';
 import { Name } from '../../domain/value-objects/Name';
@@ -31,6 +32,8 @@ export class DatabaseMapper {
                 return Session.fromProps(DatabaseMapper.toSessionProps(row));
             case EntityType.NOTE:
                 return Note.fromProps(DatabaseMapper.toNoteProps(row));
+            case EntityType.EVENT:
+                return Event.fromProps(DatabaseMapper.toEventProps(row));
             default:
                 throw new Error(`Unknown entity type: ${row.type}`);
         }
@@ -65,6 +68,7 @@ export class DatabaseMapper {
                     forked_from: char.forkedFrom?.toString() ?? null,
                     session_date: null,
                     type_specific_fields: char.typeSpecificFieldsWrapper.toJSON(),
+                    continuity_id: null,
                 };
             }
             case EntityType.LOCATION: {
@@ -83,6 +87,7 @@ export class DatabaseMapper {
                     forked_from: loc.forkedFrom?.toString() ?? null,
                     session_date: null,
                     type_specific_fields: loc.typeSpecificFieldsWrapper.toJSON(),
+                    continuity_id: null,
                 };
             }
             case EntityType.FACTION: {
@@ -101,6 +106,26 @@ export class DatabaseMapper {
                     forked_from: fac.forkedFrom?.toString() ?? null,
                     session_date: null,
                     type_specific_fields: fac.typeSpecificFieldsWrapper.toJSON(),
+                    continuity_id: null,
+                };
+            }
+            case EntityType.EVENT: {
+                const evt = entity as Event;
+                return {
+                    ...base,
+                    name: evt.name.toString(),
+                    description: evt.description.toString(),
+                    secrets: evt.secrets.toString(),
+                    content: null,
+                    summary: null,
+                    notes: null,
+                    tags: JSON.stringify(evt.tags.toArray()),
+                    world_id: evt.worldID.toString(),
+                    campaign_id: evt.campaignID?.toString() ?? null,
+                    forked_from: evt.forkedFrom?.toString() ?? null,
+                    session_date: null,
+                    type_specific_fields: evt.typeSpecificFieldsWrapper.toJSON(),
+                    continuity_id: evt.continuityID.toString(),
                 };
             }
             case EntityType.SESSION: {
@@ -119,6 +144,7 @@ export class DatabaseMapper {
                     forked_from: null,
                     session_date: sess.sessionDate?.toISOString() ?? null,
                     type_specific_fields: sess.typeSpecificFieldsWrapper.toJSON(),
+                    continuity_id: null,
                 };
             }
             case EntityType.NOTE: {
@@ -137,6 +163,7 @@ export class DatabaseMapper {
                     forked_from: null,
                     session_date: null,
                     type_specific_fields: note.typeSpecificFieldsWrapper.toJSON(),
+                    continuity_id: null,
                 };
             }
             default:
@@ -231,6 +258,25 @@ export class DatabaseMapper {
             timestamps: Timestamps.fromStringsOrThrow(row.created_at, row.modified_at),
             typeSpecificFields: TypeSpecificFieldsWrapper.fromJSON(
                 EntityType.NOTE,
+                row.type_specific_fields
+            ),
+        };
+    }
+
+    private static toEventProps(row: EntityRow): EventProps {
+        return {
+            id: EntityID.fromStringOrThrow(row.id),
+            name: Name.create(row.name).value,
+            description: RichText.fromString(row.description ?? ''),
+            secrets: RichText.fromString(row.secrets ?? ''),
+            tags: TagCollection.fromArray(JSON.parse(row.tags)).value,
+            worldID: EntityID.fromStringOrThrow(row.world_id),
+            campaignID: row.campaign_id ? EntityID.fromStringOrThrow(row.campaign_id) : null,
+            continuityID: EntityID.fromStringOrThrow(row.continuity_id!),
+            forkedFrom: row.forked_from ? EntityID.fromStringOrThrow(row.forked_from) : null,
+            timestamps: Timestamps.fromStringsOrThrow(row.created_at, row.modified_at),
+            typeSpecificFields: TypeSpecificFieldsWrapper.fromJSON(
+                EntityType.EVENT,
                 row.type_specific_fields
             ),
         };

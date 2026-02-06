@@ -7,14 +7,14 @@ import { EASING } from '@/tokens';
 // ===============================
 
 const THREAD_CONFIG = {
-    count: 8,
-    staggerMs: 25,
+    count: 10,
+    staggerMs: 15,
     durationMs: 350,
     colors: [
-        'rgba(147, 112, 219, 0.7)',  // Violet
-        'rgba(100, 149, 237, 0.6)',  // Cornflower
-        'rgba(72, 209, 204, 0.6)',   // Turquoise
-        'rgba(255, 182, 193, 0.5)',  // Blush
+        'rgba(250, 250, 250, 0.9)',  // Bright white
+        'rgba(212, 212, 216, 0.85)', // Zinc-200
+        'rgba(161, 161, 170, 0.8)',  // Zinc-400
+        'rgba(228, 228, 231, 0.85)', // Zinc-300
     ],
 } as const;
 
@@ -35,6 +35,7 @@ interface ThreadData {
     startY: number;  // Pixels
     color: string;
     delay: number;
+    angle: number;   // Radians — rotation toward target
 }
 
 // ===============================
@@ -58,12 +59,23 @@ function generateThreads(_targetX: number, _targetY: number): ThreadData[] {
         { x: -20, y: viewH * 0.25 },           // Left-top
     ];
 
-    return edgePositions.map((pos, index) => ({
+    // Add 8 extra threads at random edge positions
+    const extraPositions = Array.from({ length: 8 }, () => {
+        const side = Math.floor(Math.random() * 4);
+        const t = Math.random();
+        if (side === 0) return { x: viewW * t, y: -20 };
+        if (side === 1) return { x: viewW + 20, y: viewH * t };
+        if (side === 2) return { x: viewW * t, y: viewH + 20 };
+        return { x: -20, y: viewH * t };
+    });
+
+    return [...edgePositions, ...extraPositions].map((pos, index) => ({
         id: index,
         startX: pos.x + (Math.random() - 0.5) * 40,
         startY: pos.y + (Math.random() - 0.5) * 40,
         color: THREAD_CONFIG.colors[index % THREAD_CONFIG.colors.length] ?? defaultColor,
         delay: index * (THREAD_CONFIG.staggerMs / 1000),
+        angle: Math.atan2(_targetY - pos.y, _targetX - pos.x),
     }));
 }
 
@@ -78,6 +90,7 @@ function Thread({
     targetY,
     color,
     delay,
+    angle,
 }: {
     startX: number;
     startY: number;
@@ -85,31 +98,38 @@ function Thread({
     targetY: number;
     color: string;
     delay: number;
+    angle: number;
 }) {
+    const angleDeg = angle * (180 / Math.PI);
     return (
         <motion.div
             style={{
                 position: 'absolute',
                 left: 0,
                 top: 0,
-                width: 3,
-                height: 3,
-                borderRadius: '50%',
+                width: 40,
+                height: 4,
+                borderRadius: '2px',
                 backgroundColor: color,
-                boxShadow: `0 0 12px 4px ${color}, 0 0 24px 8px ${color.replace(/[\d.]+\)$/, '0.3)')}`,
+                boxShadow: `0 0 20px 8px ${color}, 0 0 48px 16px ${color.replace(/[\d.]+\)$/, '0.35)')}`,
                 pointerEvents: 'none',
+                transformOrigin: 'center center',
             }}
             initial={{
                 x: startX,
                 y: startY,
-                scale: 1.5,
+                scaleX: 1.8,
+                scaleY: 1,
+                rotate: angleDeg,
                 opacity: 0,
             }}
             animate={{
                 x: targetX,
                 y: targetY,
-                scale: [1.5, 1, 0.5],
-                opacity: [0, 1, 1, 0.6],
+                scaleX: [1.8, 1.2, 0.3],
+                scaleY: [1, 1.5, 0.5],
+                rotate: angleDeg,
+                opacity: [0, 0.95, 1, 0.7],
             }}
             transition={{
                 x: {
@@ -122,7 +142,12 @@ function Thread({
                     delay,
                     ease: EASING.inQuad,
                 },
-                scale: {
+                scaleX: {
+                    duration: THREAD_CONFIG.durationMs / 1000,
+                    delay,
+                    times: [0, 0.5, 1],
+                },
+                scaleY: {
                     duration: THREAD_CONFIG.durationMs / 1000,
                     delay,
                     times: [0, 0.5, 1],
@@ -130,7 +155,7 @@ function Thread({
                 opacity: {
                     duration: THREAD_CONFIG.durationMs / 1000,
                     delay,
-                    times: [0, 0.1, 0.7, 1],
+                    times: [0, 0.08, 0.6, 1],
                 },
             }}
         />
@@ -146,23 +171,23 @@ function ConvergenceGlow({ x, y }: { x: number; y: number }) {
         <motion.div
             style={{
                 position: 'absolute',
-                left: x - 25,
-                top: y - 25,
-                width: 50,
-                height: 50,
+                left: x - 40,
+                top: y - 40,
+                width: 80,
+                height: 80,
                 borderRadius: '50%',
-                background: 'radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(147,112,219,0.3) 50%, transparent 70%)',
-                boxShadow: '0 0 30px rgba(255,255,255,0.6), 0 0 60px rgba(147,112,219,0.4)',
+                background: 'radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(212,212,216,0.5) 40%, rgba(161,161,170,0.25) 65%, transparent 80%)',
+                boxShadow: '0 0 40px rgba(255,255,255,0.8), 0 0 80px rgba(161,161,170,0.5)',
                 pointerEvents: 'none',
             }}
-            initial={{ opacity: 0, scale: 0.2 }}
+            initial={{ opacity: 0, scale: 0.15 }}
             animate={{
-                opacity: [0, 0.6, 1],
-                scale: [0.2, 0.7, 1],
+                opacity: [0, 0.5, 1],
+                scale: [0.15, 0.6, 1.1],
             }}
             transition={{
-                duration: 0.35,
-                delay: 0.15,
+                duration: 0.38,
+                delay: 0.1,
                 ease: EASING.inQuad,
             }}
         />
@@ -212,6 +237,7 @@ export function GatheringThreads({
                             targetY={targetY}
                             color={thread.color}
                             delay={thread.delay}
+                            angle={thread.angle}
                         />
                     ))}
 

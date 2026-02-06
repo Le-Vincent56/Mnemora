@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useMemo } from 'react';
+import { useMemo, useEffect, useRef } from 'react';
 import { EASING } from '@/tokens';
 
 // ===============================
@@ -10,20 +10,20 @@ const SETTLING_CONFIG = {
     /** Duration of the shimmer sweep (ms) */
     shimmerDuration: 300,
     /** Duration of ember drift (ms) */
-    emberDuration: 500,
+    emberDuration: 800,
     /** Number of cooling embers */
-    emberCount: 8,
+    emberCount: 14,
     /** Delay before shimmer starts (after burst peak) */
     shimmerDelay: 100,
     /** Total settling phase duration (ms) */
-    totalDuration: 500,
+    totalDuration: 550,
 } as const;
 
 const EMBER_COLORS = [
-    'rgba(255, 248, 230, 0.6)',
-    'rgba(180, 160, 220, 0.5)',
-    'rgba(100, 149, 237, 0.4)',
-    'rgba(72, 209, 204, 0.3)',
+    'rgba(250, 250, 250, 0.6)',
+    'rgba(212, 212, 216, 0.5)',
+    'rgba(161, 161, 170, 0.4)',
+    'rgba(113, 113, 122, 0.3)',
 ] as const;
 
 // ===============================
@@ -112,9 +112,9 @@ function ShimmerPass() {
                           105deg,
                           transparent 0%,
                           transparent 42%,
-                          rgba(100, 149, 237, 0.02) 48%,
-                          rgba(100, 149, 237, 0.05) 50%,
-                          rgba(100, 149, 237, 0.02) 52%,
+                          rgba(161, 161, 170, 0.02) 48%,
+                          rgba(161, 161, 170, 0.05) 50%,
+                          rgba(161, 161, 170, 0.02) 52%,
                           transparent 58%,
                           transparent 100%
                       )`,
@@ -144,20 +144,20 @@ function generateEmbers(count: number): Ember[] {
     const defaultColor = EMBER_COLORS[0];
 
     return Array.from({ length: count }, (_, i) => {
-        // Dstribute across lower portion of viewport
-        const startX = 15 + Math.random() * 70;
-        const startY = 50 + Math.random() * 40;
+        // Spawn along the bottom edge of the viewport
+        const startX = 5 + Math.random() * 90;
+        const startY = 85 + Math.random() * 15;
 
         return {
             id: i,
             startX,
             startY,
-            driftX: (Math.random() - 0.5) * 30,
-            driftY: -(40 + Math.random() * 60),
+            driftX: (Math.random() - 0.5) * 20,
+            driftY: -(60 + Math.random() * 80),
             size: 2 + Math.random() * 4,
             color: EMBER_COLORS[i % EMBER_COLORS.length] ?? defaultColor,
             delay: Math.random() * 0.15,
-            duration: 0.4 + Math.random() * 0.2,
+            duration: 1.0 + Math.random() * 0.4,
         };
     });
 }
@@ -182,14 +182,14 @@ function CoolingEmbers() {
                         pointerEvents: 'none',
                     }}
                     initial={{
-                        opacity: 0.8,
+                        opacity: 0,
                         scale: 1,
                         x: 0,
                         y: 0,
                     }}
                     animate={{
-                        opacity: 0,
-                        scale: 0.3,
+                        opacity: [0, 0.65, 0.6, 0.5, 0],
+                        scale: [1, 1.1, 1.0, 0.7, 0.3],
                         x: ember.driftX,
                         y: ember.driftY,
                     }}
@@ -198,8 +198,14 @@ function CoolingEmbers() {
                         delay: ember.delay,
                         ease: EASING.outQuart,
                         opacity: {
-                            duration: ember.duration * 0.8,
-                            delay: ember.delay + ember.duration * 0.2
+                            duration: ember.duration,
+                            delay: ember.delay,
+                            times: [0, 0.08, 0.3, 0.7, 1],
+                        },
+                        scale: {
+                            duration: ember.duration,
+                            delay: ember.delay,
+                            times: [0, 0.08, 0.35, 0.7, 1],
                         },
                     }}
                 />
@@ -228,7 +234,7 @@ function SurfaceRipple() {
                 marginLeft: -100,
                 marginTop: -100,
                 borderRadius: '50%',
-                border: '1px solid rgba(100, 149, 237, 0.15)',
+                border: '1px solid rgba(161, 161, 170, 0.15)',
                 pointerEvents: 'none',
             }}
             initial={{
@@ -295,6 +301,26 @@ export function SettlingPhase({
     isActive,
     onSettleComplete,
 }: SettlingPhaseProps) {
+    const completeFiredRef = useRef(false);
+
+    // Fire completion after the slowest ember finishes
+    useEffect(() => {
+        if (!isActive) {
+            completeFiredRef.current = false;
+            return;
+        }
+
+        // Max ember lifetime: delay (0.15s) + duration (1.4s) + buffer (0.1s)
+        const timeout = setTimeout(() => {
+            if (!completeFiredRef.current) {
+                completeFiredRef.current = true;
+                onSettleComplete?.();
+            }
+        }, 1650);
+
+        return () => clearTimeout(timeout);
+    }, [isActive, onSettleComplete]);
+
     return (
         <AnimatePresence>
             {isActive && (
@@ -307,13 +333,7 @@ export function SettlingPhase({
                         overflow: 'hidden',
                     }}
                     initial={{ opacity: 1 }}
-                    exit={{ opacity: 0, transition: { duration: 0.2 } }}
-                    onAnimationComplete={() => {
-                        // Fire completion after all settling effects finish
-                        if (onSettleComplete) {
-                            setTimeout(onSettleComplete, SETTLING_CONFIG.totalDuration);
-                        }
-                    }}
+                    exit={{ opacity: 0, transition: { duration: 0.15 } }}
                 >
                     {/* Surface ripple — expanding calm */}
                     <SurfaceRipple />

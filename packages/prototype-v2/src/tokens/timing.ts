@@ -12,7 +12,7 @@ export const TIMING = {
     fast: 150,          // Quick transitions (hover states, small movements)
     normal: 200,        // Standard transitions (most UI state changes)
     gentle: 300,        // Gentle transitions (panels, larger movements)
-    ceremony: 1000,     // Full ceremony (Prep -> Session transition)
+    ceremony: 2500,     // Full ceremony (Prep -> Session transition)
     release: 350,       // Quick release (Session -> Prep transition)
     bypass: 250,        // Keyboard bypass (instant mode switch)
     creation: 400,      // Entity creation awakening

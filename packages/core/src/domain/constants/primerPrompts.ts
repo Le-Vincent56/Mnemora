@@ -139,6 +139,21 @@ export const PRIMER_PROMPTS: Record<EntityType, Record<string, readonly string[]
             "What do you want to accomplish this session?",
         ],
     },
+    [EntityType.EVENT]: {
+        description: [
+            "What happened in this event?",
+            "Summarize what took place.",
+            "What's the key moment here?",
+            "Describe the event from a narrator's perspective.",
+            "What made this event significant?",
+        ],
+        secrets: [
+            "What's hidden beneath the surface of this event?",
+            "What do the players not know yet?",
+            "What behind-the-scenes forces shaped this?",
+            "What secrets does this event conceal?",
+        ],
+    },
 } as const;
 
 /**

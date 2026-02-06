@@ -49,6 +49,19 @@ export interface SessionFields {
 }
 
 /**
+ * Type-specific fields for Event entities
+ */
+export interface EventFields {
+
+    readonly type: EntityType.EVENT;
+    readonly inWorldTime?: string;
+    readonly realWorldAnchor?: string;
+    readonly involvedEntityIDs?: string;
+    readonly locationID?: string;
+    readonly outcomes?: string;
+}
+
+/**
  * Discriminated union of all type-specific fields.
  */
 export type TypeSpecificFields =
@@ -56,7 +69,8 @@ export type TypeSpecificFields =
     | LocationFields
     | FactionFields
     | NoteFields
-    | SessionFields;
+    | SessionFields
+    | EventFields;
 
 /**
  * Maps EntityType to its corresponding fields interface.
@@ -67,6 +81,7 @@ export type FieldsFor<T extends EntityType> =
     T extends EntityType.FACTION ? FactionFields :
     T extends EntityType.NOTE ? NoteFields :
     T extends EntityType.SESSION ? SessionFields :
+    T extends EntityType.EVENT ? EventFields :
     never;
 
 /**
@@ -78,6 +93,7 @@ export const TYPE_SPECIFIC_FIELD_NAMES: Record<EntityType, readonly string[]> = 
     [EntityType.FACTION]: ['ideology', 'goals', 'resources', 'structure'],
     [EntityType.NOTE]: ['content'],
     [EntityType.SESSION]: ['prepNotes'],
+    [EntityType.EVENT]: ['inWorldTime', 'realWorldAnchor', 'involvedEntityIDs', 'locationID', 'outcomes'],
 } as const;
 
 /**

@@ -21,22 +21,22 @@ const BURST_CONFIG = {
     initialSize: 60,
 } as const;
 
-/** Color layers for the burst - warm center to cool edges */
+/** Color layers for the burst — monochrome white-to-slate */
 const BURST_COLORS = {
-    // Core: Golden white
+    // Core: Bright white
     core: {
-        inner: 'rgba(255, 250, 240, 0.95)',
-        outer: 'rgba(255, 220, 180, 0.6)',
+        inner: 'rgba(255, 255, 255, 0.95)',
+        outer: 'rgba(228, 228, 231, 0.6)',
     },
-    // Middle: Transitional violet
+    // Middle: Zinc mid-tone
     middle: {
-        inner: 'rgba(180, 160, 220, 0.7)',
-        outer: 'rgba(147, 112, 219, 0.3)',
+        inner: 'rgba(212, 212, 216, 0.7)',
+        outer: 'rgba(161, 161, 170, 0.3)',
     },
-    // Edge: Cool session blues
+    // Edge: Darker slate
     edge: {
-        inner: 'rgba(100, 149, 237, 0.5)',
-        outer: 'rgba(72, 180, 200, 0.1)',
+        inner: 'rgba(113, 113, 122, 0.5)',
+        outer: 'rgba(82, 82, 91, 0.15)',
     },
 } as const;
 
@@ -148,7 +148,7 @@ function ShockwaveRing({ originX, originY }: { originX: number, originY: number 
                 border: '2px solid rgba(255, 255, 255, 0.8)',
                 boxShadow: `
                     0 0 20px rgba(255, 255, 255, 0.6),
-                    0 0 40px rgba(147, 112, 219, 0.4),
+                    0 0 40px rgba(161, 161, 170, 0.4),
                     inset 0 0 20px rgba(255, 255, 255, 0.3)
                 `,
                 willChange: 'transform, opacity',
@@ -198,9 +198,9 @@ interface SprayParticle {
 function generateSprayParticles(count: number): SprayParticle[] {
     const defaultColor = 'rgba(255, 255, 255, 0.9)';
     const colors = [
-        'rgba(255, 248, 230, 0.8)',
-        'rgba(147, 112, 219, 0.7)',
-        'rgba(100, 149, 237, 0.6)',
+        'rgba(255, 255, 255, 0.9)',
+        'rgba(212, 212, 216, 0.8)',
+        'rgba(161, 161, 170, 0.7)',
     ];
 
     return Array.from({ length: count }, (_, i) => ({

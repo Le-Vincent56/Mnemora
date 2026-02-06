@@ -181,10 +181,10 @@ export interface CeremonyConfig {
  * These match --ceremony-bokeh-* tokens.
  */
 export const BOKEH_COLORS = {
-    violet: 'rgba(147, 112, 219, 0.4)',
-    cornflower: 'rgba(100, 149, 237, 0.4)',
-    turquoise: 'rgba(72, 209, 204, 0.4)',
-    blush: 'rgba(255, 182, 193, 0.3)',
+    violet: 'rgba(161, 161, 170, 0.30)',
+    cornflower: 'rgba(113, 113, 122, 0.25)',
+    turquoise: 'rgba(82, 82, 91, 0.20)',
+    blush: 'rgba(63, 63, 70, 0.15)',
 } as const;
 
 export type BokehColor = keyof typeof BOKEH_COLORS;
