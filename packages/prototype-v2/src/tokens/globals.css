@@ -73,19 +73,19 @@ INVARIANT TOKENS (same in all modes)
     --radius-2xl: 24px;
     --radius-full: 9999px;
 
-    /* Entity Type Colors */
-    --entity-character: #9F6B8E;
-    --entity-location: #6B8E9F;
-    --entity-faction: #8B9F6B;
-    --entity-session: #9F8B6B;
-    --entity-note: #8A8A87;
+    /* Entity Type Colors (Muted, sophisticated — Tailwind 400s per design-principles.md) */
+    --entity-character: #C084FC;  /* Purple-400 */
+    --entity-location: #2DD4BF;  /* Teal-400 */
+    --entity-faction: #FB7185;   /* Rose-400 */
+    --entity-session: #FBBF24;   /* Amber-400 */
+    --entity-note: #94A3B8;      /* Slate-400 */
 
     /* Entity Type Subtle Backgrounds */
-    --entity-character-subtle: rgba(159, 107, 142, 0.12);
-    --entity-location-subtle: rgba(107, 142, 159, 0.12);
-    --entity-faction-subtle: rgba(139, 159, 107, 0.12);
-    --entity-session-subtle: rgba(159, 139, 107, 0.12);
-    --entity-note-subtle: rgba(138, 138, 135, 0.12);
+    --entity-character-subtle: rgba(192, 132, 252, 0.12);
+    --entity-location-subtle: rgba(45, 212, 191, 0.12);
+    --entity-faction-subtle: rgba(251, 113, 133, 0.12);
+    --entity-session-subtle: rgba(251, 191, 36, 0.12);
+    --entity-note-subtle: rgba(148, 163, 184, 0.12);
 
     /* Primary Brand */
     --primary: #5C7A8A;
