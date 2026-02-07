@@ -38,7 +38,7 @@ export const EASING = {
      * Slightly more dramatic than standard ease-out.
      * Use for: Memory surfacing, content appearing from below.
      */
-    memory: [0.23, 1, 0.32, 1] as EasingTuple,
+    memory: [0.2, 0.8, 0.2, 1] as EasingTuple,
 
     /**
      * Standard - Material Design inspired default.

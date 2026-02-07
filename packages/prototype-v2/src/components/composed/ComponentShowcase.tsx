@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import {
-    User, MapPin, Shield, FileText, Scroll,
+    User, MapPin, Shield, FileText,
     LayoutGrid, List, Plus, Trash2, BookOpen,
 } from 'lucide-react';
 import { Surface, Stack, Text, Button, Divider } from '@/primitives';
@@ -227,16 +227,16 @@ export function ComponentShowcase() {
                                 onSelect={() => {}}
                             />
                             <EntityListItem
-                                name="Session 4: The Descent"
-                                entityType="session"
-                                icon={Scroll}
+                                name="Plot threads to resolve"
+                                entityType="note"
+                                icon={FileText}
                                 meta="3d ago"
                                 onSelect={() => {}}
                             />
                             <EntityListItem
-                                name="Plot threads to resolve"
-                                entityType="note"
-                                icon={FileText}
+                                name="The Whispering Depths"
+                                entityType="location"
+                                icon={MapPin}
                                 meta="1w ago"
                                 onSelect={() => {}}
                             />

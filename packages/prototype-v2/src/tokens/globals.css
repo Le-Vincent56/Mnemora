@@ -67,25 +67,24 @@ INVARIANT TOKENS (same in all modes)
     /* Border Radius */
     --radius-none: 0;
     --radius-sm: 4px;
-    --radius-md: 8px;
-    --radius-lg: 12px;
-    --radius-xl: 16px;
-    --radius-2xl: 24px;
+    --radius-md: 12px;   /* Cards — "Exaggerated" per design-principles */
+    --radius-lg: 24px;   /* Modals — "Super-rounded" per design-principles */
+    --radius-xl: 24px;   /* Alias (collapses with lg after realignment) */
+    --radius-2xl: 24px;  /* Alias (same as lg) */
     --radius-full: 9999px;
 
-    /* Entity Type Colors (Muted, sophisticated — Tailwind 400s per design-principles.md) */
-    --entity-character: #C084FC;  /* Purple-400 */
-    --entity-location: #2DD4BF;  /* Teal-400 */
-    --entity-faction: #FB7185;   /* Rose-400 */
-    --entity-session: #FBBF24;   /* Amber-400 */
-    --entity-note: #94A3B8;      /* Slate-400 */
+    /* Entity Type Colors (Muted earth tones per Specimen Cabinet redesign) */
+    --entity-character: #A78BCA;  /* Dusty lavender */
+    --entity-location: #7BAE9E;   /* Sage green */
+    --entity-faction: #C48B94;    /* Dusty rose */
+    --entity-session: #B5A36B;    /* Antique gold */
+    --entity-note: #8E99A4;       /* Weathered slate */
 
     /* Entity Type Subtle Backgrounds */
-    --entity-character-subtle: rgba(192, 132, 252, 0.12);
-    --entity-location-subtle: rgba(45, 212, 191, 0.12);
-    --entity-faction-subtle: rgba(251, 113, 133, 0.12);
-    --entity-session-subtle: rgba(251, 191, 36, 0.12);
-    --entity-note-subtle: rgba(148, 163, 184, 0.12);
+    --entity-character-subtle: rgba(167, 139, 202, 0.12);
+    --entity-location-subtle: rgba(123, 174, 158, 0.12);
+    --entity-faction-subtle: rgba(196, 139, 148, 0.12);
+    --entity-note-subtle: rgba(142, 153, 164, 0.12);
 
     /* Primary Brand */
     --primary: #5C7A8A;
@@ -123,7 +122,7 @@ INVARIANT TOKENS (same in all modes)
     --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
     --ease-in: cubic-bezier(0.32, 0, 0.67, 0);
     --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-    --ease-memory: cubic-bezier(0.23, 1, 0.32, 1);
+    --ease-memory: cubic-bezier(0.2, 0.8, 0.2, 1);
     /* Signature easing */
     --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
 
@@ -151,7 +150,7 @@ INVARIANT TOKENS (same in all modes)
             LAYOUT TOKENS
     -------------------------------------
     */
-    --icon-rail-width: 64px;
+    --icon-rail-width: 48px;    /* Spec: 48px fixed, minimal */
     --content-max-width: 1200px;
     --sidebar-width: 320px;
 }
@@ -186,10 +185,11 @@ MODE-DEPENDENT TOKENS (same in all modes)
     --border-emphasis: #D4D4D8;
     --border-strong: #18181B;
 
-    --shadow-sm: 0 1px 2px rgba(9, 9, 11, 0.04);
-    --shadow-md: 0 2px 8px rgba(9, 9, 11, 0.06);
-    --shadow-lg: 0 4px 16px rgba(9, 9, 11, 0.08);
-    --shadow-xl: 0 8px 24px rgba(9, 9, 11, 0.12);
+    /* Prep Mode: no drop shadows; depth is communicated via borders and masks only. */
+    --shadow-sm: none;
+    --shadow-md: none;
+    --shadow-lg: none;
+    --shadow-xl: none;
 
     /* Focus ring for accessibility */
     --focus-ring: 0 0 0 2px var(--canvas), 0 0 0 4px var(--primary);
@@ -295,7 +295,7 @@ SCROLLBAR STYLING (subtle, mode-aware)
 -------------------------------------
 */
 
-::webkit-scrollbar {
+::-webkit-scrollbar {
     width: 8px;
     height: 8px;
 }

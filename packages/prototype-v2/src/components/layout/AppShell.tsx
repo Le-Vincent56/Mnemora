@@ -30,7 +30,7 @@ export interface AppShellProps {
 const contentVariants = {
     hidden: {
         opacity: 0,
-        y: 12,
+        y: 24,
     },
     visible: {
         opacity: 1,
@@ -45,7 +45,7 @@ const contentVariants = {
 /**
  * Main application layout shell.
  * Provides the foundational two-column structure:
- * - Fixed 64px IconRail on the left
+ * - Fixed 48px IconRail on the left
  * - Fluid content area on the right
  *
  * Uses slot-based composition for maximum flexibility.

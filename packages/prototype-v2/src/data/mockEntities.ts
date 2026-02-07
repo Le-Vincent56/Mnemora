@@ -1,11 +1,11 @@
 import type { LucideIcon } from 'lucide-react';
-import { User, MapPin, Shield, BookOpen, StickyNote } from 'lucide-react';
+import { User, MapPin, Shield, StickyNote } from 'lucide-react';
 
 // -----------------------------------------------
 //  Types
 // -----------------------------------------------
 
-export type EntityType = 'character' | 'location' | 'faction' | 'session' | 'note';
+export type EntityType = 'character' | 'location' | 'faction' | 'note';
 
 export interface Entity {
   id: string;
@@ -27,7 +27,6 @@ export const ENTITY_ICONS: Record<EntityType, LucideIcon> = {
   character: User,
   location: MapPin,
   faction: Shield,
-  session: BookOpen,
   note: StickyNote,
 };
 
@@ -105,32 +104,6 @@ const MOCK_ENTITIES: Entity[] = [
     typeSpecificFields: { alignment: 'Lawful Neutral', influence: 'Regional' },
   },
   {
-    id: 'sess-1',
-    type: 'session',
-    name: 'Session 12: The Ember Auction',
-    description: 'The party attended a clandestine auction beneath The Gilded Hearth, bidding on a map fragment rumored to show the Grandmother Oak.',
-    tags: ['session-12', 'auction', 'brindlemark', 'plot-critical'],
-    connections: [
-      { id: 'loc-1', name: 'The Gilded Hearth', type: 'location' },
-      { id: 'char-1', name: 'Theron Ashvale', type: 'character' },
-    ],
-    createdAt: '2026-01-04T19:00:00Z',
-    modifiedAt: '2026-01-04T22:30:00Z',
-  },
-  {
-    id: 'sess-2',
-    type: 'session',
-    name: 'Session 13: Into the Thornwild',
-    description: 'Armed with the map fragment, the party ventured into the Thornwild. They encountered fey tricksters and a wounded ranger from the Compact.',
-    tags: ['session-13', 'thornwild', 'exploration', 'fey'],
-    connections: [
-      { id: 'loc-2', name: 'The Thornwild', type: 'location' },
-      { id: 'fac-1', name: 'Northern Compact', type: 'faction' },
-    ],
-    createdAt: '2026-01-11T19:00:00Z',
-    modifiedAt: '2026-01-11T23:00:00Z',
-  },
-  {
     id: 'note-1',
     type: 'note',
     name: 'Ley Line Theory',
@@ -150,7 +123,12 @@ const MOCK_ENTITIES: Entity[] = [
 // -----------------------------------------------
 
 export function getAllEntities(): Entity[] {
-  return MOCK_ENTITIES;
+  return MOCK_ENTITIES.map((e) => ({
+    ...e,
+    tags: [...e.tags],
+    connections: e.connections.map((c) => ({ ...c })),
+    typeSpecificFields: e.typeSpecificFields ? { ...e.typeSpecificFields } : undefined,
+  }));
 }
 
 export function getAllTags(): string[] {

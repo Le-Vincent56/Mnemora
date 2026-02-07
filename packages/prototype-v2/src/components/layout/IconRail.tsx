@@ -1,8 +1,5 @@
 import {
-    Globe,
     Library,
-    Search,
-    History,
     Play,
     Clock,
     BookOpen,
@@ -21,7 +18,7 @@ import styles from "./layout.module.css";
  */
 interface NavItem {
     id: string;
-    icon: typeof Globe;
+    icon: typeof Library;
     label: string;
 }
 
@@ -29,10 +26,7 @@ interface NavItem {
  * Prep Mode navigation items
  */
 const PREP_NAV_ITEMS: NavItem[] = [
-    { id: 'world', icon: Globe, label: 'World' },
-    { id: 'entities', icon: Library, label: 'Entities' },
-    { id: 'search', icon: Search, label: 'Search' },
-    { id: 'history', icon: History, label: 'Session History' },
+    { id: 'prep', icon: Library, label: 'Prep Mode' },
     { id: 'design-system', icon: Palette, label: 'Design System' },
 ];
 

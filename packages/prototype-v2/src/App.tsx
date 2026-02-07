@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Surface, Stack, Text } from '@/primitives';
 import { useReducedMotion } from '@/hooks';
@@ -13,11 +13,12 @@ import {
     PageHeader
 } from '@/components/layout';
 import { ComponentShowcase } from '@/components/composed';
-import { PrepModeWorkspace } from '@/screens/PrepModeWorkspace';
+import { PrepModeShell } from '@/components/prep/PrepModeShell';
+import layoutStyles from '@/components/layout/layout.module.css';
 import { EASING } from '@/tokens';
 
 type Mode = 'prep' | 'session';
-type PrepView = 'world' | 'entities' | 'search' | 'history' | 'design-system';
+type PrepView = 'prep' | 'design-system';
 type SessionView = 'quick-ref' | 'notes' | 'safety';
 
 /**
@@ -28,10 +29,24 @@ type SessionView = 'quick-ref' | 'notes' | 'safety';
  * can coexist briefly. The exit runs while the enter starts,
  * creating a true crossfade instead of a sequential gap.
  */
+const reducedContentVariants = {
+    initial: {
+        opacity: 0,
+    },
+    animate: {
+        opacity: 1,
+        transition: { duration: 0.01 },
+    },
+    exit: {
+        opacity: 0,
+        transition: { duration: 0.01 },
+    },
+};
+
 const contentVariants = {
     initial: {
         opacity: 0,
-        y: 20,
+        y: 24,
         scale: 0.98,
     },
     animate: {
@@ -61,7 +76,7 @@ const contentVariants = {
 
 export function App() {
     const [mode, setMode] = useState<Mode>('prep');
-    const [prepView, setPrepView] = useState<PrepView>('entities');
+    const [prepView, setPrepView] = useState<PrepView>('prep');
     const [sessionView, setSessionView] = useState<SessionView>('quick-ref');
     const [sessionTime, setSessionTime] = useState('0:00');
     const reducedMotion = useReducedMotion();
@@ -71,29 +86,14 @@ export function App() {
     //      MODE & DOCUMENT SYNC (DEFERRED)
     // -----------------------------------------
 
-    // Track pending mode so the deferred rAF callback reads the latest value
-    const pendingModeRef = useRef(mode);
-    pendingModeRef.current = mode;
-
     // Sync data-mode attribute on <html>.
-    // During a running ceremony, defer by a double-rAF so the browser
-    // paints at least one full frame with the scrim opaque before
-    // CSS tokens flip. Single rAF can land in the same paint as the
-    // React commit, causing a one-frame flash.
+    // During a ceremony, the onModeSwitch callback sets data-mode
+    // synchronously (scrim is opaque at that point, hiding token flash).
+    // Outside of a ceremony, sync immediately on mode change.
     useEffect(() => {
-        if (state.status === 'running') {
-            let inner: number;
-            const outer = requestAnimationFrame(() => {
-                inner = requestAnimationFrame(() => {
-                    document.documentElement.setAttribute('data-mode', pendingModeRef.current);
-                });
-            });
-            return () => {
-                cancelAnimationFrame(outer);
-                cancelAnimationFrame(inner);
-            };
+        if (state.status !== 'running') {
+            document.documentElement.setAttribute('data-mode', mode);
         }
-        document.documentElement.setAttribute('data-mode', mode);
     }, [mode, state.status]);
 
     // Mock session timer
@@ -132,16 +132,19 @@ export function App() {
     // -----------------------------------------
 
     const handleModeSwitch = useCallback(() => {
+        const newMode = mode === 'prep' ? 'session' : 'prep';
         const ceremonyType = mode === 'prep'
             ? CeremonyType.PREP_TO_SESSION
             : CeremonyType.SESSION_TO_PREP;
 
         controls.triggerCeremony(ceremonyType, {
             onModeSwitch: () => {
-                setMode(mode === 'prep' ? 'session' : 'prep');
+                // Set data-mode synchronously — ceremony scrim is opaque
+                document.documentElement.setAttribute('data-mode', newMode);
+                setMode(newMode);
             },
             onComplete: () => {
-                console.log(`Ceremony complete: now in ${mode === 'prep' ? 'session' : 'prep'} mode`);
+                console.log(`Ceremony complete: now in ${newMode} mode`);
             },
         });
     }, [mode, controls]);
@@ -172,6 +175,7 @@ export function App() {
                     />
                 }
                 animateContent={false}
+                contentClassName={mode === 'prep' && prepView === 'prep' ? layoutStyles.contentNoPad : undefined}
             >
                 {/*
                  * mode="popLayout" keeps both contents mounted briefly,
@@ -180,21 +184,21 @@ export function App() {
                  */}
                 <AnimatePresence mode="popLayout">
                     {mode === 'prep' ? (
-                        prepView === 'entities' ? (
+                        prepView === 'prep' ? (
                             <motion.div
-                                key="prep-entities"
-                                variants={contentVariants}
+                                key="prep-shell"
+                                variants={reducedMotion ? reducedContentVariants : contentVariants}
                                 initial="initial"
                                 animate="animate"
                                 exit="exit"
                                 style={{ height: '100%' }}
                             >
-                                <PrepModeWorkspace />
+                                <PrepModeShell />
                             </motion.div>
                         ) : (
                             <motion.div
                                 key="prep-content"
-                                variants={contentVariants}
+                                variants={reducedMotion ? reducedContentVariants : contentVariants}
                                 initial="initial"
                                 animate="animate"
                                 exit="exit"
@@ -210,7 +214,7 @@ export function App() {
                     ) : (
                         <motion.div
                             key="session-content"
-                            variants={contentVariants}
+                            variants={reducedMotion ? reducedContentVariants : contentVariants}
                             initial="initial"
                             animate="animate"
                             exit="exit"
@@ -246,21 +250,9 @@ function PrepModeContent({
     reducedMotion,
 }: PrepModeContentProps) {
     const viewTitles: Record<PrepView, { title: string; subtitle: string }> = {
-        world: {
-            title: 'World',
-            subtitle: 'Campaign and world settings'
-        },
-        entities: {
-            title: 'Entities',
-            subtitle: 'Characters, locations, factions, and more'
-        },
-        search: {
-            title: 'Search',
-            subtitle: 'Find anything in your world'
-        },
-        history: {
-            title: 'Session History',
-            subtitle: 'Past sessions and notes'
+        prep: {
+            title: 'Prep Mode',
+            subtitle: 'Your campaign workspace'
         },
         'design-system': {
             title: 'Design System',

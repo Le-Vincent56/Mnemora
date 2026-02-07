@@ -1,18 +1,20 @@
 import { useMemo, useState } from 'react';
 import { Search } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { EmptyState } from '@/primitives';
+import { EntityCard, EntityListItem } from '@/components/composed';
+import { useReducedMotion } from '@/hooks';
+import { EASING, TIMING, toSeconds } from '@/tokens';
 import {
-  getAllEntities,
-  getAllTags,
+  ENTITY_ICONS,
   type Entity,
   type EntityType,
   type SortOption,
 } from '@/data/mockEntities';
 import { FilterBar } from './FilterBar';
-import { EntitySection } from './EntitySection';
-import type { BrowserView } from './PrepModeHeader';
+import styles from './prep.module.css';
 
-const SECTION_ORDER: EntityType[] = ['character', 'location', 'faction', 'session', 'note'];
+export type BrowserView = 'grid' | 'list';
 
 function sortEntities(entities: Entity[], sort: SortOption): Entity[] {
   const sorted = [...entities];
@@ -30,13 +32,34 @@ function sortEntities(entities: Entity[], sort: SortOption): Entity[] {
   }
 }
 
-export interface EntityBrowserProps {
-  view: BrowserView;
-  searchQuery: string;
+function timeAgo(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const days = Math.floor(diff / 86_400_000);
+  if (days < 1) return 'Today';
+  if (days === 1) return 'Yesterday';
+  if (days < 30) return `${days}d ago`;
+  return `${Math.floor(days / 30)}mo ago`;
 }
 
-export function EntityBrowser({ view, searchQuery }: EntityBrowserProps) {
-  const allTags = useMemo(() => getAllTags(), []);
+export interface EntityBrowserProps {
+  entities: Entity[];
+  view: BrowserView;
+  searchQuery: string;
+  activeType: EntityType | 'all';
+  onSelectEntity?: (id: string) => void;
+  onEditEntity?: (id: string) => void;
+  onDeleteEntity?: (id: string) => void;
+}
+
+export function EntityBrowser({ entities, view, searchQuery, activeType, onSelectEntity, onEditEntity, onDeleteEntity }: EntityBrowserProps) {
+  const allTags = useMemo(() => {
+    const tagSet = new Set<string>();
+    for (const e of entities) {
+      for (const t of e.tags) tagSet.add(t);
+    }
+    return Array.from(tagSet).sort();
+  }, [entities]);
+  const reducedMotion = useReducedMotion();
 
   const [activeTags, setActiveTags] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<SortOption>('recent');
@@ -48,11 +71,11 @@ export function EntityBrowser({ view, searchQuery }: EntityBrowserProps) {
   };
 
   const filtered = useMemo(() => {
-    let entities = getAllEntities();
+    let filteredEntities = entities;
 
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
-      entities = entities.filter(
+      filteredEntities = filteredEntities.filter(
         (e) =>
           e.name.toLowerCase().includes(q) ||
           e.description.toLowerCase().includes(q) ||
@@ -60,24 +83,18 @@ export function EntityBrowser({ view, searchQuery }: EntityBrowserProps) {
       );
     }
 
+    if (activeType !== 'all') {
+      filteredEntities = filteredEntities.filter((e) => e.type === activeType);
+    }
+
     if (activeTags.length > 0) {
-      entities = entities.filter((e) =>
+      filteredEntities = filteredEntities.filter((e) =>
         activeTags.every((tag) => e.tags.includes(tag))
       );
     }
 
-    return sortEntities(entities, sortBy);
-  }, [searchQuery, activeTags, sortBy]);
-
-  const grouped = useMemo(() => {
-    const map = new Map<EntityType, Entity[]>();
-    for (const entity of filtered) {
-      const list = map.get(entity.type) ?? [];
-      list.push(entity);
-      map.set(entity.type, list);
-    }
-    return map;
-  }, [filtered]);
+    return sortEntities(filteredEntities, sortBy);
+  }, [entities, searchQuery, activeType, activeTags, sortBy]);
 
   return (
     <>
@@ -96,14 +113,51 @@ export function EntityBrowser({ view, searchQuery }: EntityBrowserProps) {
           title="No entities found"
           description="Try adjusting your filters or search query."
         />
+      ) : view === 'grid' ? (
+        <div className={styles.entityGrid}>
+          {filtered.map((entity, i) => (
+            <motion.div
+              key={entity.id}
+              initial={reducedMotion ? false : { opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={
+                reducedMotion
+                  ? { duration: 0 }
+                  : {
+                      duration: toSeconds(TIMING.gentle),
+                      ease: EASING.memory,
+                      delay: i * 0.04,
+                    }
+              }
+            >
+              <EntityCard
+                data-entity-id={entity.id}
+                name={entity.name}
+                entityType={entity.type}
+                icon={ENTITY_ICONS[entity.type]}
+                excerpt={entity.description}
+                tags={entity.tags}
+                connectionCount={entity.connections.length}
+                onSelect={onSelectEntity ? () => onSelectEntity(entity.id) : () => console.log('Open entity:', entity.id)}
+                onEdit={onEditEntity ? () => onEditEntity(entity.id) : undefined}
+                onDelete={onDeleteEntity ? () => onDeleteEntity(entity.id) : undefined}
+              />
+            </motion.div>
+          ))}
+        </div>
       ) : (
-        <div>
-          {SECTION_ORDER.filter((type) => grouped.has(type)).map((type) => (
-            <EntitySection
-              key={type}
-              type={type}
-              entities={grouped.get(type)!}
-              view={view}
+        <div className={styles.entityList}>
+          {filtered.map((entity) => (
+            <EntityListItem
+              key={entity.id}
+              data-entity-id={entity.id}
+              name={entity.name}
+              entityType={entity.type}
+              icon={ENTITY_ICONS[entity.type]}
+              meta={timeAgo(entity.modifiedAt)}
+              onSelect={onSelectEntity ? () => onSelectEntity(entity.id) : () => console.log('Open entity:', entity.id)}
+              onEdit={onEditEntity ? () => onEditEntity(entity.id) : undefined}
+              onDelete={onDeleteEntity ? () => onDeleteEntity(entity.id) : undefined}
             />
           ))}
         </div>

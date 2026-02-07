@@ -1,5 +1,4 @@
 import { X } from 'lucide-react';
-import { Text } from '@/primitives';
 import type { SortOption } from '@/data/mockEntities';
 import styles from './prep.module.css';
 
@@ -82,11 +81,9 @@ export function FilterBar({
       </select>
 
       {/* Entity count */}
-      <div className={styles.filterCount}>
-        <Text variant="body-sm" color="tertiary">
-          {entityCount} {entityCount === 1 ? 'entity' : 'entities'}
-        </Text>
-      </div>
+      <span className={styles.filterCount}>
+        {entityCount} {entityCount === 1 ? 'entity' : 'entities'}
+      </span>
     </div>
   );
 }

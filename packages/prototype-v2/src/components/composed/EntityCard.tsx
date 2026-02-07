@@ -1,48 +1,38 @@
 import { forwardRef, type HTMLAttributes } from 'react';
 import type { LucideIcon } from 'lucide-react';
+import { Pencil, Trash2 } from 'lucide-react';
 import { cn } from '@/utils';
-import { Surface, Badge, Text, Icon, Stack } from '@/primitives';
+import { Icon } from '@/primitives';
+import type { EntityType } from '@/data/mockEntities';
 import styles from './composed.module.css';
 
-export type EntityType = 'character' | 'location' | 'faction' | 'session' | 'note';
-
 export interface EntityCardProps extends HTMLAttributes<HTMLDivElement> {
-    /** Entity display name */
     name: string;
-    /** Entity type (drives badge color and icon) */
     entityType: EntityType;
-    /** Lucide icon for the entity type */
     icon: LucideIcon;
-    /** Short excerpt or description */
     excerpt?: string;
-    /** Whether this card is currently selected */
+    tags?: string[];
+    connectionCount?: number;
     selected?: boolean;
-    /** Click handler */
     onSelect?: () => void;
+    onEdit?: () => void;
+    onDelete?: () => void;
 }
 
-/** Map entity types to Badge variants */
-const typeLabels: Record<EntityType, string> = {
+const TYPE_LABELS: Record<EntityType, string> = {
     character: 'Character',
     location: 'Location',
     faction: 'Faction',
-    session: 'Session',
     note: 'Note',
 };
 
-/**
- * Hoverable entity card for the Prep Mode entity browser grid.
- * Displays entity icon, name, type badge, and an optional excerpt.
- *
- * @example
- * <EntityCard
- *   name="Theron Ashvale"
- *   entityType="character"
- *   icon={User}
- *   excerpt="A retired soldier turned innkeeper..."
- *   onSelect={() => openEditor(id)}
- * />
- */
+const TYPE_COLORS: Record<EntityType, string> = {
+    character: 'var(--entity-character)',
+    location: 'var(--entity-location)',
+    faction: 'var(--entity-faction)',
+    note: 'var(--entity-note)',
+};
+
 export const EntityCard = forwardRef<HTMLDivElement, EntityCardProps>(
     function EntityCard(
         {
@@ -50,48 +40,95 @@ export const EntityCard = forwardRef<HTMLDivElement, EntityCardProps>(
             entityType,
             icon,
             excerpt,
+            tags,
+            connectionCount,
             selected = false,
             onSelect,
+            onEdit,
+            onDelete,
             className,
             ...props
         },
         ref
     ) {
         return (
-            <Surface
+            <div
                 ref={ref}
-                elevation="flat"
-                radius="md"
-                padding="md"
-                bordered
-                hoverable
                 className={cn(
                     styles.entityCard,
                     selected && styles.entityCardSelected,
                     className
                 )}
+                style={{ '--_entity-color': TYPE_COLORS[entityType] } as React.CSSProperties}
                 onClick={onSelect}
+                onKeyDown={onSelect ? (e: React.KeyboardEvent) => {
+                    if (e.target !== e.currentTarget) return;
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        onSelect();
+                    }
+                } : undefined}
                 role={onSelect ? 'button' : undefined}
                 tabIndex={onSelect ? 0 : undefined}
                 {...props}
             >
-                <Stack direction="horizontal" gap={3} align="start">
-                    <Icon icon={icon} size={20} color="secondary" />
-                    <Stack direction="vertical" gap={2} style={{ minWidth: 0, flex: 1 }}>
-                        <Stack direction="horizontal" gap={2} align="center">
-                            <Text variant="body" weight="semibold" className={styles.entityCardName}>
-                                {name}
-                            </Text>
-                            <Badge variant={entityType} size="sm">{typeLabels[entityType]}</Badge>
-                        </Stack>
+                <div className={styles.entityCardHeader}>
+                    <div className={styles.entityCardIcon}>
+                        <Icon icon={icon} size={16} color="inherit" />
+                    </div>
+                    <span className={styles.entityCardName}>{name}</span>
+                    <span className={styles.entityCardType}>{TYPE_LABELS[entityType]}</span>
+                    {(onEdit || onDelete) && (
+                        <span className={styles.entityCardActions}>
+                            {onEdit && (
+                                <button
+                                    type="button"
+                                    className={styles.entityActionBtn}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onEdit();
+                                    }}
+                                    aria-label="Edit entity"
+                                >
+                                    <Icon icon={Pencil} size={16} color="inherit" />
+                                </button>
+                            )}
+                            {onDelete && (
+                                <button
+                                    type="button"
+                                    className={cn(styles.entityActionBtn, styles.entityActionBtnDanger)}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onDelete();
+                                    }}
+                                    aria-label="Delete entity"
+                                >
+                                    <Icon icon={Trash2} size={16} color="inherit" />
+                                </button>
+                            )}
+                        </span>
+                    )}
+                </div>
+                {(excerpt || tags?.length || connectionCount !== undefined) && (
+                    <div className={styles.entityCardBody}>
                         {excerpt && (
-                            <Text variant="body-sm" color="secondary" className={styles.entityCardExcerpt}>
-                                {excerpt}
-                            </Text>
+                            <p className={styles.entityCardExcerpt}>{excerpt}</p>
                         )}
-                    </Stack>
-                </Stack>
-            </Surface>
+                        {(tags?.length || connectionCount !== undefined) && (
+                            <div className={styles.entityCardFooter}>
+                                {tags?.slice(0, 3).map((tag) => (
+                                    <span key={tag} className={styles.entityCardTag}>{tag}</span>
+                                ))}
+                                {connectionCount !== undefined && connectionCount > 0 && (
+                                    <span className={styles.entityCardConnections}>
+                                        {connectionCount} link{connectionCount !== 1 ? 's' : ''}
+                                    </span>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
         );
     }
 );

@@ -7,6 +7,8 @@
 .shell {
     min-height: 100vh;
     min-height: 100dvh;
+    display: grid;
+    grid-template-columns: var(--icon-rail-width) 1fr;
     background-color: var(--canvas);
     transition: background-color var(--duration-gentle) var(--ease-out);
 }
@@ -136,7 +138,7 @@ ICON RAIL ITEM - Individual navigation buttons
     transform: none;
 }
 
-.modeswitchEnhanced {
+.modeSwitchEnhanced {
     /* Enable GPU acceleration for smooth animations */
     will-change: transform;
     transform: translateZ(0);
@@ -229,12 +231,17 @@ ICON RAIL ITEM - Individual navigation buttons
 */
 
 .content {
-    margin-inline-start: var(--icon-rail-width);
+    grid-column: 2;
     padding: var(--space-6);
     min-height: 100vh;
     min-height: 100dvh;
     /* Allow position:absolute children during AnimatePresence crossfade */
     position: relative;
+}
+
+/* Prep shell fills the content area edge-to-edge (no padding) */
+.contentNoPad {
+    padding: 0;
 }
 
 .contentHeader {
