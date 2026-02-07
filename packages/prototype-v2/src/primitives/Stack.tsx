@@ -2,13 +2,18 @@ import { forwardRef, type ReactNode, type HTMLAttributes } from 'react';
 import { cn } from '@/utils';
 import styles from './primitives.module.css';
 
+export type StackGap =
+    | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12
+    | 'xs' | 's' | 'm' | 'l' | 'xl' | 'xxl' | '3xl' | '4xl'
+    | 'intimate' | 'strong' | 'medium' | 'weak' | 'separated' | 'break';
+
 export interface StackProps extends HTMLAttributes<HTMLDivElement> {
     /** Content to stack */
     children: ReactNode;
     /** Stack direction */
     direction?: 'vertical' | 'horizontal';
     /** Gap between items */
-    gap?: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12;
+    gap?: StackGap;
     /** Horizontal alignment */
     align?: 'start' | 'center' | 'end' | 'stretch';
     /** Vertical alignment (for horizontal stacks) */
@@ -41,6 +46,11 @@ export const Stack = forwardRef<HTMLDivElement, StackProps>(
         },
         ref
     ) {
+        const gapValue =
+            typeof gap === 'number'
+                ? `var(--space-${gap})`
+                : `var(--gap-${gap})`;
+
         return (
             <div
                 ref={ref}
@@ -53,7 +63,7 @@ export const Stack = forwardRef<HTMLDivElement, StackProps>(
                     className
                 )}
                 style={{
-                    gap: `var(--space-${gap})`,
+                    gap: gapValue,
                     ...style,
                 }}
                 {...props}

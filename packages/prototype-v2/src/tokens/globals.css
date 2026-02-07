@@ -64,6 +64,26 @@ INVARIANT TOKENS (same in all modes)
     --space-20: 80px;
     --space-24: 96px;
 
+    /* Relationship Gap Scale (em; scales with local typography) */
+    --gap-xs: 0.128em;
+    --gap-s: 0.272em;
+    --gap-m: 0.618em;
+    --gap-l: 1em;
+    --gap-xl: 1.618em;
+    --gap-xxl: 2.618em;
+
+    /* Optional page/region gaps */
+    --gap-3xl: 4.236em;
+    --gap-4xl: 6.854em;
+
+    /* Relationship aliases (prefer these in components) */
+    --gap-intimate: var(--gap-xs);
+    --gap-strong: var(--gap-s);
+    --gap-medium: var(--gap-m);
+    --gap-weak: var(--gap-l);
+    --gap-separated: var(--gap-xl);
+    --gap-break: var(--gap-xxl);
+
     /* Border Radius */
     --radius-none: 0;
     --radius-sm: 4px;

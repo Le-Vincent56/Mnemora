@@ -32,13 +32,13 @@
 .formField {
     display: flex;
     flex-direction: column;
-    gap: var(--space-1);
+    gap: var(--gap-strong);
 }
 
 .formFieldLabel {
     display: flex;
     align-items: center;
-    gap: var(--space-1);
+    gap: var(--gap-intimate);
     cursor: pointer;
 }
 
