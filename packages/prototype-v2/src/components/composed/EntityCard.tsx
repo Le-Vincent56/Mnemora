@@ -74,10 +74,12 @@ export const EntityCard = forwardRef<HTMLDivElement, EntityCardProps>(
             >
                 <div className={styles.entityCardHeader}>
                     <div className={styles.entityCardIcon}>
-                        <Icon icon={icon} size={16} color="inherit" />
+                        <Icon icon={icon} size={20} color="inherit" />
                     </div>
-                    <span className={styles.entityCardName}>{name}</span>
-                    <span className={styles.entityCardType}>{TYPE_LABELS[entityType]}</span>
+                    <div className={styles.entityCardTitleBlock}>
+                        <span className={styles.entityCardName}>{name}</span>
+                        <span className={styles.entityCardTypeSub}>{TYPE_LABELS[entityType]}</span>
+                    </div>
                     {(onEdit || onDelete) && (
                         <span className={styles.entityCardActions}>
                             {onEdit && (

@@ -7,6 +7,15 @@ import { User, MapPin, Shield, StickyNote } from 'lucide-react';
 
 export type EntityType = 'character' | 'location' | 'faction' | 'note';
 
+export type EntityBlockType = 'text' | 'heading' | 'checklist' | 'divider' | 'secret';
+
+export interface EntityBlock {
+  id: string;
+  type: EntityBlockType;
+  content: string;
+  checked?: boolean;
+}
+
 export interface Entity {
   id: string;
   type: EntityType;
@@ -15,6 +24,7 @@ export interface Entity {
   secrets?: string;
   tags: string[];
   connections: Array<{ id: string; name: string; type: EntityType }>;
+  blocks: EntityBlock[];
   createdAt: string;
   modifiedAt: string;
   typeSpecificFields?: Record<string, string>;
@@ -46,6 +56,18 @@ const MOCK_ENTITIES: Entity[] = [
       { id: 'loc-1', name: 'The Gilded Hearth', type: 'location' },
       { id: 'fac-1', name: 'Northern Compact', type: 'faction' },
     ],
+    blocks: [
+      {
+        id: 'blk-char-1-1',
+        type: 'text',
+        content: 'A retired soldier turned innkeeper who still hears the war drums in his sleep. Runs The Gilded Hearth in Brindlemark.',
+      },
+      {
+        id: 'blk-char-1-2',
+        type: 'secret',
+        content: 'Secretly reports troop movements to the Northern Compact.',
+      },
+    ],
     createdAt: '2025-11-15T10:30:00Z',
     modifiedAt: '2025-12-28T14:22:00Z',
     typeSpecificFields: { race: 'Human', role: 'Innkeeper / Spy' },
@@ -59,6 +81,13 @@ const MOCK_ENTITIES: Entity[] = [
     connections: [
       { id: 'loc-2', name: 'The Thornwild', type: 'location' },
     ],
+    blocks: [
+      {
+        id: 'blk-char-2-1',
+        type: 'text',
+        content: 'An elven cartographer mapping ley lines across the Thornwild. Her maps are coveted by every faction in the region.',
+      },
+    ],
     createdAt: '2025-11-20T08:00:00Z',
     modifiedAt: '2026-01-05T09:45:00Z',
     typeSpecificFields: { race: 'Elf', role: 'Cartographer' },
@@ -71,6 +100,13 @@ const MOCK_ENTITIES: Entity[] = [
     tags: ['tavern', 'brindlemark', 'social-hub'],
     connections: [
       { id: 'char-1', name: 'Theron Ashvale', type: 'character' },
+    ],
+    blocks: [
+      {
+        id: 'blk-loc-1-1',
+        type: 'text',
+        content: 'A warm and noisy tavern at the crossroads of Brindlemark. Smells of roast pheasant and pipe smoke year-round.',
+      },
     ],
     createdAt: '2025-11-10T12:00:00Z',
     modifiedAt: '2025-12-20T16:30:00Z',
@@ -86,6 +122,18 @@ const MOCK_ENTITIES: Entity[] = [
       { id: 'char-2', name: 'Seraphine Duskhollow', type: 'character' },
       { id: 'fac-1', name: 'Northern Compact', type: 'faction' },
     ],
+    blocks: [
+      {
+        id: 'blk-loc-2-1',
+        type: 'text',
+        content: 'A vast, ancient forest where the canopy blocks out the sun. Strange lights dance among the roots at midnight.',
+      },
+      {
+        id: 'blk-loc-2-2',
+        type: 'secret',
+        content: 'A sealed portal to the Feywild lies beneath the Grandmother Oak.',
+      },
+    ],
     createdAt: '2025-11-12T09:15:00Z',
     modifiedAt: '2026-01-10T11:00:00Z',
   },
@@ -98,6 +146,13 @@ const MOCK_ENTITIES: Entity[] = [
     connections: [
       { id: 'char-1', name: 'Theron Ashvale', type: 'character' },
       { id: 'loc-2', name: 'The Thornwild', type: 'location' },
+    ],
+    blocks: [
+      {
+        id: 'blk-fac-1-1',
+        type: 'text',
+        content: 'A loose alliance of border lords and merchants dedicated to keeping the Thornwild trade routes open despite growing dangers.',
+      },
     ],
     createdAt: '2025-11-18T14:00:00Z',
     modifiedAt: '2025-12-15T10:10:00Z',
@@ -113,6 +168,29 @@ const MOCK_ENTITIES: Entity[] = [
       { id: 'char-2', name: 'Seraphine Duskhollow', type: 'character' },
       { id: 'loc-2', name: 'The Thornwild', type: 'location' },
     ],
+    blocks: [
+      {
+        id: 'blk-note-1-1',
+        type: 'heading',
+        content: 'Notes',
+      },
+      {
+        id: 'blk-note-1-2',
+        type: 'text',
+        content: 'Working notes on the ley line network. Seraphine believes three lines converge under the Grandmother Oak, forming a natural planar anchor.',
+      },
+      {
+        id: 'blk-note-1-3',
+        type: 'divider',
+        content: '',
+      },
+      {
+        id: 'blk-note-1-4',
+        type: 'checklist',
+        content: 'Verify the third convergence marker',
+        checked: false,
+      },
+    ],
     createdAt: '2025-12-01T11:00:00Z',
     modifiedAt: '2026-01-08T15:20:00Z',
   },
@@ -127,6 +205,7 @@ export function getAllEntities(): Entity[] {
     ...e,
     tags: [...e.tags],
     connections: e.connections.map((c) => ({ ...c })),
+    blocks: e.blocks.map((b) => ({ ...b })),
     typeSpecificFields: e.typeSpecificFields ? { ...e.typeSpecificFields } : undefined,
   }));
 }

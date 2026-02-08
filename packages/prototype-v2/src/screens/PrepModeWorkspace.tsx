@@ -14,6 +14,32 @@ import { EASING, TIMING, toSeconds } from '@/tokens';
 import { getAllEntities, type Entity, type EntityType } from '@/data/mockEntities';
 import styles from '@/components/prep/prep.module.css';
 
+type EntityPatch = Partial<Pick<
+  Entity,
+  'type' | 'name' | 'description' | 'secrets' | 'tags' | 'connections' | 'typeSpecificFields' | 'blocks'
+>>;
+
+function deriveDescriptionFromBlocks(blocks: Entity['blocks']): string {
+  const parts: string[] = [];
+  for (const b of blocks) {
+    if (b.type === 'secret' || b.type === 'divider') continue;
+    const c = b.content.trim();
+    if (c) parts.push(c);
+  }
+  return parts.join('\n').trim();
+}
+
+function deriveSecretsFromBlocks(blocks: Entity['blocks']): string | undefined {
+  const parts: string[] = [];
+  for (const b of blocks) {
+    if (b.type !== 'secret') continue;
+    const c = b.content.trim();
+    if (c) parts.push(c);
+  }
+  const merged = parts.join('\n').trim();
+  return merged ? merged : undefined;
+}
+
 const VIEW_OPTIONS: ViewToggleOption[] = [
   { value: 'grid', icon: LayoutGrid, label: 'Card view' },
   { value: 'list', icon: List, label: 'List view' },
@@ -32,8 +58,6 @@ export function PrepModeWorkspace() {
   const reducedMotion = useReducedMotion();
 
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
-  const [editingId, setEditingId] = useState<string | null>(null);
 
   const typeCounts = useMemo(() => {
     const counts: Record<EntityType | 'all', number> = {
@@ -50,14 +74,6 @@ export function PrepModeWorkspace() {
   }, [entities]);
 
   const handleOpenCreate = useCallback(() => {
-    setModalMode('create');
-    setEditingId(null);
-    setModalOpen(true);
-  }, []);
-
-  const handleOpenEdit = useCallback((id: string) => {
-    setModalMode('edit');
-    setEditingId(id);
     setModalOpen(true);
   }, []);
 
@@ -91,10 +107,40 @@ export function PrepModeWorkspace() {
     });
   }, []);
 
-  const editingEntity = useMemo(
-    () => (editingId ? entities.find((e) => e.id === editingId) : undefined),
-    [editingId, entities],
-  );
+  const updateEntity = useCallback((id: string, patch: EntityPatch) => {
+    const now = new Date().toISOString();
+    setEntities((prev) => {
+      const current = prev.find((e) => e.id === id);
+      if (!current) return prev;
+
+      const nextPatch: EntityPatch = { ...patch };
+      if (patch.blocks) {
+        nextPatch.description = deriveDescriptionFromBlocks(patch.blocks);
+        nextPatch.secrets = deriveSecretsFromBlocks(patch.blocks);
+      }
+      const nextEntity: Entity = {
+        ...current,
+        ...nextPatch,
+        modifiedAt: now,
+      };
+      const next = prev.map((e) => (e.id === id ? nextEntity : e));
+
+      const nameChanged = nextPatch.name !== undefined && nextPatch.name !== current.name;
+      const typeChanged = nextPatch.type !== undefined && nextPatch.type !== current.type;
+      if (!nameChanged && !typeChanged) return next;
+
+      return next.map((e) =>
+        e.id === id
+          ? e
+          : {
+              ...e,
+              connections: e.connections.map((c) =>
+                c.id === id ? { ...c, name: nextEntity.name, type: nextEntity.type } : c
+              ),
+            }
+      );
+    });
+  }, []);
 
   const activeEntity = useMemo(
     () => (activeEntityId ? entities.find((e) => e.id === activeEntityId) : undefined),
@@ -123,26 +169,17 @@ export function PrepModeWorkspace() {
     return () => window.removeEventListener('keydown', handler);
   }, [activeEntityId, modalOpen, handleBackToBrowse]);
 
-  const modalInitial = useMemo(() => {
-    if (modalMode === 'edit' && editingEntity) {
-      return {
-        type: editingEntity.type,
-        name: editingEntity.name,
-        description: editingEntity.description,
-        tags: editingEntity.tags,
-        secrets: editingEntity.secrets,
-        typeSpecificFields: editingEntity.typeSpecificFields,
-      };
-    }
-    return {
+  const modalInitial = useMemo(
+    () => ({
       type: 'character' as EntityType,
       name: '',
       description: '',
       tags: [],
       secrets: undefined,
       typeSpecificFields: undefined,
-    };
-  }, [modalMode, editingEntity]);
+    }),
+    [],
+  );
 
   const handleSaveEntity = useCallback(
     (value: {
@@ -154,52 +191,34 @@ export function PrepModeWorkspace() {
       typeSpecificFields?: Record<string, string>;
     }) => {
       const now = new Date().toISOString();
-      if (modalMode === 'create') {
-        const newId = `ent-${Date.now()}`;
-        const newEntity: Entity = {
-          id: newId,
-          type: value.type,
-          name: value.name,
-          description: value.description,
-          tags: value.tags,
-          secrets: value.secrets,
-          connections: [],
-          createdAt: now,
-          modifiedAt: now,
-          typeSpecificFields: value.typeSpecificFields,
-        };
-        setEntities((prev) => [...prev, newEntity]);
-        setLastBrowseEntityId(newId);
-        setActiveEntityId(newId);
-      } else if (editingId) {
-        setEntities((prev) =>
-          prev.map((e) =>
-            e.id === editingId
-              ? {
-                  ...e,
-                  type: value.type,
-                  name: value.name,
-                  description: value.description,
-                  tags: value.tags,
-                  secrets: value.secrets,
-                  typeSpecificFields: value.typeSpecificFields,
-                  modifiedAt: now,
-                }
-              : e,
-          ),
-        );
+      const ts = Date.now();
+      const newId = `ent-${ts}`;
+      const blocks: Entity['blocks'] = [
+        { id: `blk-${ts}-1`, type: 'text', content: value.description },
+      ];
+      if (value.secrets?.trim()) {
+        blocks.push({ id: `blk-${ts}-2`, type: 'secret', content: value.secrets });
       }
+      const newEntity: Entity = {
+        id: newId,
+        type: value.type,
+        name: value.name,
+        description: value.description,
+        tags: value.tags,
+        secrets: value.secrets,
+        connections: [],
+        blocks,
+        createdAt: now,
+        modifiedAt: now,
+        typeSpecificFields: value.typeSpecificFields,
+      };
+      setEntities((prev) => [...prev, newEntity]);
+      setLastBrowseEntityId(newId);
+      setActiveEntityId(newId);
       setModalOpen(false);
     },
-    [modalMode, editingId],
+    [],
   );
-
-  const handleDeleteEditing = useCallback(() => {
-    if (!editingEntity) return;
-    if (!window.confirm(`Delete "${editingEntity.name}"?`)) return;
-    deleteEntity(editingEntity.id);
-    setModalOpen(false);
-  }, [editingEntity, deleteEntity]);
 
   const handleDeleteFromDetail = useCallback(() => {
     if (!activeEntity) return;
@@ -236,9 +255,10 @@ export function PrepModeWorkspace() {
               >
                 <EntityDetailCanvas
                   entity={activeEntity}
+                  allEntities={entities}
                   onBack={handleBackToBrowse}
-                  onEdit={() => handleOpenEdit(activeEntity.id)}
                   onDelete={handleDeleteFromDetail}
+                  onUpdateEntity={updateEntity}
                   onOpenEntity={(id) => {
                     setLastBrowseEntityId(id);
                     setActiveEntityId(id);
@@ -280,7 +300,7 @@ export function PrepModeWorkspace() {
                   searchQuery={searchQuery}
                   activeType={activeType}
                   onSelectEntity={handleOpenDetail}
-                  onEditEntity={handleOpenEdit}
+                  onEditEntity={handleOpenDetail}
                   onDeleteEntity={handleDeleteFromBrowse}
                 />
               </motion.div>
@@ -290,11 +310,10 @@ export function PrepModeWorkspace() {
       </div>
       <EntityModal
         open={modalOpen}
-        mode={modalMode}
+        mode="create"
         initial={modalInitial}
         onClose={() => setModalOpen(false)}
         onSave={handleSaveEntity}
-        onDelete={modalMode === 'edit' ? handleDeleteEditing : undefined}
       />
     </div>
   );

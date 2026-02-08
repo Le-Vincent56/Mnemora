@@ -183,16 +183,23 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
     border-radius: var(--radius-sm);
     background: color-mix(in srgb, var(--_entity-color) 15%, transparent);
     color: var(--_entity-color);
     flex-shrink: 0;
 }
 
-.entityCardName {
+.entityCardTitleBlock {
     flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.entityCardName {
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -203,14 +210,13 @@
     color: var(--ink-primary);
 }
 
-.entityCardType {
-    flex-shrink: 0;
+.entityCardTypeSub {
     font-family: var(--font-body);
     font-size: var(--text-xs);
     font-weight: var(--font-medium);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--_entity-color);
+    letter-spacing: 0.06em;
+    color: color-mix(in srgb, var(--_entity-color) 70%, var(--ink-tertiary));
 }
 
 .entityCardBody {

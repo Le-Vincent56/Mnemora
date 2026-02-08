@@ -380,6 +380,7 @@
 */
 
 .entityDetailPage {
+    --_entity-color: var(--primary);
     display: flex;
     flex-direction: column;
     min-height: 100%;
@@ -391,11 +392,12 @@
     z-index: 1;
     display: grid;
     grid-template-columns: auto 1fr auto;
-    gap: var(--space-3);
+    column-gap: var(--space-3);
+    row-gap: var(--space-2);
     align-items: center;
-    padding: var(--space-2) 0 var(--space-3);
-    background: var(--surface);
-    border-bottom: 1px solid var(--border-subtle);
+    padding: var(--space-2) var(--space-2) var(--space-3);
+    background: color-mix(in srgb, var(--_entity-color) 8%, var(--surface));
+    border-bottom: 1px solid color-mix(in srgb, var(--_entity-color) 20%, var(--border-subtle));
 }
 
 .entityDetailBackBtn {
@@ -440,8 +442,8 @@
     width: 32px;
     height: 32px;
     border-radius: var(--radius-sm);
-    background: var(--surface-hover);
-    color: var(--ink-secondary);
+    background: color-mix(in srgb, var(--_entity-color) 15%, transparent);
+    color: var(--_entity-color);
     flex-shrink: 0;
 }
 
@@ -453,17 +455,105 @@
     font-family: var(--font-display);
 }
 
+.entityDetailNameInput {
+    width: 100%;
+    min-width: 0;
+    height: 32px;
+    padding: 0 var(--space-3);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    background: var(--canvas);
+    color: var(--text-primary);
+    font-family: var(--font-display);
+    font-size: var(--text-base);
+    transition: border-color var(--duration-fast) var(--ease-out);
+}
+
+.entityDetailNameInput:hover {
+    border-color: var(--border-emphasis);
+}
+
+.entityDetailNameInput:focus {
+    border-color: var(--_entity-color);
+    box-shadow: var(--focus-ring);
+    outline: none;
+}
+
 .entityDetailActions {
     display: inline-flex;
     align-items: center;
     gap: var(--space-2);
 }
 
+/* Entity block editor: secret callout block */
+.entityBlockSecret {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-2);
+    margin: var(--space-1) var(--space-2);
+    border: 1px solid color-mix(in srgb, var(--gold) 20%, var(--border-default));
+    border-left: 3px solid var(--gold);
+    border-radius: var(--radius-md);
+    background: var(--gold-dim);
+}
+
+.entityBlockSecretInput {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--ink-secondary);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    line-height: var(--leading-normal);
+    resize: none;
+    overflow: hidden;
+    outline: none;
+}
+
+.entityBlockSecretInput::placeholder {
+    color: color-mix(in srgb, var(--gold) 55%, var(--ink-tertiary));
+}
+
 .entityDetailBody {
+    padding-top: var(--space-4);
+}
+
+.entityDetailGrid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: var(--space-4);
+    align-items: start;
+}
+
+.entityDetailDossier {
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
-    padding-top: var(--space-4);
+    min-width: 0;
+}
+
+.entityDetailRail {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding-left: var(--space-4);
+    border-left: 1px solid color-mix(in srgb, var(--_entity-color) 18%, var(--border-subtle));
+    min-width: 0;
+}
+
+.entityDetailRailLabel {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    color: var(--ink-tertiary);
+    opacity: 0.8;
+}
+
+.entityDetailRailSection {
+    padding: var(--space-3);
 }
 
 .entityDetailSection {
@@ -476,10 +566,43 @@
     background: var(--canvas);
 }
 
+.entityDetailSectionSecrets {
+    border: 1px solid color-mix(in srgb, var(--gold) 20%, var(--border-default));
+    border-left: 3px solid var(--gold);
+    background: var(--gold-dim);
+}
+
+.entityDetailSectionHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    min-height: 32px;
+}
+
+.entityDetailSectionControls {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-shrink: 0;
+}
+
 .entityDetailSectionTitle {
     display: inline-flex;
     align-items: center;
     gap: var(--space-2);
+    flex: 1;
+    min-width: 0;
+}
+
+.entityDetailSectionTitleText {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.entityDetailSectionSecrets .entityDetailSectionTitle {
+    color: var(--gold);
 }
 
 .entityPills {
@@ -488,12 +611,73 @@
     gap: var(--space-2);
 }
 
+.entityRailSectionBody {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    min-width: 0;
+}
+
+.entityConnectionAddRow {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+
+.entityConnectionRemoveWrap {
+    position: absolute;
+    right: var(--space-1);
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.entityConnectionRemove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-full);
+    background: var(--canvas);
+    color: var(--ink-tertiary);
+    cursor: pointer;
+    transition:
+        border-color var(--duration-fast) var(--ease-out),
+        background-color var(--duration-fast) var(--ease-out),
+        color var(--duration-fast) var(--ease-out);
+}
+
+.entityConnectionChip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.entityConnectionRemove:hover {
+    border-color: color-mix(in srgb, var(--danger) 30%, transparent);
+    background: color-mix(in srgb, var(--danger) 6%, transparent);
+    color: var(--danger);
+}
+
+.entityConnectionRemove:focus-visible {
+    box-shadow: var(--focus-ring);
+    outline: none;
+}
+
 .entityPill {
     --_pill-color: var(--primary);
     display: inline-flex;
     align-items: center;
     height: 28px;
-    padding: 0 var(--space-3);
+    padding-left: var(--space-3);
+    padding-right: calc(var(--space-2) + 20px);
     border: 1px solid color-mix(in srgb, var(--_pill-color) 20%, var(--border-default));
     border-radius: var(--radius-full);
     background: color-mix(in srgb, var(--_pill-color) 8%, transparent);
@@ -585,6 +769,17 @@ button.entityPill:focus-visible {
 
     .entityDetailActions {
         justify-content: flex-end;
+    }
+
+    .entityDetailGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .entityDetailRail {
+        padding-left: 0;
+        padding-top: var(--space-4);
+        border-left: none;
+        border-top: 1px solid color-mix(in srgb, var(--_entity-color) 18%, var(--border-subtle));
     }
 
     .entityFieldsRow {
