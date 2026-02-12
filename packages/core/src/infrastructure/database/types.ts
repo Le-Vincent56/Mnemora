@@ -19,6 +19,8 @@ export interface EntityRow {
     created_at: string;             // ISO string
     modified_at: string;            // ISO string
     duration?: number | null;
+    started_at?: string | null;
+    ended_at?: string | null;
     type_specific_fields?: string | null;
     continuity_id?: string | null;  // Only for Event
 }

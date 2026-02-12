@@ -39,6 +39,9 @@ interface FullEntitySnapshot {
     summary?: string;
     notes?: string;
     sessionDate?: string | null;
+    duration?: number | null;
+    startedAt?: string | null;
+    endedAt?: string | null;
 }
 
 /**
@@ -175,6 +178,9 @@ export class DeleteEntityCommand extends BaseCommand {
                     notes: s.notes.value,
                     secrets: s.secrets.value,
                     sessionDate: s.sessionDate?.toISOString() ?? null,
+                    duration: s.duration,
+                    startedAt: s.startedAt?.toISOString() ?? null,
+                    endedAt: s.endedAt?.toISOString() ?? null,
                 };
             }
             case EntityType.NOTE: {
@@ -274,7 +280,9 @@ export class DeleteEntityCommand extends BaseCommand {
                         timestamps: timestamps.value,
                         quickNotes: [],
                         starsAndWishes: null,
-                        duration: null,
+                        duration: snapshot.duration ?? null,
+                        startedAt: snapshot.startedAt ? new Date(snapshot.startedAt) : null,
+                        endedAt: snapshot.endedAt ? new Date(snapshot.endedAt) : null,
                     };
                     return Result.ok(Session.fromProps(props));
                 }

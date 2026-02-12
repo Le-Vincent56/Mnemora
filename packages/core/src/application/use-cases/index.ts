@@ -1,6 +1,6 @@
 /**
-     * Use case exports.
-     */
+ * Use case exports.
+ */
 
 // Base
 export type { IUseCase } from './IUseCase';
@@ -53,6 +53,11 @@ export { BranchContinuityUseCase } from './BranchContinuityUseCase';
 export { AddQuickNoteUseCase } from './AddQuickNoteUseCase';
 export { RemoveQuickNoteUseCase } from './RemoveQuickNoteUseCase';
 export { EndSessionWithSummaryUseCase } from './EndSessionWithSummaryUseCase';
+
+// Session run use cases
+export { StartSessionRunUseCase } from './StartSessionRunUseCase';
+export { GetActiveSessionRunUseCase } from './GetActiveSessionRunUseCase';
+export { EndSessionRunUseCase } from './EndSessionRunUseCase';
 
 // Mentions use case
 export { ResolveMentionUseCase } from './ResolveMentionUseCase';

@@ -9,6 +9,7 @@ import { SQLiteSafetyToolRepository } from '../repositories/SQLiteSafetyToolRepo
 import { SQLiteQuickNoteRepository } from '../repositories/SQLiteQuickNoteRepository';
 import { SQLiteContinuityRepository } from '../repositories/SQLiteContinuityRepository';
 import { SQLiteDriftRepository } from '../repositories/SQLiteDriftRepository';
+import { SQLiteSessionRunRepository } from '../repositories/SQLiteSessionRunRepository';
 import { EventBus } from '../../application/services/EventBus';
 import { CommandHistory } from '../../application/commands/CommandHistory';
 import { EventStatePropagator } from '../../domain/services/EventStatePropagator';
@@ -51,6 +52,9 @@ import {
     BranchContinuityUseCase,
     ListDriftsUseCase,
     ResolveDriftUseCase,
+    StartSessionRunUseCase,
+    GetActiveSessionRunUseCase,
+    EndSessionRunUseCase,
 } from '../../application/use-cases';
 import { EntityEditorViewModel } from '../../presentation';
 import { SearchViewModel } from '../../presentation';
@@ -90,6 +94,9 @@ export function createContainer(config: DatabaseConfig): Container {
     );
     container.register(TOKENS.DriftRepository, () =>
         new SQLiteDriftRepository(container.resolve(TOKENS.Database)), true
+    );
+    container.register(TOKENS.SessionRunRepository, () => 
+        new SQLiteSessionRunRepository(container.resolve(TOKENS.Database)), true
     );
 
     // Services (singletons)
@@ -256,13 +263,36 @@ export function createContainer(config: DatabaseConfig): Container {
     container.register(TOKENS.EndSessionWithSummaryUseCase, () =>
         new EndSessionWithSummaryUseCase(
             container.resolve(TOKENS.EntityRepository),
-            container.resolve(TOKENS.QuickNoteRepository)
+            container.resolve(TOKENS.QuickNoteRepository),
+            container.resolve(TOKENS.SessionRunRepository)
         )
     );
 
     container.register(TOKENS.ResolveMentionUseCase, () =>
         new ResolveMentionUseCase(
             container.resolve(TOKENS.EntityRepository)
+        )
+    );
+    
+    // Session run use cases
+    container.register(TOKENS.StartSessionRunUseCase, () => 
+        new StartSessionRunUseCase(
+            container.resolve(TOKENS.EntityRepository),
+            container.resolve(TOKENS.CampaignRepository),
+            container.resolve(TOKENS.SessionRunRepository)
+        )
+    );
+    container.register(TOKENS.GetActiveSessionRunUseCase, () => 
+        new GetActiveSessionRunUseCase(
+            container.resolve(TOKENS.CampaignRepository),
+            container.resolve(TOKENS.SessionRunRepository)
+        )
+    );
+    container.register(TOKENS.EndSessionRunUseCase, () => 
+        new EndSessionRunUseCase(
+            container.resolve(TOKENS.EntityRepository),
+            container.resolve(TOKENS.CampaignRepository),
+            container.resolve(TOKENS.SessionRunRepository)
         )
     );
 

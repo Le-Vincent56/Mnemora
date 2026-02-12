@@ -8,11 +8,13 @@ import type { IUseCase } from './IUseCase';
 import { UseCaseError } from './UseCaseError';
 import type { EndSessionRequest, SessionSummaryDTO, QuickNoteDTO, StarsAndWishesDTO } from '../dtos/SessionNotesDTOs';
 import { EntityID } from '../../domain/value-objects/EntityID';
+import type { ISessionRunRepository } from '../../domain/repositories/ISessionRunRepository';
 
 export class EndSessionWithSummaryUseCase implements IUseCase<EndSessionRequest, SessionSummaryDTO> {
     constructor(
         private readonly entityRepository: IEntityRepository,
-        private readonly quickNoteRepository: IQuickNoteRepository
+        private readonly quickNoteRepository: IQuickNoteRepository,
+        private readonly sessionRunRepository : ISessionRunRepository
     ) { }
 
     async execute(request: EndSessionRequest): Promise<Result<SessionSummaryDTO, UseCaseError>> {
@@ -91,7 +93,26 @@ export class EndSessionWithSummaryUseCase implements IUseCase<EndSessionRequest,
 
         const notes = notesResult.value;
 
-        // 5. Count unique referenced entities from quick notes
+        // 5. End the sesion run (persist ended_at + durationSeconds, clear active pointer)
+        const endResult = await this.sessionRunRepository.endSessionRun(
+            session.campaignID,
+            session.id,
+            new Date(),
+            request.durationSeconds
+        );
+
+        if(endResult.isFailure) {
+            return Result.fail(UseCaseError.repositoryError('Failed to end session', endResult.error));
+        }
+
+        const endOutcome = endResult.value;
+        if(endOutcome.kind === 'conflict') {
+            return Result.fail(UseCaseError.conflict(
+                `Cannot end session: campaign has a different active session (${endOutcome.activeSessionID.toString()})`
+            ));
+        }
+
+        // 6. Count unique referenced entities from quick notes
         const referencedEntityIds = new Set<string>();
         for (const note of notes) {
             for (const entityId of note.linkedEntityIds) {
@@ -99,10 +120,10 @@ export class EndSessionWithSummaryUseCase implements IUseCase<EndSessionRequest,
             }
         }
 
-        // 6. Format duration
+        // 7. Format duration
         const durationFormatted = this.formatDuration(request.durationSeconds);
 
-        // 7. Build and return summary DTO
+        // 8. Build and return summary DTO
         const quickNoteDTOs: QuickNoteDTO[] = notes.map(note => ({
             id: note.id,
             content: note.content,

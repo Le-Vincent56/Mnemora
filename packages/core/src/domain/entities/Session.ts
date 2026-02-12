@@ -38,6 +38,8 @@ export interface SessionProps {
     quickNotes: QuickNote[];
     starsAndWishes: StarsAndWishes | null;
     duration: number | null;
+    startedAt: Date | null;
+    endedAt: Date | null;
     typeSpecificFields?: TypeSpecificFieldsWrapper<EntityType.SESSION>;
 }
 
@@ -58,6 +60,8 @@ export class Session extends BaseEntity {
     private _quickNotes: QuickNote[];
     private _starsAndWishes: StarsAndWishes | null;
     private _duration: number | null;
+    private _startedAt: Date | null;
+    private _endedAt: Date | null;
     private _typeSpecificFields: TypeSpecificFieldsWrapper<EntityType.SESSION>;
 
     get name(): Name {
@@ -112,6 +116,19 @@ export class Session extends BaseEntity {
     }
 
     /**
+     * Session Mode run start timestamp (null if never started).
+     */
+    get startedAt(): Date | null {
+        return this._startedAt ? new Date(this._startedAt.getTime()) : null;
+    }
+    /**
+     * Session Mode run end timestamp (null if not ended).
+     */
+    get endedAt(): Date | null {
+        return this._endedAt ? new Date(this._endedAt.getTime()) : null;
+    }
+
+    /**
      * Returns true if the session has ended (duration is set).
      */
     get hasEnded(): boolean {
@@ -145,6 +162,8 @@ export class Session extends BaseEntity {
         this._quickNotes = props.quickNotes;
         this._starsAndWishes = props.starsAndWishes;
         this._duration = props.duration;
+        this._startedAt = props.startedAt;
+        this._endedAt = props.endedAt;
         this._typeSpecificFields = props.typeSpecificFields ?? TypeSpecificFieldsWrapper.createForType(EntityType.SESSION);
     }
 
@@ -172,6 +191,8 @@ export class Session extends BaseEntity {
             quickNotes: [],
             starsAndWishes: null,
             duration: null,
+            startedAt: null,
+            endedAt: null,
             typeSpecificFields: TypeSpecificFieldsWrapper.createForType(EntityType.SESSION),
         });
 
@@ -322,6 +343,11 @@ export class Session extends BaseEntity {
         }
 
         this._duration = durationSeconds;
+
+        if (this._endedAt === null) {
+            this._endedAt = new Date();
+        }
+
         this.touch();
         return Result.okVoid();
     }

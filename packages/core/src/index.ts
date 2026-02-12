@@ -80,6 +80,13 @@ export {
     type SearchResponse as DomainSearchResponse
 } from './domain/repositories/ISearchRepository';
 
+export type {
+    ActiveSessionRun,
+    StartSessionRunResult,
+    EndSessionRunResult,
+    ISessionRunRepository,
+} from './domain/repositories/ISessionRunRepository';
+
 // Domain Events
 export {
     DomainEvent,
@@ -181,6 +188,14 @@ export type {
     BatchFailure,
 } from './application/dtos/ResponseDTOs';
 
+// DTOs - Session Run
+export type {
+    ActiveSessionRunDTO,
+    StartSessionRunRequest,
+    GetActiveSessionRunRequest,
+    EndSessionRunRequest,
+} from './application/dtos/SessionRunDTOs';
+
 // Commands
 export type { ICommand } from './application/commands/ICommand';
 export { BaseCommand, CommandError } from './application/commands/ICommand';
@@ -211,6 +226,11 @@ export { UpdateEntityUseCase } from './application/use-cases/UpdateEntityUseCase
 
 // Use Cases - Delete
 export { DeleteEntityUseCase } from './application/use-cases/DeleteEntityUseCase';
+
+// Use Cases - Session Run
+export { StartSessionRunUseCase } from './application/use-cases/StartSessionRunUseCase';
+export { GetActiveSessionRunUseCase } from './application/use-cases/GetActiveSessionRunUseCase';
+export { EndSessionRunUseCase } from './application/use-cases/EndSessionRunUseCase';
 
 // Mappers
 export { EntityMapper } from './application/mappers/EntityMapper';

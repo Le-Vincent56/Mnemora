@@ -1,4 +1,4 @@
-export const SCHEMA_VERSION = 7;
+export const SCHEMA_VERSION = 8;
 
 export const CREATE_ENTITIES_TABLE = `
     CREATE TABLE IF NOT EXISTS entities (
@@ -283,4 +283,17 @@ export const CREATE_ENTITY_DRIFTS_INDEXES = `
     CREATE INDEX IF NOT EXISTS idx_entity_drifts_entity ON entity_drifts(entity_id);
     CREATE INDEX IF NOT EXISTS idx_entity_drifts_continuity ON entity_drifts(continuity_id);
     CREATE INDEX IF NOT EXISTS idx_entity_drifts_unresolved ON entity_drifts(resolved_at) WHERE resolved_at IS NULL;
+`;
+
+// ============================================================================
+// Schema Version 8: Session run persistence (active session + run timestamps)
+// ============================================================================
+export const ALTER_CAMPAIGNS_ADD_ACTIVE_SESSION_ID = `
+    ALTER TABLE campaigns ADD COLUMN active_session_id TEXT;
+`;
+export const ALTER_ENTITIES_ADD_STARTED_AT = `
+    ALTER TABLE entities ADD COLUMN started_at TEXT;
+`;
+export const ALTER_ENTITIES_ADD_ENDED_AT = `
+    ALTER TABLE entities ADD COLUMN ended_at TEXT;
 `;

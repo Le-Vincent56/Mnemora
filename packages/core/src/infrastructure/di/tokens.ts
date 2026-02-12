@@ -12,6 +12,7 @@ export const TOKENS = {
     QuickNoteRepository: Symbol('QuickNoteRepository'),
     ContinuityRepository: Symbol('ContinuityRepository'),
     DriftRepository: Symbol('DriftRepository'),
+    SessionRunRepository: Symbol('SessionRunRepository'),
 
     // Services
     EventBus: Symbol('EventBus'),
@@ -62,6 +63,9 @@ export const TOKENS = {
     AddQuickNoteUseCase: Symbol('AddQuickNoteUseCase'),
     RemoveQuickNoteUseCase: Symbol('RemoveQuickNoteUseCase'),
     EndSessionWithSummaryUseCase: Symbol('EndSessionWithSummaryUseCase'),
+    StartSessionRunUseCase: Symbol('StartSessionRunUseCase'),
+    GetActiveSessionRunUseCase: Symbol('GetActiveSessionRunUseCase'),
+    EndSessionRunUseCase: Symbol('EndSessionRunUseCase'),
 
     ResolveMentionUseCase: Symbol('ResolveMentionUseCase'),
 

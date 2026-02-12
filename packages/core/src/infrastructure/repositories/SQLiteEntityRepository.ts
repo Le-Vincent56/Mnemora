@@ -142,11 +142,13 @@ export class SQLiteEntityRepository implements IEntityRepository {
                 INSERT INTO entities (
                     id, type, name, description, secrets, content, summary, notes,
                     tags, world_id, campaign_id, forked_from, session_date,
-                    created_at, modified_at, type_specific_fields, continuity_id
+                    created_at, modified_at, duration, started_at, ended_at,
+                    type_specific_fields, continuity_id
                 ) VALUES (
                     @id, @type, @name, @description, @secrets, @content, @summary, @notes,
                     @tags, @world_id, @campaign_id, @forked_from, @session_date,
-                    @created_at, @modified_at, @type_specific_fields, @continuity_id
+                    @created_at, @modified_at, @duration, @started_at, @ended_at,
+                    @type_specific_fields, @continuity_id
                 )
                 ON CONFLICT(id) DO UPDATE SET
                     name = @name,
@@ -156,6 +158,10 @@ export class SQLiteEntityRepository implements IEntityRepository {
                     summary = @summary,
                     notes = @notes,
                     tags = @tags,
+                    session_date = @session_date,
+                    duration = @duration,
+                    started_at = @started_at,
+                    ended_at = @ended_at,
                     modified_at = @modified_at,
                     type_specific_fields = @type_specific_fields,
                     continuity_id = @continuity_id
@@ -177,11 +183,13 @@ export class SQLiteEntityRepository implements IEntityRepository {
                         INSERT INTO entities (
                             id, type, name, description, secrets, content, summary, notes,
                             tags, world_id, campaign_id, forked_from, session_date,
-                            created_at, modified_at, type_specific_fields, continuity_id
+                            created_at, modified_at, duration, started_at, ended_at,
+                            type_specific_fields, continuity_id
                         ) VALUES (
                             @id, @type, @name, @description, @secrets, @content, @summary, @notes,
                             @tags, @world_id, @campaign_id, @forked_from, @session_date,
-                            @created_at, @modified_at, @type_specific_fields, @continuity_id
+                            @created_at, @modified_at, @duration, @started_at, @ended_at,
+                            @type_specific_fields, @continuity_id
                         )
                         ON CONFLICT(id) DO UPDATE SET
                             name = @name,
@@ -191,6 +199,10 @@ export class SQLiteEntityRepository implements IEntityRepository {
                             summary = @summary,
                             notes = @notes,
                             tags = @tags,
+                            session_date = @session_date,
+                            duration = @duration,
+                            started_at = @started_at,
+                            ended_at = @ended_at,
                             modified_at = @modified_at,
                             type_specific_fields = @type_specific_fields,
                             continuity_id = @continuity_id

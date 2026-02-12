@@ -49,6 +49,9 @@ export class DatabaseMapper {
             type: entity.type,
             created_at: entity.createdAt.toISOString(),
             modified_at: entity.modifiedAt.toISOString(),
+            duration: null,
+            started_at: null,
+            ended_at: null,
         };
 
         switch (entity.type) {
@@ -143,6 +146,9 @@ export class DatabaseMapper {
                     campaign_id: sess.campaignID.toString(),  // Always non-null for Session
                     forked_from: null,
                     session_date: sess.sessionDate?.toISOString() ?? null,
+                    duration: sess.duration,
+                    started_at: sess.startedAt?.toISOString() ?? null,
+                    ended_at: sess.endedAt?.toISOString() ?? null,
                     type_specific_fields: sess.typeSpecificFieldsWrapper.toJSON(),
                     continuity_id: null,
                 };
@@ -239,7 +245,9 @@ export class DatabaseMapper {
             timestamps: Timestamps.fromStringsOrThrow(row.created_at, row.modified_at),
             quickNotes: [],
             starsAndWishes: null,
-            duration: (row as EntityRow & { duration?: number }).duration ?? null,
+            duration: row.duration ?? null,
+            startedAt: row.started_at ? new Date(row.started_at) : null,
+            endedAt: row.ended_at ? new Date(row.ended_at) : null,
             typeSpecificFields: TypeSpecificFieldsWrapper.fromJSON(
                 EntityType.SESSION,
                 row.type_specific_fields

@@ -198,6 +198,43 @@ export class DatabaseManager {
                     db.prepare('INSERT INTO schema_version (version) VALUES (?)').run(7);
                 })();
             }
+
+            // Re-check version after v7
+            const versionAfterV7 = (db.prepare(
+                'SELECT version FROM schema_version ORDER BY version DESC LIMIT 1'
+            ).get() as { version: number } | undefined)?.version ?? 0;
+            
+            if (versionAfterV7 < 8) {
+                db.transaction(() => {
+                    // Add active_session_id to campaigns if it doesn't exist
+                    const activeSessionColumn = db.prepare(
+                        "SELECT name FROM pragma_table_info('campaigns') WHERE name = 'active_session_id'"
+                    ).get();
+
+                    if (!activeSessionColumn) {
+                        db.exec(schema.ALTER_CAMPAIGNS_ADD_ACTIVE_SESSION_ID);
+                    }
+
+                    // Add started_at and ended_at to entities if they don't exist
+                    const startedAtColumn = db.prepare(
+                        "SELECT name FROM pragma_table_info('entities') WHERE name = 'started_at'"
+                    ).get();
+
+                    if (!startedAtColumn) {
+                        db.exec(schema.ALTER_ENTITIES_ADD_STARTED_AT);
+                    }
+
+                    const endedAtColumn = db.prepare(
+                        "SELECT name FROM pragma_table_info('entities') WHERE name = 'ended_at'"
+                    ).get();
+
+                    if (!endedAtColumn) {
+                        db.exec(schema.ALTER_ENTITIES_ADD_ENDED_AT);
+                    }
+
+                    db.prepare('INSERT INTO schema_version (version) VALUES (?)').run(8);
+                })();
+            }
         }
     }
 }
