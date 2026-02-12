@@ -42,8 +42,8 @@ export class GetActiveSessionRunUseCase implements IUseCase<GetActiveSessionRunR
         }
 
         return Result.ok({
-            campaignId: active.campaignID.toString(),
-            sessionId: active.sessionID.toString(),
+            campaignID: active.campaignID.toString(),
+            sessionID: active.sessionID.toString(),
             sessionName: active.sessionName,
             startedAt: active.startedAt.toISOString(),
         });

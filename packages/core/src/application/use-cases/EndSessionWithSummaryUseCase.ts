@@ -112,6 +112,12 @@ export class EndSessionWithSummaryUseCase implements IUseCase<EndSessionRequest,
             ));
         }
 
+        if(endOutcome.kind === 'not_active') {
+            return Result.fail(
+                UseCaseError.invalidOperation('Cannot end session: session is not active')
+            );
+        }
+
         // 6. Count unique referenced entities from quick notes
         const referencedEntityIds = new Set<string>();
         for (const note of notes) {

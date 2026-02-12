@@ -78,8 +78,8 @@ export class StartSessionRunUseCase implements IUseCase<StartSessionRunRequest, 
         }
 
         return Result.ok({
-            campaignId: session.campaignID.toString(),
-            sessionId: session.id.toString(),
+            campaignID: session.campaignID.toString(),
+            sessionID: session.id.toString(),
             sessionName: session.name.toString(),
             startedAt: outcome.startedAt.toISOString(),
         });

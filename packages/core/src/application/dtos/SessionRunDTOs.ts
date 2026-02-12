@@ -2,7 +2,7 @@
  * DTO for an active Session
  */
 export interface ActiveSessionRunDTO {
-    readonly campaignId: string;
+    readonly campaignID: string;
     readonly sessionID: string;
     readonly sessionName: string;
     readonly startedAt: string; // ISO date string
