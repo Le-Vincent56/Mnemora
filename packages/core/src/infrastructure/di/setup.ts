@@ -60,6 +60,7 @@ import { EntityEditorViewModel } from '../../presentation';
 import { SearchViewModel } from '../../presentation';
 import { EntityListViewModel } from '../../presentation';
 import { CommandHistoryViewModel } from '../../presentation';
+import { SessionNotesViewModel } from '../../presentation';
 
 export function createContainer(config: DatabaseConfig): Container {
     const container = new Container();
@@ -369,6 +370,13 @@ export function createContainer(config: DatabaseConfig): Container {
     container.register(TOKENS.CommandHistoryViewModel, () =>
         new CommandHistoryViewModel(
             container.resolve(TOKENS.CommandHistory)
+        )
+    );
+
+    container.register(TOKENS.SessionNotesViewModel, () =>
+        new SessionNotesViewModel(
+            container.resolve(TOKENS.EntityRepository),
+            container.resolve(TOKENS.QuickNoteRepository),
         )
     );
 

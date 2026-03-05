@@ -86,7 +86,7 @@ export class EndSessionWithSummaryUseCase implements IUseCase<EndSessionRequest,
         }
 
         // 4. Get all quick notes for the session
-        const notesResult = await this.quickNoteRepository.findBySessionId(request.sessionId);
+        const notesResult = await this.quickNoteRepository.findBySessionID(request.sessionId);
         if (notesResult.isFailure) {
             return Result.fail(UseCaseError.repositoryError('Failed to get quick notes', notesResult.error));
         }
@@ -121,7 +121,7 @@ export class EndSessionWithSummaryUseCase implements IUseCase<EndSessionRequest,
         // 6. Count unique referenced entities from quick notes
         const referencedEntityIds = new Set<string>();
         for (const note of notes) {
-            for (const entityId of note.linkedEntityIds) {
+            for (const entityId of note.linkedEntityIDs) {
                 referencedEntityIds.add(entityId);
             }
         }
@@ -134,7 +134,7 @@ export class EndSessionWithSummaryUseCase implements IUseCase<EndSessionRequest,
             id: note.id,
             content: note.content,
             capturedAt: note.capturedAt.toISOString(),
-            linkedEntityIds: [...note.linkedEntityIds],
+            linkedEntityIds: [...note.linkedEntityIDs],
             visibility: note.visibility
         }));
 

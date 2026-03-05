@@ -18,3 +18,9 @@ export { CommandHistory } from './CommandHistory';
 export { CreateEntityCommand } from './CreateEntityCommand';
 export { UpdateEntityCommand } from './UpdateEntityCommand';
 export { DeleteEntityCommand } from './DeleteEntityCommand';
+
+// Session notes commands
+export { AddQuickNoteCommand } from './AddQuickNoteCommand';
+export { UpdateQuickNoteCommand } from './UpdateQuickNoteCommand';
+export { RemoveQuickNoteCommand } from './RemoveQuickNoteCommand';
+export { SetSessionFeedbackCommand } from './SetSessionFeedbackCommand';

@@ -22,3 +22,4 @@ export type { SearchViewModelOptions } from './SearchViewModel';
 export { EntityListViewModel } from './EntityListViewModel';
 export type { EntityListViewModelOptions } from './EntityListViewModel';
 export { CommandHistoryViewModel } from './CommandHistoryViewModel';
+export { SessionNotesViewModel } from './SessionNotesViewModel';

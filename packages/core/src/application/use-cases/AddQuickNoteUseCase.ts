@@ -68,7 +68,7 @@ export class AddQuickNoteUseCase implements IUseCase<AddQuickNoteRequest, AddQui
             id: note.id,
             content: note.content,
             capturedAt: note.capturedAt.toISOString(),
-            linkedEntityIds: [...note.linkedEntityIds],
+            linkedEntityIds: [...note.linkedEntityIDs],
             visibility: note.visibility
         };
 

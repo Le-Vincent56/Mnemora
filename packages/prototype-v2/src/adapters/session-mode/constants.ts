@@ -10,3 +10,5 @@ export const PROTOTYPE_CAMPAIGN = {
 } as const
 
 export const SESSION_RUN_STORAGE_KEY = "mnemora:prototype-v2:session-run:v1" as const;
+
+export const SESSION_NOTES_STORAGE_KEY = "mnemora:prototype-v2:session-notes:v1" as const;

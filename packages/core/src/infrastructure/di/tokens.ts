@@ -74,4 +74,5 @@ export const TOKENS = {
     SearchViewModel: Symbol('SearchViewModel'),
     EntityListViewModel: Symbol('EntityListViewModel'),
     CommandHistoryViewModel: Symbol('CommandHistoryViewModel'),
+    SessionNotesViewModel: Symbol('SessionNotesViewModel'),
 } as const;

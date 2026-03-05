@@ -99,15 +99,24 @@ export class CommandHistory {
     }
 
     /**
+     * Clear both undo and redo stacks.
+     * Useful when switching contexts (e.g., active session) where cross-context undo is unsafe.
+     */
+    clear(): void {
+        this.undoStack = [];
+        this.redoStack = [];
+    }
+
+    /**
      * Execute a command and add it to history.
      * @param command - The command to execute
      * @returns Result from command execution
      */
     async execute(command: ICommand): Promise<Result<void, CommandError>> {
         const result = await command.execute();
-        if (result.isFailure) {
-            return result;
-        }
+
+        // Exit case - the command failed
+        if (result.isFailure) return result;
 
         // Clear redo stack on new action
         this.redoStack = [];
@@ -116,8 +125,8 @@ export class CommandHistory {
             this.undoStack.push(command);
             this.trimHistory();
         } else {
-            // Non-undoable commands break the undo chain
-            // User can't undo past a non-undoable action
+            // Non-undoable commands break the undo chain;
+            // the user can't undo past a non-undoable action
             this.undoStack = [];
         }
 
@@ -131,10 +140,12 @@ export class CommandHistory {
     async undo(): Promise<Result<void, CommandError>> {
         const command = this.undoStack.pop();
 
+        // Exit case - there is no command
         if (!command) {
             return Result.fail(new CommandError('Nothing to undo', 'NOTHING_TO_UNDO'));
         }
 
+        // Exit case - the command cannot undo
         if (!command.canUndo) {
             // This shouldn't happen if we're managing stacks correctly,
             // but handle it gracefully
@@ -160,6 +171,7 @@ export class CommandHistory {
     async redo(): Promise<Result<void, CommandError>> {
         const command = this.redoStack.pop();
 
+        // Exit case - there is no command
         if (!command) {
             return Result.fail(new CommandError('Nothing to redo', 'NOTHING_TO_REDO'));
         }

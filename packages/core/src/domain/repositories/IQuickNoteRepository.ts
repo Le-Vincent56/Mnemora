@@ -13,7 +13,7 @@ export interface IQuickNoteRepository {
     /**
      * Finds all quick notes for a session.
      */
-    findBySessionId(sessionId: string): Promise<Result<QuickNote[], RepositoryError>>;
+    findBySessionID(sessionId: string): Promise<Result<QuickNote[], RepositoryError>>;
 
     /**
      * Saves a quick note for a session.
@@ -36,7 +36,7 @@ export interface IQuickNoteRepository {
      * Finds Stars & Wishes feedback for a session.
      * Returns null if no feedback has been collected.
      */
-    findFeedbackBySessionId(sessionId: string): Promise<Result<StarsAndWishes | null, RepositoryError>>;
+    findFeedbackBySessionID(sessionId: string): Promise<Result<StarsAndWishes | null, RepositoryError>>;
 
     /**
      * Saves Stars & Wishes feedback for a session.

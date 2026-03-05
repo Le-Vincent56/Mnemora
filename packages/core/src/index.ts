@@ -204,6 +204,10 @@ export { CommandHistory } from './application/commands/CommandHistory';
 export { CreateEntityCommand } from './application/commands/CreateEntityCommand';
 export { UpdateEntityCommand } from './application/commands/UpdateEntityCommand';
 export { DeleteEntityCommand } from './application/commands/DeleteEntityCommand';
+export { AddQuickNoteCommand } from './application/commands/AddQuickNoteCommand';
+export { UpdateQuickNoteCommand } from './application/commands/UpdateQuickNoteCommand';
+export { RemoveQuickNoteCommand } from './application/commands/RemoveQuickNoteCommand';
+export { SetSessionFeedbackCommand } from './application/commands/SetSessionFeedbackCommand';
 
 // Use Cases
 export type { IUseCase } from './application/use-cases/IUseCase';
@@ -303,3 +307,4 @@ export type { SearchViewModelOptions } from './presentation/view-models/SearchVi
 export { EntityListViewModel } from './presentation/view-models/EntityListViewModel';
 export type { EntityListViewModelOptions } from './presentation/view-models/EntityListViewModel';
 export { CommandHistoryViewModel } from './presentation/view-models/CommandHistoryViewModel';
+export { SessionNotesViewModel } from './presentation/view-models/SessionNotesViewModel';

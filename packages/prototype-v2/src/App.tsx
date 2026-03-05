@@ -15,6 +15,8 @@ import {
 import { ComponentShowcase, ConfirmDialog } from '@/components/composed';
 import { useSessionMode } from '@/adapters/session-mode';
 import { PrepModeShell } from '@/components/prep/PrepModeShell';
+import { SessionNotesPanel } from '@/components/session/SessionNotesPanel';
+import { SessionEndModal } from '@/components/session/SessionEndModal';
 import layoutStyles from '@/components/layout/layout.module.css';
 import { EASING } from '@/tokens';
 
@@ -81,6 +83,7 @@ export function App() {
     const [sessionView, setSessionView] = useState<SessionView>('quick-ref');
     const [sessionTime, setSessionTime] = useState('0:00');
     const [resumePromptDismissed, setResumePromptDismissed] = useState(false);
+    const [endModalOpen, setEndModalOpen] = useState(false);
     const reducedMotion = useReducedMotion();
     const { state, controls, isBlocking } = useCeremony();
     const sessionMode = useSessionMode();
@@ -120,6 +123,38 @@ export function App() {
         }, 1000);
         return () => clearInterval(interval);
     }, [mode, sessionMode.activeRun?.startedAt]);
+
+    // Session undo/redo keyboard shortcuts (Cmd/Ctrl+Z, Cmd/Ctrl+Shift+Z)
+    useEffect(() => {
+        if (mode !== 'session') return;
+        const handler = (e: KeyboardEvent) => {
+            const key = e.key.toLowerCase();
+            if (!(e.metaKey || e.ctrlKey)) return;
+            if (key !== 'z') return;
+
+            const target = e.target as HTMLElement | null;
+            const isTextField = !!target && (
+                target.tagName === 'INPUT' ||
+                target.tagName === 'TEXTAREA' ||
+                target.isContentEditable
+            );
+            if (isTextField) return;
+
+            if (e.shiftKey) {
+                if (!sessionMode.undoRedo.canRedo) return;
+                e.preventDefault();
+                void sessionMode.redo();
+                return;
+            }
+
+            if (!sessionMode.undoRedo.canUndo) return;
+            e.preventDefault();
+            void sessionMode.undo();
+        };
+
+        window.addEventListener('keydown', handler);
+        return () => window.removeEventListener('keydown', handler);
+    }, [mode, sessionMode]);
 
 
     // -----------------------------------------
@@ -174,20 +209,7 @@ export function App() {
 
         // Exit case - no active session
         if (!active) return;
-
-        const durationSeconds = Math.max(
-            0,
-            Math.floor((Date.now() - new Date(active.startedAt).getTime()) / 1000),
-        );
-
-        void (async () => {
-            const endResult = await sessionMode.endActiveSessionRun(durationSeconds);
-            
-            // Exit case - could not end the current session
-            if (endResult.isFailure) return;
-
-            triggerModeSwitch('prep', CeremonyType.SESSION_TO_PREP);
-        })();
+        setEndModalOpen(true);
     }, [mode, sessionMode, triggerModeSwitch]);
 
     // -----------------------------------------
@@ -241,6 +263,32 @@ export function App() {
                 cancelLabel="Not now"
                 confirmVariant="primary"
             />
+
+            {sessionMode.activeRun && (
+                <SessionEndModal
+                    open={endModalOpen}
+                    onClose={() => setEndModalOpen(false)}
+                    onConfirm={() => {
+                        const active = sessionMode.activeRun;
+                        if (!active) return;
+
+                        const durationSeconds = Math.max(
+                            0,
+                            Math.floor((Date.now() - new Date(active.startedAt).getTime()) / 1000),
+                        );
+
+                        void (async () => {
+                            const endResult = await sessionMode.endActiveSessionWithSummary(durationSeconds);
+                            if (endResult.isFailure) return;
+                            setEndModalOpen(false);
+                            triggerModeSwitch('prep', CeremonyType.SESSION_TO_PREP);
+                        })();
+                    }}
+                    sessionName={sessionMode.activeRun.sessionName}
+                    startedAt={sessionMode.activeRun.startedAt}
+                    elapsedLabel={sessionTime}
+                />
+            )}
 
             <AppShell
                 rail={
@@ -552,17 +600,21 @@ function SessionModeContent({
             </Surface>
 
             {/* Placeholder content for active view */}
-            <Surface elevation="flat" radius="md" padding="lg" bordered>
-                <Stack gap={4} align="center" style={{ padding: 'var(--space-8) 0' }}>
-                    <Text variant="title" color="tertiary">
-                        {title}
-                    </Text>
-                    <Text variant="body" color="tertiary" style={{ textAlign: 'center', maxWidth: 400 }}>
-                        Session mode {activeView} content will appear here.
-                        The interface shifts to night mode for focused gameplay.
-                    </Text>
-                </Stack>
-            </Surface>
+            {activeView === 'notes' ? (
+                <SessionNotesPanel />
+            ) : (
+                <Surface elevation="flat" radius="md" padding="lg" bordered>
+                    <Stack gap={4} align="center" style={{ padding: 'var(--space-8) 0' }}>
+                        <Text variant="title" color="tertiary">
+                            {title}
+                        </Text>
+                        <Text variant="body" color="tertiary" style={{ textAlign: 'center', maxWidth: 400 }}>
+                            Session mode {activeView} content will appear here.
+                            The interface shifts to night mode for focused gameplay.
+                        </Text>
+                    </Stack>
+                </Surface>
+            )}
         </Stack>
     );
 }

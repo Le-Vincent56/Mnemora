@@ -33,7 +33,7 @@ export class SQLiteQuickNoteRepository implements IQuickNoteRepository {
 
     // Quick Notes
 
-    async findBySessionId(sessionId: string): Promise<Result<QuickNote[], RepositoryError>> {
+    async findBySessionID(sessionId: string): Promise<Result<QuickNote[], RepositoryError>> {
         try {
             const rows = this.db.prepare(
                 'SELECT * FROM quick_notes WHERE session_id = ? ORDER BY captured_at ASC'
@@ -60,7 +60,7 @@ export class SQLiteQuickNoteRepository implements IQuickNoteRepository {
                 session_id: sessionId,
                 content: note.content,
                 captured_at: note.capturedAt.toISOString(),
-                linked_entity_ids: JSON.stringify(note.linkedEntityIds),
+                linked_entity_ids: JSON.stringify(note.linkedEntityIDs),
                 visibility: note.visibility
             });
 
@@ -90,7 +90,7 @@ export class SQLiteQuickNoteRepository implements IQuickNoteRepository {
 
     // Stars & Wishes (Session Feedback)
 
-    async findFeedbackBySessionId(sessionId: string): Promise<Result<StarsAndWishes | null, RepositoryError>> {
+    async findFeedbackBySessionID(sessionId: string): Promise<Result<StarsAndWishes | null, RepositoryError>> {
         try {
             const rows = this.db.prepare(
                 'SELECT * FROM session_feedback WHERE session_id = ? ORDER BY collected_at ASC'
@@ -184,7 +184,7 @@ export class SQLiteQuickNoteRepository implements IQuickNoteRepository {
             id: row.id,
             content: row.content,
             capturedAt: new Date(row.captured_at),
-            linkedEntityIds: JSON.parse(row.linked_entity_ids),
+            linkedEntityIDs: JSON.parse(row.linked_entity_ids),
             visibility: row.visibility as QuickNoteVisibility
         });
     }

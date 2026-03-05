@@ -4,6 +4,8 @@ export type {
     SessionModeError,
     SessionModeErrorCode,
     SessionModeStatus,
+    SessionNotesState,
+    UndoRedoState,
     SelectedSession,
 } from './types';
 export { PROTOTYPE_WORLD, PROTOTYPE_CAMPAIGN } from './constants';
