@@ -9,7 +9,7 @@ describe('QuickNote', () => {
             expect(result.isSuccess).toBe(true);
             expect(result.value.content).toBe('Player mentioned the artifact');
             expect(result.value.visibility).toBe('gm_only');
-            expect(result.value.linkedEntityIds).toHaveLength(0);
+            expect(result.value.linkedEntityIDs).toHaveLength(0);
             expect(result.value.id).toBeDefined();
             expect(result.value.capturedAt).toBeInstanceOf(Date);
         });
@@ -54,7 +54,7 @@ describe('QuickNote', () => {
             const result = QuickNote.create('note', ['entity1', 'entity2']);
 
             expect(result.isSuccess).toBe(true);
-            expect(result.value.linkedEntityIds).toEqual(['entity1', 'entity2']);
+            expect(result.value.linkedEntityIDs).toEqual(['entity1', 'entity2']);
         });
 
         it('should accept players visibility', () => {
@@ -72,7 +72,7 @@ describe('QuickNote', () => {
                 id: 'test-id',
                 content: 'Test content',
                 capturedAt: new Date('2024-01-01'),
-                linkedEntityIds: ['e1'],
+                linkedEntityIDs: ['e1'],
                 visibility: 'gm_only' as const
             };
 
@@ -90,14 +90,14 @@ describe('QuickNote', () => {
                 id: 'same-id',
                 content: 'Note 1',
                 capturedAt: new Date(),
-                linkedEntityIds: [],
+                linkedEntityIDs: [],
                 visibility: 'gm_only'
             });
             const note2 = QuickNote.fromProps({
                 id: 'same-id',
                 content: 'Note 2',
                 capturedAt: new Date(),
-                linkedEntityIds: [],
+                linkedEntityIDs: [],
                 visibility: 'gm_only'
             });
 

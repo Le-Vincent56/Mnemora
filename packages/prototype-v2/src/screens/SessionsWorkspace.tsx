@@ -16,8 +16,10 @@ import { Text, Icon, Badge, Button } from '@/primitives';
 import { Modal, FormField } from '@/components/composed';
 import { useReducedMotion } from '@/hooks';
 import { EASING, TIMING, toSeconds } from '@/tokens';
-import { getAllSessions, type SessionData, type SessionBlock } from '@/data/mockSessions';
+import { type SessionData, type SessionBlock } from '@/data/mockSessions';
+import { loadPrepSessions, savePrepSessions } from '@/data/PrepSessionsLocalStorage';
 import { useSessionMode } from '@/adapters/session-mode';
+import { StagedProposalsReviewPanel } from '@/components/prep/StagedProposalsReviewPanel';
 import styles from '@/components/prep/prep.module.css';
 
 type SessionTab = 'upcoming' | 'history';
@@ -33,7 +35,7 @@ const EMPTY_FORM: SessionFormData = {
 };
 
 let blockCounter = 0;
-function genBlockId(): string {
+function genBlockID(): string {
   return `blk-${Date.now()}-${++blockCounter}`;
 }
 
@@ -71,16 +73,20 @@ const SLASH_ITEMS = [
 // ---------------------------------------------------------------------------
 
 export function SessionsWorkspace() {
-  const [sessions, setSessions] = useState<SessionData[]>(() => getAllSessions());
+  const [sessions, setSessions] = useState<SessionData[]>(() => loadPrepSessions());
   const [activeTab, setActiveTab] = useState<SessionTab>('upcoming');
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingId, setEditingID] = useState<string | null>(null);
   const [editingForm, setEditingForm] = useState<SessionFormData>(EMPTY_FORM);
   const [activeSlashEditorID, setActiveSlashEditorId] = useState<string | null>(null);
-  const [activeSessionID, setActiveSessionId] = useState<string | null>(null);
+  const [activeSessionID, setActiveSessionID] = useState<string | null>(null);
   const reducedMotion = useReducedMotion();
   const { selectSession } = useSessionMode();
+
+  useEffect(() => {
+    savePrepSessions(sessions);
+  }, [sessions]);
 
   const upcoming = useMemo(
     () => sessions.filter((s) => s.isUpcoming).sort((a, b) => a.date.localeCompare(b.date)),
@@ -95,11 +101,11 @@ export function SessionsWorkspace() {
   // Auto-select first upcoming session if none selected or selection becomes invalid
   useEffect(() => {
     if (upcoming.length === 0) {
-      setActiveSessionId(null);
+      setActiveSessionID(null);
       return;
     }
     if (!activeSessionID || !upcoming.some((s) => s.id === activeSessionID)) {
-      setActiveSessionId(upcoming[0]?.id ?? null);
+      setActiveSessionID(upcoming[0]?.id ?? null);
     }
   }, [upcoming, activeSessionID]);
 
@@ -117,28 +123,28 @@ export function SessionsWorkspace() {
   }, [activeSession?.id, activeSession?.title, selectSession]);
 
   // Auto-select first history session
-  const [activeHistoryId, setActiveHistoryId] = useState<string | null>(null);
+  const [activeHistoryID, setActiveHistoryID] = useState<string | null>(null);
 
   useEffect(() => {
     if (history.length === 0) {
-      setActiveHistoryId(null);
+      setActiveHistoryID(null);
       return;
     }
-    if (!activeHistoryId || !history.some((s) => s.id === activeHistoryId)) {
-      setActiveHistoryId(history[0]?.id ?? null);
+    if (!activeHistoryID || !history.some((s) => s.id === activeHistoryID)) {
+      setActiveHistoryID(history[0]?.id ?? null);
     }
-  }, [history, activeHistoryId]);
+  }, [history, activeHistoryID]);
 
   const activeHistorySession = useMemo(
-    () => history.find((s) => s.id === activeHistoryId),
-    [history, activeHistoryId],
+    () => history.find((s) => s.id === activeHistoryID),
+    [history, activeHistoryID],
   );
 
   // -- CRUD handlers --------------------------------------------------------
 
   const handleCreate = useCallback(() => {
     setEditingForm(EMPTY_FORM);
-    setEditingId(null);
+    setEditingID(null);
     setModalMode('create');
     setModalOpen(true);
   }, []);
@@ -148,7 +154,7 @@ export function SessionsWorkspace() {
       title: session.title,
       date: session.date.slice(0, 10),
     });
-    setEditingId(session.id);
+    setEditingID(session.id);
     setModalMode('edit');
     setModalOpen(true);
   }, []);
@@ -165,13 +171,13 @@ export function SessionsWorkspace() {
       const isUpcoming = new Date(fullDate).getTime() > Date.now();
 
       if (modalMode === 'create') {
-        const newId = `sess-${Date.now()}`;
+        const newID = `sess-${Date.now()}`;
         setSessions((prev) => {
           const maxNum = prev.reduce((max, s) => Math.max(max, s.number), 0);
           return [
             ...prev,
             {
-              id: newId,
+              id: newID,
               number: maxNum + 1,
               title: data.title,
               date: fullDate,
@@ -180,16 +186,18 @@ export function SessionsWorkspace() {
               isUpcoming,
               feedback: { stars: 0, wishes: 0 },
               prepChecklist: [],
-              blocks: [{ id: genBlockId(), type: 'text', content: '' }],
+              blocks: [{ id: genBlockID(), type: 'text', content: '' }],
             },
           ];
         });
+
         // Navigate to the new session
         setActiveTab(isUpcoming ? 'upcoming' : 'history');
+
         if (isUpcoming) {
-          setActiveSessionId(newId);
+          setActiveSessionID(newID);
         } else {
-          setActiveHistoryId(newId);
+          setActiveHistoryID(newID);
         }
       } else if (editingId) {
         setSessions((prev) =>
@@ -261,7 +269,7 @@ export function SessionsWorkspace() {
                     key={s.id}
                     type="button"
                     className={`${styles.sessionsPickerItem} ${s.id === activeSessionID ? styles.sessionsPickerItemActive : ''}`}
-                    onClick={() => setActiveSessionId(s.id)}
+                    onClick={() => setActiveSessionID(s.id)}
                   >
                     <span className={styles.sessionsPickerNumber}>{s.number}</span>
                     <span className={styles.sessionsPickerTitle}>{s.title}</span>
@@ -298,8 +306,8 @@ export function SessionsWorkspace() {
                 <button
                   key={s.id}
                   type="button"
-                  className={`${styles.sessionsPickerItem} ${s.id === activeHistoryId ? styles.sessionsPickerItemActive : ''}`}
-                  onClick={() => setActiveHistoryId(s.id)}
+                  className={`${styles.sessionsPickerItem} ${s.id === activeHistoryID ? styles.sessionsPickerItemActive : ''}`}
+                  onClick={() => setActiveHistoryID(s.id)}
                 >
                   <span className={styles.sessionsPickerNumber}>{s.number}</span>
                   <span className={styles.sessionsPickerTitle}>{s.title}</span>
@@ -462,9 +470,11 @@ function BlockEditor({
   // Focus newly created blocks after render
   useEffect(() => {
     if (!pendingFocusRef.current) return;
-    const { blockId, cursorPos } = pendingFocusRef.current;
+
+    const { blockId: blockID, cursorPos } = pendingFocusRef.current;
     pendingFocusRef.current = null;
-    const el = blockRefsMap.current.get(blockId);
+    const el = blockRefsMap.current.get(blockID);
+
     if (el) {
       el.focus();
       if (cursorPos !== undefined) {
@@ -502,7 +512,10 @@ function BlockEditor({
 
   const commitSlash = (blockIndex: number, slashItem: (typeof SLASH_ITEMS)[number]) => {
     const current = blocks[blockIndex];
+
+    // Exit case - no current block
     if (!current) return;
+
     const updated = [...blocks];
     updated[blockIndex] = {
       ...current,
@@ -510,11 +523,13 @@ function BlockEditor({
       content: '',
       checked: slashItem.type === 'checklist' ? false : undefined,
     };
+
     onUpdateBlocks(updated);
     setSlashMenuIndex(null);
     setSlashFilter('');
     setSlashHighlight(0);
     onSlashClose();
+
     if (slashItem.type !== 'divider') {
       pendingFocusRef.current = { blockId: current.id };
     }
@@ -554,7 +569,10 @@ function BlockEditor({
 
   const handleBlockKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>, index: number) => {
     const block = blocks[index];
+
+    // Exit case - no block
     if (!block) return;
+
     const el = e.currentTarget;
 
     // Slash menu navigation
@@ -564,17 +582,20 @@ function BlockEditor({
         setSlashHighlight((p) => Math.min(p + 1, filteredSlash.length - 1));
         return;
       }
+
       if (e.key === 'ArrowUp') {
         e.preventDefault();
         setSlashHighlight((p) => Math.max(p - 1, 0));
         return;
       }
+
       if (e.key === 'Enter') {
         e.preventDefault();
         const highlighted = filteredSlash[slashHighlight];
         if (highlighted) commitSlash(index, highlighted);
         return;
       }
+
       if (e.key === 'Escape') {
         e.preventDefault();
         const updated = [...blocks];
@@ -603,7 +624,7 @@ function BlockEditor({
       const cursorPos = el.selectionStart;
       const before = block.content.slice(0, cursorPos);
       const after = block.content.slice(cursorPos);
-      const newId = genBlockId();
+      const newId = genBlockID();
       const updated = [...blocks];
 
       updated[index] = { ...block, content: before };
@@ -635,13 +656,18 @@ function BlockEditor({
       // Merge with previous block (if exists and is text/heading/checklist)
       if (index > 0) {
         const prevB = blocks[index - 1];
+
+        // Exit case - no previous block
         if (!prevB) return;
+
+        // Exit case - the previous block was a divider
         if (prevB.type === 'divider') {
           const updated = blocks.filter((_, i) => i !== index - 1);
           onUpdateBlocks(updated);
           pendingFocusRef.current = { blockId: block.id, cursorPos: 0 };
           return;
         }
+
         const mergePos = prevB.content.length;
         const updated = [...blocks];
         updated[index - 1] = { ...prevB, content: prevB.content + block.content };
@@ -656,10 +682,12 @@ function BlockEditor({
     if (e.key === 'ArrowUp' && el.selectionStart === 0 && index > 0) {
       e.preventDefault();
       const prevB = blocks[index - 1];
+
       if (prevB && prevB.type !== 'divider') {
         pendingFocusRef.current = { blockId: prevB.id, cursorPos: prevB.content.length };
         onUpdateBlocks([...blocks]);
       }
+
       return;
     }
 
@@ -667,17 +695,22 @@ function BlockEditor({
     if (e.key === 'ArrowDown' && el.selectionStart === block.content.length && index < blocks.length - 1) {
       e.preventDefault();
       const nextB = blocks[index + 1];
+
       if (nextB && nextB.type !== 'divider') {
         pendingFocusRef.current = { blockId: nextB.id, cursorPos: 0 };
         onUpdateBlocks([...blocks]);
       }
+
       return;
     }
   };
 
   const handleCheckToggle = (index: number) => {
     const block = blocks[index];
+
+    // Exit case - no block
     if (!block) return;
+
     const updated = [...blocks];
     updated[index] = { ...block, checked: !block.checked };
     onUpdateBlocks(updated);
@@ -685,7 +718,7 @@ function BlockEditor({
 
   const handleDividerClick = (index: number) => {
     // Insert a new text block after the divider
-    const newId = genBlockId();
+    const newId = genBlockID();
     const updated = [...blocks];
     updated.splice(index + 1, 0, { id: newId, type: 'text', content: '' });
     onUpdateBlocks(updated);
@@ -693,7 +726,7 @@ function BlockEditor({
   };
 
   const handleAddBlock = () => {
-    const newId = genBlockId();
+    const newId = genBlockID();
     onUpdateBlocks([...blocks, { id: newId, type: 'text', content: '' }]);
     pendingFocusRef.current = { blockId: newId, cursorPos: 0 };
   };
@@ -731,6 +764,7 @@ function BlockEditor({
                   onChange={() => handleCheckToggle(i)}
                   aria-label={`Toggle: ${block.content}`}
                 />
+
                 <textarea
                   ref={setBlockRef(block.id)}
                   className={`${styles.sessionsBlockChecklistInput} ${block.checked ? styles.sessionsBlockChecked : ''}`}
@@ -805,6 +839,7 @@ function BlockEditor({
                       <span className={styles.sessionsSlashItemIcon}>
                         <Icon icon={item.icon} size={16} color="inherit" />
                       </span>
+
                       <span className={styles.sessionsSlashItemText}>
                         <span className={styles.sessionsSlashItemLabel}>{item.label}</span>
                         <span className={styles.sessionsSlashItemDesc}>{item.desc}</span>
@@ -870,18 +905,22 @@ function UpcomingSection({
     >
       <div className={styles.sessionsSectionHeader}>
         <span className={styles.sessionsNextNumber}>{session.number}</span>
+
         <div className={styles.sessionsNextInfo}>
           <Text variant="title" weight="semibold" className={styles.sessionsNextTitle}>
             {session.title}
           </Text>
+
           <span className={styles.sessionsNextDate}>
             {formatSessionDate(session.date)}
           </span>
         </div>
+
         <div className={styles.sessionsCardActions}>
           <Badge variant="session" size="sm">
             {formatRelativeDate(session.date)}
           </Badge>
+
           <button
             type="button"
             className={styles.sessionsActionBtn}
@@ -890,6 +929,7 @@ function UpcomingSection({
           >
             <Icon icon={Pencil} size={16} />
           </button>
+
           <button
             type="button"
             className={`${styles.sessionsActionBtn} ${styles.sessionsActionBtnDanger}`}
@@ -902,6 +942,10 @@ function UpcomingSection({
       </div>
 
       <div className={styles.sessionsSectionCanvas}>
+        <StagedProposalsReviewPanel sessionID={session.id} sessionName={session.title} />
+
+        <div style={{ height: 'var(--space-3)' }} />
+
         <BlockEditor
           blocks={session.blocks}
           onUpdateBlocks={onUpdateBlocks}
@@ -950,10 +994,12 @@ function HistorySection({
     >
       <div className={styles.sessionsSectionHeader}>
         <span className={styles.sessionsNextNumber}>{session.number}</span>
+
         <div className={styles.sessionsNextInfo}>
           <Text variant="title" weight="semibold" className={styles.sessionsNextTitle}>
             {session.title}
           </Text>
+
           <div className={styles.sessionsHeaderMeta}>
             <span className={styles.sessionsNextDate}>
               {formatSessionDate(session.date)}
@@ -972,6 +1018,7 @@ function HistorySection({
             )}
           </div>
         </div>
+
         <div className={styles.sessionsCardActions}>
           <button
             type="button"
@@ -981,6 +1028,7 @@ function HistorySection({
           >
             <Icon icon={Pencil} size={16} />
           </button>
+
           <button
             type="button"
             className={`${styles.sessionsActionBtn} ${styles.sessionsActionBtnDanger}`}
@@ -998,11 +1046,15 @@ function HistorySection({
             <Text variant="caption" color="tertiary" className={styles.sessionsRecapLabel}>
               RECAP
             </Text>
+
             <Text variant="body-sm" color="secondary">
               {session.recap}
             </Text>
           </div>
         )}
+        <StagedProposalsReviewPanel sessionID={session.id} sessionName={session.title} />
+
+        <div style={{ height: 'var(--space-3)' }} />
 
         <BlockEditor
           blocks={session.blocks}

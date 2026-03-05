@@ -1,4 +1,4 @@
-export const SCHEMA_VERSION = 8;
+export const SCHEMA_VERSION = 9;
 
 export const CREATE_ENTITIES_TABLE = `
     CREATE TABLE IF NOT EXISTS entities (
@@ -262,7 +262,7 @@ export const CREATE_ENTITIES_INDEXES_V6 = `
 // ============================================================================
 // Schema Version 7: Entity Drifts table (drift detection)
 // ============================================================================
-  
+
 export const CREATE_ENTITY_DRIFTS_TABLE = `
     CREATE TABLE IF NOT EXISTS entity_drifts (
         id TEXT PRIMARY KEY,
@@ -296,4 +296,55 @@ export const ALTER_ENTITIES_ADD_STARTED_AT = `
 `;
 export const ALTER_ENTITIES_ADD_ENDED_AT = `
     ALTER TABLE entities ADD COLUMN ended_at TEXT;
+`;
+
+// ============================================================================
+// Schema Version 9: Staged proposals + audit trail (M4 scaffold)
+// ============================================================================
+export const CREATE_STAGED_PROPOSALS_TABLE = `
+    CREATE TABLE IF NOT EXISTS staged_proposals (
+        id TEXT PRIMARY KEY,
+        session_id TEXT NOT NULL,
+        kind TEXT NOT NULL,
+        title TEXT,
+        content TEXT NOT NULL,
+        status TEXT NOT NULL CHECK(status IN ('open','accepted','deferred','discarded','merged')),
+        merged_target TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        FOREIGN KEY (session_id) REFERENCES entities(id) ON DELETE CASCADE
+    );
+`;
+
+export const CREATE_STAGED_PROPOSALS_INDEXES = `
+    CREATE INDEX IF NOT EXISTS idx_staged_proposals_session ON staged_proposals(session_id);
+    CREATE INDEX IF NOT EXISTS idx_staged_proposals_status ON staged_proposals(status);
+    CREATE INDEX IF NOT EXISTS idx_staged_proposals_created ON staged_proposals(created_at);
+`;
+
+export const CREATE_STAGED_PROPOSAL_AUDIT_EVENTS_TABLE = `
+    CREATE TABLE IF NOT EXISTS staged_proposal_audit_events (
+        id TEXT PRIMARY KEY,
+        proposal_id TEXT NOT NULL,
+        session_id TEXT NOT NULL,
+        action TEXT NOT NULL CHECK(action IN (
+            'created',
+            'accepted',
+            'edited_then_accepted',
+            'deferred',
+            'discarded',
+            'merged',
+            'reclassified'
+        )),
+        occurred_at TEXT NOT NULL,
+        metadata_json TEXT NOT NULL DEFAULT '{}',
+        FOREIGN KEY (proposal_id) REFERENCES staged_proposals(id) ON DELETE CASCADE,
+        FOREIGN KEY (session_id) REFERENCES entities(id) ON DELETE CASCADE
+    );
+`;
+
+export const CREATE_STAGED_PROPOSAL_AUDIT_EVENTS_INDEXES = `
+    CREATE INDEX IF NOT EXISTS idx_staged_audit_proposal ON staged_proposal_audit_events(proposal_id);
+    CREATE INDEX IF NOT EXISTS idx_staged_audit_session ON staged_proposal_audit_events(session_id);
+    CREATE INDEX IF NOT EXISTS idx_staged_audit_occurred ON staged_proposal_audit_events(occurred_at);
 `;

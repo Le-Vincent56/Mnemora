@@ -14,7 +14,7 @@ import { Name } from '@mnemora/core/src/domain/value-objects/Name';
 import { RichText } from '@mnemora/core/src/domain/value-objects/RichText';
 import { TagCollection } from '@mnemora/core/src/domain/value-objects/TagCollection';
 import { Timestamps } from '@mnemora/core/src/domain/value-objects/Timestamps';
-import { getAllSessions } from '@/data/mockSessions';
+import { loadPrepSessions } from '@/data/PrepSessionsLocalStorage';
 import type { SelectedSession } from '../types';
 import { SESSION_RUN_STORAGE_KEY } from '../constants';
 import { readSessionRunState } from './SessionRunLocalStorage';
@@ -52,7 +52,7 @@ export class SessionSelectionEntityRepository implements IEntityRepository {
 
             const state = stateResult.value;
             const stored = state.sessions[idStr];
-            const mock = getAllSessions().find((s) => s.id === idStr);
+            const mock = loadPrepSessions().find((s) => s.id === idStr);
             const sessionName =
                 (selected && selected.sessionID === idStr ? selected.sessionName : null) ??
                 stored?.name ??

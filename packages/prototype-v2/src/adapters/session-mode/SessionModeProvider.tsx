@@ -15,6 +15,12 @@ import { StartSessionRunUseCase } from '@mnemora/core/src/application/use-cases/
 import { GetActiveSessionRunUseCase } from '@mnemora/core/src/application/use-cases/GetActiveSessionRunUseCase';
 import { EndSessionRunUseCase } from '@mnemora/core/src/application/use-cases/EndSessionRunUseCase';
 import { EndSessionWithSummaryUseCase } from '@mnemora/core/src/application/use-cases/EndSessionWithSummaryUseCase';
+import { CreateStagedProposalUseCase } from '@mnemora/core/src/application/use-cases/CreateStagedProposalUseCase';
+import { ListStagedProposalsUseCase } from '@mnemora/core/src/application/use-cases/ListStagedProposalsUseCase';
+import { ReviewStagedProposalUseCase } from '@mnemora/core/src/application/use-cases/ReviewStagedProposalUseCase';
+import { ListStagedProposalAuditEventsUseCase } from '@mnemora/core/src/application/use-cases/ListStagedProposalAuditEventsUseCase';
+import type { ReviewStagedProposalRequest } from '@mnemora/core/src/application/dtos/StagedProposalsDTOs';
+import type { StagedProposalKind } from '@mnemora/core/src/domain/value-objects/StagedProposal';
 import { Result } from '@mnemora/core/src/domain/core/Result';
 import type { ViewModelError } from '@mnemora/core/src/presentation/view-models/types';
 import { SessionNotesViewModel } from '@mnemora/core/src/presentation/view-models/SessionNotesViewModel';
@@ -22,6 +28,7 @@ import { PROTOTYPE_CAMPAIGN, PROTOTYPE_WORLD } from './constants';
 import type { SessionModeContextValue, SessionModeError, SessionModeStatus, SelectedSession, SessionNotesState, UndoRedoState } from './types';
 import { LocalStorageSessionRunRepository } from './infrastructure/LocalStorageSessionRunRepository';
 import { LocalStorageQuickNoteRepository } from './infrastructure/LocalStorageQuickNoteRepository';
+import { LocalStorageStagedProposalRepository } from './infrastructure/LocalStorageStagedProposalRepository';
 import { SessionSelectionEntityRepository } from './infrastructure/SessionSelectionEntityRepository';
 import { StaticCampaignRepository } from './infrastructure/StaticCampaignRepository';
 
@@ -38,6 +45,8 @@ export function SessionModeProvider({ children }: { children: ReactNode }) {
         ending: false,
         notesLoading: false,
         notesSaving: false,
+        proposalsLoading: false,
+        proposalsSaving: false,
     });
 
     const [notes, setNotes] = useState<SessionNotesState>({
@@ -88,6 +97,31 @@ export function SessionModeProvider({ children }: { children: ReactNode }) {
     const quickNoteRepository = useMemo(
         () => new LocalStorageQuickNoteRepository(),
         [],
+    );
+
+    const stagedProposalRepository = useMemo(
+        () => new LocalStorageStagedProposalRepository(),
+        [],
+    );
+
+    const createStagedProposalUseCase = useMemo(
+        () => new CreateStagedProposalUseCase(stagedProposalRepository),
+        [stagedProposalRepository],
+    );
+
+    const listStagedProposalsUseCase = useMemo(
+        () => new ListStagedProposalsUseCase(stagedProposalRepository),
+        [stagedProposalRepository],
+    );
+
+    const listStagedProposalAuditEventsUseCase = useMemo(
+        () => new ListStagedProposalAuditEventsUseCase(stagedProposalRepository),
+        [stagedProposalRepository],
+    );
+
+    const reviewStagedProposalUseCase = useMemo(
+        () => new ReviewStagedProposalUseCase(stagedProposalRepository),
+        [stagedProposalRepository],
     );
 
     const sessionNotesViewModel = useMemo(
@@ -168,13 +202,13 @@ export function SessionModeProvider({ children }: { children: ReactNode }) {
         setError(null);
 
         const result = await getActiveUseCase.execute({ campaignID: PROTOTYPE_CAMPAIGN.id });
-        
+
         if (result.isSuccess) {
             setDetectedActiveRun(result.value);
         } else {
             setError(mapUseCaseError(result.error));
         }
-        
+
         setStatus((prev) => ({ ...prev, checking: false }));
     }, [getActiveUseCase, mapUseCaseError]);
 
@@ -214,7 +248,7 @@ export function SessionModeProvider({ children }: { children: ReactNode }) {
 
     const startSelectedSessionRun = useCallback(async () => {
         const selected = selectedSessionRef.current;
-        
+
         // Exit case - no session selected
         if (!selected) {
             const e: SessionModeError = {
@@ -227,9 +261,9 @@ export function SessionModeProvider({ children }: { children: ReactNode }) {
 
         setStatus((prev) => ({ ...prev, starting: true }));
         setError(null);
-        
+
         const result = await startUseCase.execute({ sessionID: selected.sessionID });
-        
+
         // Exit case - setting the active run was successful
         if (result.isSuccess) {
             const dto = result.value;
@@ -244,7 +278,7 @@ export function SessionModeProvider({ children }: { children: ReactNode }) {
         const mapped = mapUseCaseError(result.error);
         setError(mapped);
         setStatus((prev) => ({ ...prev, starting: false }));
-        
+
         if (mapped.code === 'CONFLICT') {
             await refreshDetectedActiveRun();
         }
@@ -266,13 +300,13 @@ export function SessionModeProvider({ children }: { children: ReactNode }) {
         setError(null);
         setActiveRun(detectedActiveRun);
         selectSession({ sessionID: detectedActiveRun.sessionID, sessionName: detectedActiveRun.sessionName });
-        
+
         return Result.okVoid();
     }, [detectedActiveRun, selectSession]);
 
     const endActiveSessionRun = useCallback(async (durationSeconds: number) => {
         const run = activeRun;
-        
+
         // Exit case - no active session run
         if (!run) {
             const e: SessionModeError = {
@@ -524,6 +558,84 @@ export function SessionModeProvider({ children }: { children: ReactNode }) {
         setError(null);
     }, []);
 
+    const listStagedProposals = useCallback(async (sessionID: string, includeResolved?: boolean) => {
+        setStatus((prev) => ({ ...prev, proposalsLoading: true }));
+        setError(null);
+        const result = await listStagedProposalsUseCase.execute({ sessionID, includeResolved });
+        setStatus((prev) => ({ ...prev, proposalsLoading: false }));
+        
+        // Exit case - failed tolist the staged proposals
+        if (result.isFailure) {
+            const mapped = mapUseCaseError(result.error);
+            setError(mapped);
+            return Result.fail(mapped);
+        }
+
+        return Result.ok(result.value.proposals);
+    }, [listStagedProposalsUseCase, mapUseCaseError]);
+
+    const listStagedProposalAuditEvents = useCallback(async (proposalID: string) => {
+        setStatus((prev) => ({ ...prev, proposalsLoading: true }));
+        setError(null);
+        const result = await listStagedProposalAuditEventsUseCase.execute({ proposalID });
+        setStatus((prev) => ({ ...prev, proposalsLoading: false }));
+        
+        // Exit case - failed to list the audit events
+        if (result.isFailure) {
+            const mapped = mapUseCaseError(result.error);
+            setError(mapped);
+            return Result.fail(mapped);
+        }
+
+        return Result.ok(result.value.events);
+    }, [listStagedProposalAuditEventsUseCase, mapUseCaseError]);
+    
+    const stageProposal = useCallback(async (input: { content: string; title?: string | null; kind?: StagedProposalKind }) => {
+        const run = activeRun;
+
+        // Exit case - no active run
+        if (!run) {
+            const e: SessionModeError = { code: 'NO_ACTIVE_SESSION', message: 'No active session.' };
+            setError(e);
+            return Result.fail(e);
+        }
+
+        setStatus((prev) => ({ ...prev, proposalsSaving: true }));
+        setError(null);
+        const result = await createStagedProposalUseCase.execute({
+            sessionID: run.sessionID,
+            kind: input.kind,
+            title: input.title,
+            content: input.content,
+        });
+        setStatus((prev) => ({ ...prev, proposalsSaving: false }));
+        
+        // Exit case - failed to create the staged proposal
+        if (result.isFailure) {
+            const mapped = mapUseCaseError(result.error);
+            setError(mapped);
+            return Result.fail(mapped);
+        }
+
+        return Result.ok(result.value.proposal);
+    }, [activeRun, createStagedProposalUseCase, mapUseCaseError]);
+   
+    const reviewStagedProposal = useCallback(async (request: ReviewStagedProposalRequest) => {
+        setStatus((prev) => ({ ...prev, proposalsSaving: true }));
+        setError(null);
+        const result = await reviewStagedProposalUseCase.execute(request);
+        setStatus((prev) => ({ ...prev, proposalsSaving: false }));
+        
+        // Exit case - failed to review the staged proposal
+        if (result.isFailure) {
+            const mapped = mapUseCaseError(result.error);
+            setError(mapped);
+            return Result.fail(mapped);
+        }
+
+        return Result.ok(result.value.proposal);
+    }, [mapUseCaseError, reviewStagedProposalUseCase]);
+
     const value = useMemo<SessionModeContextValue>(() => ({
         selectedSession,
         detectedActiveRun,
@@ -549,6 +661,10 @@ export function SessionModeProvider({ children }: { children: ReactNode }) {
         undo,
         redo,
         clearError,
+        listStagedProposals,
+        listStagedProposalAuditEvents,
+        stageProposal,
+        reviewStagedProposal,
     }), [
         selectedSession,
         detectedActiveRun,
@@ -585,7 +701,7 @@ export function SessionModeProvider({ children }: { children: ReactNode }) {
 
 export function useSessionMode(): SessionModeContextValue {
     const ctx = useContext(SessionModeContext);
-    
+
     // Exit case - no context
     if (!ctx) {
         throw new Error('useSessionMode must be used within a SessionModeProvider');

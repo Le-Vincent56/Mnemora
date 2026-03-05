@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Pencil, Plus, Redo2, Trash2, Undo2 } from 'lucide-react';
 import { Button, Icon, Stack, Surface, Text } from '@/primitives';
 import { useSessionMode } from '@/adapters/session-mode';
@@ -14,12 +14,38 @@ export function SessionNotesPanel() {
     const sessionMode = useSessionMode();
     const [draft, setDraft] = useState('');
     const [editingID, setEditingID] = useState<string | null>(null);
+    const [stageDraft, setStageDraft] = useState('');
+    const [stagedCount, setStagedCount] = useState<number>(0);
+
+    useEffect(() => {
+        const sessionID = sessionMode.activeRun?.sessionID ?? null;
+        
+        // Exit case - no active run
+        if (!sessionID) {
+            setStagedCount(0);
+            return;
+        }
+        
+        let cancelled = false;
+        
+        void (async () => {
+            const r = await sessionMode.listStagedProposals(sessionID, false);
+            if (cancelled) return;
+            if (r.isSuccess) setStagedCount(r.value.length);
+        })();
+        
+        return () => {
+            cancelled = true;
+        };
+    }, [sessionMode.activeRun?.sessionID, sessionMode.listStagedProposals]);
 
     const notes = sessionMode.notes.quickNotes;
     const canSubmit = draft.trim().length > 0 && !sessionMode.status.notesSaving;
 
     const headerLabel = useMemo(() => {
+        // Exit case - no active session
         if (!sessionMode.activeRun) return 'No active session';
+
         return `Session Notes (${notes.length})`;
     }, [notes.length, sessionMode.activeRun]);
 
@@ -30,7 +56,7 @@ export function SessionNotesPanel() {
         // Exit case - updating a quick note
         if (editingID) {
             const result = await sessionMode.updateQuickNote(editingID, draft);
-            
+
             if (result.isSuccess) {
                 setEditingID(null);
                 setDraft('');
@@ -49,6 +75,7 @@ export function SessionNotesPanel() {
                 <Stack gap={4}>
                     <Stack direction="horizontal" justify="between" align="center" wrap>
                         <Text variant="heading">{headerLabel}</Text>
+
                         <Stack direction="horizontal" gap={2}>
                             <Button
                                 variant="ghost"
@@ -62,6 +89,7 @@ export function SessionNotesPanel() {
                             >
                                 <Icon icon={Undo2} size={16} />
                             </Button>
+
                             <Button
                                 variant="ghost"
                                 size="sm"
@@ -85,6 +113,7 @@ export function SessionNotesPanel() {
                             rows={3}
                             placeholder={editingID ? 'Edit note...' : 'Capture a thought...'}
                         />
+
                         <Stack direction="horizontal" gap={2} justify="end" wrap>
                             {editingID && (
                                 <Button
@@ -118,6 +147,54 @@ export function SessionNotesPanel() {
                 </Stack>
             </Surface>
 
+            <Surface elevation="raised" radius="lg" padding="md" bordered>
+                <Stack gap={3}>
+                    <Stack direction="horizontal" justify="between" align="center" wrap>
+                        <Text variant="heading">Staged Proposals</Text>
+
+                        <Text variant="body-sm" color="tertiary">
+                            {sessionMode.activeRun ? `${stagedCount} in queue` : 'No active session'}
+                        </Text>
+                    </Stack>
+
+                    <div className={styles.inputRow}>
+                        <textarea
+                            className={styles.textarea}
+                            value={stageDraft}
+                            onChange={(e) => setStageDraft(e.target.value)}
+                            rows={3}
+                            placeholder="Stage a canon-affecting change for later review..."
+                        />
+
+                        <Stack direction="horizontal" gap={2} justify="end" wrap>
+                            <Button
+                                variant="primary"
+                                size="sm"
+                                disabled={stageDraft.trim().length === 0 || sessionMode.status.proposalsSaving}
+                                onClick={() => void (async () => {
+                                    const r = await sessionMode.stageProposal({ content: stageDraft });
+
+                                    // Exit case - failed to stage the proposal
+                                    if (r.isFailure) return;
+
+                                    setStageDraft('');
+                                    const run = sessionMode.activeRun;
+
+                                    // Exit case - no active run
+                                    if (!run) return;
+
+                                    const list = await sessionMode.listStagedProposals(run.sessionID, false);
+                                    if (list.isSuccess) setStagedCount(list.value.length);
+                                })()}
+                            >
+                                <Icon icon={Plus} size={16} color="inherit" />
+                                Stage
+                            </Button>
+                        </Stack>
+                    </div>
+                </Stack>
+            </Surface>
+
             <Surface elevation="flat" radius="lg" padding="md" bordered>
                 {notes.length === 0 ? (
                     <Text variant="body-sm" color="tertiary">
@@ -129,10 +206,12 @@ export function SessionNotesPanel() {
                             <div key={n.id} className={styles.noteItem}>
                                 <div className={styles.noteMain}>
                                     <Text variant="body">{n.content}</Text>
+
                                     <Text variant="caption" color="tertiary">
                                         {formatTime(n.capturedAt)}
                                     </Text>
                                 </div>
+
                                 <Stack direction="horizontal" gap={2}>
                                     <Button
                                         variant="ghost"
@@ -147,6 +226,7 @@ export function SessionNotesPanel() {
                                     >
                                         <Icon icon={Pencil} size={16} />
                                     </Button>
+
                                     <Button
                                         variant="ghost"
                                         size="sm"

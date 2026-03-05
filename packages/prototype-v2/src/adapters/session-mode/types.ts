@@ -1,5 +1,11 @@
 import type { ActiveSessionRunDTO } from '@mnemora/core/src/application/dtos/SessionRunDTOs';
 import type { QuickNoteDTO, SessionSummaryDTO, StarsAndWishesDTO } from '@mnemora/core/src/application/dtos/SessionNotesDTOs';
+import type {
+    ReviewStagedProposalRequest,
+    StagedProposalAuditEventDTO,
+    StagedProposalDTO,
+} from '@mnemora/core/src/application/dtos/StagedProposalsDTOs';
+import type { StagedProposalKind } from '@mnemora/core/src/domain/value-objects/StagedProposal';
 import type { Result } from '@mnemora/core/src/domain/core/Result';
 
 export interface SelectedSession {
@@ -13,6 +19,8 @@ export interface SessionModeStatus {
     readonly ending: boolean;
     readonly notesLoading: boolean;
     readonly notesSaving: boolean;
+    readonly proposalsLoading: boolean;
+    readonly proposalsSaving: boolean;
 }
 
 export interface SessionNotesState {
@@ -69,4 +77,8 @@ export interface SessionModeContextValue {
     undo(): Promise<Result<void, SessionModeError>>;
     redo(): Promise<Result<void, SessionModeError>>;
     clearError(): void;
+    listStagedProposals(sessionID: string, includeResolved?: boolean): Promise<Result<readonly StagedProposalDTO[], SessionModeError>>;
+    listStagedProposalAuditEvents(proposalID: string): Promise<Result<readonly StagedProposalAuditEventDTO[], SessionModeError>>;
+    stageProposal(input: { content: string; title?: string | null; kind?: StagedProposalKind }): Promise<Result<StagedProposalDTO, SessionModeError>>;
+    reviewStagedProposal(request: ReviewStagedProposalRequest): Promise<Result<StagedProposalDTO, SessionModeError>>;
 }

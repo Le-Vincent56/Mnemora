@@ -235,6 +235,21 @@ export class DatabaseManager {
                     db.prepare('INSERT INTO schema_version (version) VALUES (?)').run(8);
                 })();
             }
+
+            // Re-check version after v8
+            const versionAfterV8 = (db.prepare(
+                'SELECT version FROM schema_version ORDER BY version DESC LIMIT 1'
+            ).get() as { version: number } | undefined)?.version ?? 0;
+            
+            if (versionAfterV8 < 9) {
+                db.transaction(() => {
+                    db.exec(schema.CREATE_STAGED_PROPOSALS_TABLE);
+                    db.exec(schema.CREATE_STAGED_PROPOSALS_INDEXES);
+                    db.exec(schema.CREATE_STAGED_PROPOSAL_AUDIT_EVENTS_TABLE);
+                    db.exec(schema.CREATE_STAGED_PROPOSAL_AUDIT_EVENTS_INDEXES);
+                    db.prepare('INSERT INTO schema_version (version) VALUES (?)').run(9);
+                })();
+            }
         }
     }
 }
