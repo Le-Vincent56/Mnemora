@@ -17,6 +17,7 @@ import { Modal, FormField } from '@/components/composed';
 import { useReducedMotion } from '@/hooks';
 import { EASING, TIMING, toSeconds } from '@/tokens';
 import { getAllSessions, type SessionData, type SessionBlock } from '@/data/mockSessions';
+import { useSessionMode } from '@/adapters/session-mode';
 import styles from '@/components/prep/prep.module.css';
 
 type SessionTab = 'upcoming' | 'history';
@@ -76,9 +77,10 @@ export function SessionsWorkspace() {
   const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingForm, setEditingForm] = useState<SessionFormData>(EMPTY_FORM);
-  const [activeSlashEditorId, setActiveSlashEditorId] = useState<string | null>(null);
-  const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
+  const [activeSlashEditorID, setActiveSlashEditorId] = useState<string | null>(null);
+  const [activeSessionID, setActiveSessionId] = useState<string | null>(null);
   const reducedMotion = useReducedMotion();
+  const { selectSession } = useSessionMode();
 
   const upcoming = useMemo(
     () => sessions.filter((s) => s.isUpcoming).sort((a, b) => a.date.localeCompare(b.date)),
@@ -96,15 +98,23 @@ export function SessionsWorkspace() {
       setActiveSessionId(null);
       return;
     }
-    if (!activeSessionId || !upcoming.some((s) => s.id === activeSessionId)) {
+    if (!activeSessionID || !upcoming.some((s) => s.id === activeSessionID)) {
       setActiveSessionId(upcoming[0]?.id ?? null);
     }
-  }, [upcoming, activeSessionId]);
+  }, [upcoming, activeSessionID]);
 
   const activeSession = useMemo(
-    () => upcoming.find((s) => s.id === activeSessionId),
-    [upcoming, activeSessionId],
+    () => upcoming.find((s) => s.id === activeSessionID),
+    [upcoming, activeSessionID],
   );
+
+  useEffect(() => {
+    if (activeSession) {
+      selectSession({ sessionID: activeSession.id, sessionName: activeSession.title });
+    } else {
+      selectSession(null);
+    }
+  }, [activeSession?.id, activeSession?.title, selectSession]);
 
   // Auto-select first history session
   const [activeHistoryId, setActiveHistoryId] = useState<string | null>(null);
@@ -250,7 +260,7 @@ export function SessionsWorkspace() {
                   <button
                     key={s.id}
                     type="button"
-                    className={`${styles.sessionsPickerItem} ${s.id === activeSessionId ? styles.sessionsPickerItemActive : ''}`}
+                    className={`${styles.sessionsPickerItem} ${s.id === activeSessionID ? styles.sessionsPickerItemActive : ''}`}
                     onClick={() => setActiveSessionId(s.id)}
                   >
                     <span className={styles.sessionsPickerNumber}>{s.number}</span>
@@ -268,7 +278,7 @@ export function SessionsWorkspace() {
                 onEdit={() => handleEdit(activeSession)}
                 onDelete={() => handleDelete(activeSession)}
                 onUpdateBlocks={(blocks) => handleUpdateBlocks(activeSession.id, blocks)}
-                isSlashOwner={activeSlashEditorId === activeSession.id}
+                isSlashOwner={activeSlashEditorID === activeSession.id}
                 onSlashOpen={() => setActiveSlashEditorId(activeSession.id)}
                 onSlashClose={() => setActiveSlashEditorId((prev) => prev === activeSession.id ? null : prev)}
               />
@@ -305,7 +315,7 @@ export function SessionsWorkspace() {
               onEdit={() => handleEdit(activeHistorySession)}
               onDelete={() => handleDelete(activeHistorySession)}
               onUpdateBlocks={(blocks) => handleUpdateBlocks(activeHistorySession.id, blocks)}
-              isSlashOwner={activeSlashEditorId === activeHistorySession.id}
+              isSlashOwner={activeSlashEditorID === activeHistorySession.id}
               onSlashOpen={() => setActiveSlashEditorId(activeHistorySession.id)}
               onSlashClose={() => setActiveSlashEditorId((prev) => prev === activeHistorySession.id ? null : prev)}
             />

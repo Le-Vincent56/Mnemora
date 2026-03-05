@@ -12,7 +12,8 @@ import {
     IconRail,
     PageHeader
 } from '@/components/layout';
-import { ComponentShowcase } from '@/components/composed';
+import { ComponentShowcase, ConfirmDialog } from '@/components/composed';
+import { useSessionMode } from '@/adapters/session-mode';
 import { PrepModeShell } from '@/components/prep/PrepModeShell';
 import layoutStyles from '@/components/layout/layout.module.css';
 import { EASING } from '@/tokens';
@@ -79,8 +80,10 @@ export function App() {
     const [prepView, setPrepView] = useState<PrepView>('prep');
     const [sessionView, setSessionView] = useState<SessionView>('quick-ref');
     const [sessionTime, setSessionTime] = useState('0:00');
+    const [resumePromptDismissed, setResumePromptDismissed] = useState(false);
     const reducedMotion = useReducedMotion();
     const { state, controls, isBlocking } = useCeremony();
+    const sessionMode = useSessionMode();
 
     // -----------------------------------------
     //      MODE & DOCUMENT SYNC (DEFERRED)
@@ -96,23 +99,27 @@ export function App() {
         }
     }, [mode, state.status]);
 
-    // Mock session timer
     useEffect(() => {
-        if (mode !== 'session') {
+        if (sessionMode.detectedActiveRun) {
+            setResumePromptDismissed(false);
+        }
+    }, [sessionMode.detectedActiveRun?.sessionID]);
+
+    // Session timer derived from core startedAt (survives refresh/resume)
+    useEffect(() => {
+        if (mode !== 'session' || !sessionMode.activeRun) {
             setSessionTime('0:00');
             return;
         }
-
-        const start = Date.now();
+        const startedAtMs = new Date(sessionMode.activeRun.startedAt).getTime();
         const interval = setInterval(() => {
-            const elapsed = Math.floor((Date.now() - start) / 1000);
+            const elapsed = Math.max(0, Math.floor((Date.now() - startedAtMs) / 1000));
             const mins = Math.floor(elapsed / 60);
             const secs = elapsed % 60;
             setSessionTime(`${mins}:${secs.toString().padStart(2, '0')}`);
         }, 1000);
-
         return () => clearInterval(interval);
-    }, [mode]);
+    }, [mode, sessionMode.activeRun?.startedAt]);
 
 
     // -----------------------------------------
@@ -131,12 +138,7 @@ export function App() {
     //   MODE SWITCH WITH CEREMONY
     // -----------------------------------------
 
-    const handleModeSwitch = useCallback(() => {
-        const newMode = mode === 'prep' ? 'session' : 'prep';
-        const ceremonyType = mode === 'prep'
-            ? CeremonyType.PREP_TO_SESSION
-            : CeremonyType.SESSION_TO_PREP;
-
+    const triggerModeSwitch = useCallback((newMode: Mode, ceremonyType: CeremonyType) => {
         controls.triggerCeremony(ceremonyType, {
             onModeSwitch: () => {
                 // Set data-mode synchronously — ceremony scrim is opaque
@@ -147,13 +149,78 @@ export function App() {
                 console.log(`Ceremony complete: now in ${newMode} mode`);
             },
         });
-    }, [mode, controls]);
+    }, [controls]);
+
+    const handleModeSwitch = useCallback(() => {
+        if (mode === 'prep') {
+            void (async () => {
+                const startResult = await sessionMode.startSelectedSessionRun();
+                
+                // Exit case - could not start a session run
+                if (startResult.isFailure) {
+                    if (startResult.error.code === 'CONFLICT') {
+                        setResumePromptDismissed(false);
+                    }
+
+                    return;
+                }
+
+                triggerModeSwitch('session', CeremonyType.PREP_TO_SESSION);
+            })();
+
+            return;
+        }
+        const active = sessionMode.activeRun;
+
+        // Exit case - no active session
+        if (!active) return;
+
+        const durationSeconds = Math.max(
+            0,
+            Math.floor((Date.now() - new Date(active.startedAt).getTime()) / 1000),
+        );
+
+        void (async () => {
+            const endResult = await sessionMode.endActiveSessionRun(durationSeconds);
+            
+            // Exit case - could not end the current session
+            if (endResult.isFailure) return;
+
+            triggerModeSwitch('prep', CeremonyType.SESSION_TO_PREP);
+        })();
+    }, [mode, sessionMode, triggerModeSwitch]);
 
     // -----------------------------------------
     //          ACTIVE VIEW
     // -----------------------------------------
 
     const activeItem = mode === 'prep' ? prepView : sessionView;
+
+    const modeSwitchDisabled = mode === 'prep'
+        ? sessionMode.selectedSession === null || sessionMode.status.starting || sessionMode.status.checking
+        : sessionMode.activeRun === null || sessionMode.status.ending;
+    
+    const resumeCandidate = sessionMode.detectedActiveRun;
+    
+    const resumePromptOpen =
+        mode === 'prep' &&
+        state.status !== 'running' &&
+        resumeCandidate !== null &&
+        sessionMode.activeRun === null &&
+        !resumePromptDismissed;
+    
+    const resumePromptMessage = resumeCandidate
+        ? `An active session is still running: "${resumeCandidate.sessionName}".\nStarted: ${new Date(resumeCandidate.startedAt).toLocaleString()}`
+        : '';
+    
+    const handleResume = () => {
+        const resumeResult = sessionMode.resumeDetectedRun();
+        
+        // Exit case - resuming the session failed
+        if (resumeResult.isFailure) return;
+
+        triggerModeSwitch('session', CeremonyType.PREP_TO_SESSION);
+    };
 
     // -----------------------------------------
     //          RENDER
@@ -164,6 +231,17 @@ export function App() {
             {/* Ceremony particle overlay (portals to body) */}
             <CeremonyOverlay />
 
+            <ConfirmDialog
+                open={resumePromptOpen}
+                onClose={() => setResumePromptDismissed(true)}
+                onConfirm={handleResume}
+                title="Resume Session?"
+                message={resumePromptMessage}
+                confirmLabel="Resume"
+                cancelLabel="Not now"
+                confirmVariant="primary"
+            />
+
             <AppShell
                 rail={
                     <IconRail
@@ -172,6 +250,7 @@ export function App() {
                         onNavigate={handleNavigate}
                         onModeSwitch={handleModeSwitch}
                         sessionTime={sessionTime}
+                        modeSwitchDisabled={modeSwitchDisabled}
                     />
                 }
                 animateContent={false}

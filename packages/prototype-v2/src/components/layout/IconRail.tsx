@@ -53,6 +53,8 @@ export interface IconRailProps {
     onModeSwitch?: () => void;
     /** Optional: Session timer display (only shown in Session mode) */
     sessionTime?: string;
+    /** Disable the mode switch button (Start/End Session) */
+    modeSwitchDisabled?: boolean;
     /** Additional CSS classes */
     className?: string;
 }
@@ -82,6 +84,7 @@ export function IconRail({
     onNavigate,
     onModeSwitch,
     sessionTime,
+    modeSwitchDisabled = false,
     className,
 }: IconRailProps) {
     const { isBlocking, controls } = useCeremony();
@@ -153,6 +156,7 @@ export function IconRail({
                     onClick={handleModeSwitch}
                     isModeSwitch
                     ceremonyActive={isBlocking}
+                    disabled={modeSwitchDisabled}
                 />
             </div>
         </nav>
